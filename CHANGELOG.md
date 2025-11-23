@@ -7,6 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- `PracticeEngine` - state machine for managing practice sessions
+  - States: `.idle`, `.inBlock`, `.betweenBlocks`, `.finished`
+  - Timer control with tick, pause, resume
+  - Block transitions (finish, skip, extend)
+  - Feedback recording
+  - Progress tracking (session and block)
+- `PracticeEngineTests` - 39 tests for TDD implementation
 - Initial Xcode project structure with iOS 17 target
 - App entry point (`PiqApp.swift`) with SwiftUI lifecycle
 - `RootView` with TabView (Today, History, Settings tabs)

@@ -7,7 +7,7 @@ Tracking progress through the TDD development phases outlined in `claude.md`.
 ## Phase Overview
 
 - [x] **Phase 0** - Domain skeleton (no UI yet)
-- [ ] **Phase 1** - PracticeEngine (driven by tests)
+- [x] **Phase 1** - PracticeEngine (driven by tests)
 - [ ] **Phase 2** - SpacedRepetitionEngine (stub then grow)
 - [ ] **Phase 3** - Storage
 - [ ] **Phase 4** - Wire minimal UI (thin views)
@@ -25,21 +25,21 @@ Tracking progress through the TDD development phases outlined in `claude.md`.
 - [x] Add simple factory helpers
 - [x] Xcode project setup with iOS 17 target
 - [x] Basic app structure with TabView
-- [ ] Tests for model invariants (e.g. 4 blocks per session)
-- [ ] Tests for derived properties (e.g. total minutes)
+- [x] Tests for model invariants (e.g. 4 blocks per session)
+- [x] Tests for derived properties (e.g. total minutes)
 
 ---
 
-### Phase 1 - PracticeEngine
-**Status:** Not started
+### Phase 1 - PracticeEngine ✅
+**Status:** Complete
 
 Write tests first for state machine:
-- [ ] `startSession()` puts engine into first `.inBlock`
-- [ ] Tick/advance logic updates `remainingSeconds` correctly
-- [ ] `finishCurrentBlock()` moves to `.betweenBlocks` then next block
-- [ ] `skipCurrentBlock()` skips correctly without breaking state
-- [ ] `extendCurrentBlock(by:)` adds time as expected
-- [ ] Implement `PracticeEngine` to satisfy tests
+- [x] `startSession()` puts engine into first `.inBlock`
+- [x] Tick/advance logic updates `remainingSeconds` correctly
+- [x] `finishCurrentBlock()` moves to `.betweenBlocks` then next block
+- [x] `skipCurrentBlock()` skips correctly without breaking state
+- [x] `extendCurrentBlock(by:)` adds time as expected
+- [x] Implement `PracticeEngine` to satisfy tests (39 tests passing)
 
 ---
 
