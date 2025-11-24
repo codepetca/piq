@@ -165,12 +165,21 @@ final class PracticeStorage {
             return catalogItems
         }
 
-        // Merge stored SRS state with catalog
-        // This preserves catalog structure while keeping user's SRS progress
-        let storedByTitle = Dictionary(storedItems.map { ($0.title, $0) }, uniquingKeysWith: { first, _ in first })
+        // Merge stored SRS state with catalog using (title, category) as composite key
+        // This is more robust than title alone in case items move between categories
+        struct ItemKey: Hashable {
+            let title: String
+            let category: PracticeItemCategory
+        }
+
+        let storedByKey = Dictionary(
+            storedItems.map { (ItemKey(title: $0.title, category: $0.category), $0) },
+            uniquingKeysWith: { first, _ in first }
+        )
 
         return catalogItems.map { catalogItem in
-            if let storedItem = storedByTitle[catalogItem.title] {
+            let key = ItemKey(title: catalogItem.title, category: catalogItem.category)
+            if let storedItem = storedByKey[key] {
                 var merged = catalogItem
                 merged.srs = storedItem.srs
                 return merged
