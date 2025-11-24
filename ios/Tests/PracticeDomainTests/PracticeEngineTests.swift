@@ -46,8 +46,7 @@ final class PracticeEngineTests: XCTestCase {
         engine.startSession()
 
         if case .inBlock(_, let remainingSeconds) = engine.state {
-            // Default is 10 minutes = 600 seconds
-            XCTAssertEqual(remainingSeconds, 600)
+            XCTAssertEqual(remainingSeconds, 300)
         } else {
             XCTFail("Engine should be in block state")
         }
@@ -61,7 +60,7 @@ final class PracticeEngineTests: XCTestCase {
         engine.tick()
 
         if case .inBlock(_, let remainingSeconds) = engine.state {
-            XCTAssertEqual(remainingSeconds, 599)
+            XCTAssertEqual(remainingSeconds, 299)
         } else {
             XCTFail("Engine should be in block state")
         }
@@ -87,7 +86,7 @@ final class PracticeEngineTests: XCTestCase {
         }
 
         if case .inBlock(_, let remainingSeconds) = engine.state {
-            XCTAssertEqual(remainingSeconds, 590)
+            XCTAssertEqual(remainingSeconds, 290)
         } else {
             XCTFail("Engine should be in block state")
         }
@@ -133,7 +132,7 @@ final class PracticeEngineTests: XCTestCase {
 
         // Simulate 3 minutes (180 seconds) of practice
         if case .inBlock(let index, _) = engine.state {
-            engine.state = .inBlock(index: index, remainingSeconds: 420) // 600 - 180
+            engine.state = .inBlock(index: index, remainingSeconds: 120)
         }
 
         engine.finishCurrentBlock()
@@ -189,7 +188,7 @@ final class PracticeEngineTests: XCTestCase {
         engine.startNextBlock()
 
         if case .inBlock(_, let remainingSeconds) = engine.state {
-            XCTAssertEqual(remainingSeconds, 600)
+            XCTAssertEqual(remainingSeconds, 300)
         } else {
             XCTFail("Engine should be in block state")
         }
@@ -221,7 +220,7 @@ final class PracticeEngineTests: XCTestCase {
     func testSkipLastBlockTransitionsToFinished() {
         let engine = PracticeEngine()
         engine.startSession()
-        engine.state = .inBlock(index: 3, remainingSeconds: 600)
+        engine.state = .inBlock(index: 3, remainingSeconds: 360)
         engine.skipCurrentBlock()
 
         if case .finished = engine.state {
@@ -239,7 +238,7 @@ final class PracticeEngineTests: XCTestCase {
         engine.extendCurrentBlock(byExtraSeconds: 60)
 
         if case .inBlock(_, let remainingSeconds) = engine.state {
-            XCTAssertEqual(remainingSeconds, 660)
+            XCTAssertEqual(remainingSeconds, 360)
         } else {
             XCTFail("Engine should be in block state")
         }
@@ -251,7 +250,7 @@ final class PracticeEngineTests: XCTestCase {
         engine.extendCurrentBlock(byExtraSeconds: 300) // 5 minutes
 
         if case .inBlock(_, let remainingSeconds) = engine.state {
-            XCTAssertEqual(remainingSeconds, 900)
+            XCTAssertEqual(remainingSeconds, 600)
         } else {
             XCTFail("Engine should be in block state")
         }
@@ -333,7 +332,7 @@ final class PracticeEngineTests: XCTestCase {
         engine.tick()
 
         if case .inBlock(_, let remainingSeconds) = engine.state {
-            XCTAssertEqual(remainingSeconds, 600) // Unchanged
+            XCTAssertEqual(remainingSeconds, 300) // Unchanged
         } else {
             XCTFail("Engine should be in block state")
         }
@@ -470,7 +469,7 @@ final class PracticeEngineTests: XCTestCase {
 
         // Simulate halfway through block
         if case .inBlock(let index, _) = engine.state {
-            engine.state = .inBlock(index: index, remainingSeconds: 300)
+            engine.state = .inBlock(index: index, remainingSeconds: 150)
         }
 
         XCTAssertEqual(engine.blockProgress, 0.5, accuracy: 0.01)
