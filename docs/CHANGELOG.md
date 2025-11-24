@@ -63,11 +63,19 @@ Complete implementation of core practice companion functionality following TDD a
 - `SettingsViewModel` with UserDefaults persistence
 - `SettingsView` with preferences and data management actions
 
+#### MVP Polish
+- Wire default BPM from settings to MetronomeService
+- Auto-start/stop metronome based on block kind (`defaultMetronomeOn`)
+- `HapticService` with UIKit feedback generators
+- Haptic feedback on rating selection (light/medium/heavy)
+- Success haptic on session completion
+- Haptics respect `hapticFeedbackEnabled` setting
+
 ---
 
 ## Summary
 
-- **Total Swift files:** 23
-- **Total lines of code:** ~3,000
+- **Total Swift files:** 24
+- **Total lines of code:** ~3,500
 - **Test coverage:** PracticeEngine, SpacedRepetitionEngine, PracticeStorage, HistoryViewModel
 - **Architecture:** SwiftUI + Observation framework, @Observable engines, environment injection
