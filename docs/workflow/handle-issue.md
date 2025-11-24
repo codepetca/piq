@@ -1,45 +1,16 @@
-# PR Factory Prompt (GitHub Issues as Source of Truth)
+# Handle Issue Workflow (GitHub Issues as Source of Truth)
 
-This file defines the reusable prompt you give to Claude **after** the Startup Prompt, when you want it to take a GitHub Issue and turn it into a focused PR.
+This prompt is used **after** loading project context (`load-context.md`) to turn a GitHub Issue into a focused PR.
 
-In this workflow:
-
-- **GitHub Issues are the only source of truth for work items.**
-- The repo’s `/docs` folder holds only:
-  - core rules (`/docs/core`),
-  - conceptual guidance (`/docs/guidance`),
-  - and optional workflow helpers like this file.
-- There are **no longer per-issue files in `/docs/issues`**.
+**GitHub Issues are the only source of truth for work items.** There are no per-issue files in `/docs/issues`.
 
 ---
 
-## How to Use This
-
-1. Start a new Claude session in your IDE / environment.
-2. Paste the **Claude Startup Prompt** (initialization only).
-3. After Claude confirms documentation is loaded, paste this **PR Factory Prompt**.
-4. Optionally specify an issue number (e.g., “Use GitHub Issue #12”), or let Claude automatically pick the “next” issue using `gh` CLI.
-5. Claude will:
-   - read the GitHub Issue,
-   - plan the work,
-   - implement the changes,
-   - write tests,
-   - and output a diff + PR description.
-
-This prompt assumes:
-
-- The environment running Claude has access to:
-  - the local git repo,
-  - the `gh` (GitHub CLI) command configured with auth,
-  - and can run shell commands (bash/sh).
-
----
-
-# ✅ PR Factory Prompt (Copy/Paste into Claude After Startup Prompt)
+# ✅ Handle Issue Workflow
 
 You are now initialized with the full piq documentation set.
 
-You will now operate as a **PR Factory** for this repository, using **GitHub Issues as the single source of truth for work items**.
+You will use **GitHub Issues as the single source of truth for work items** to implement focused, scoped changes.
 
 ## 1. Determine Which GitHub Issue to Work On
 
@@ -89,11 +60,11 @@ You must **never** start work on an issue without me confirming the issue number
 For the chosen GitHub Issue:
 
 1. Read the issue body **fully**.
-2. Re-read (in order) the core docs paths referenced inside the issue body (e.g., `/docs/core/design.md`, `/docs/core/claude.md`, etc.).
+2. Review relevant sections from the core docs (`/docs/core`) and guidance docs (`/docs/guidance`) as they relate to this issue.
 3. Summarize the issue in **5–10 bullet points**, covering:
    - What you will build or change.
    - Important constraints or acceptance criteria.
-   - Anything listed under “Do NOT” in the issue template.
+   - Any "Do NOT" items from the issue.
 4. Ask **exactly one clarifying question**, but only if something is genuinely ambiguous.
 5. Wait for my confirmation before modifying any code.
 
@@ -153,16 +124,22 @@ Include:
 
 ### D. Reference the GitHub Issue in the PR description
 
-Use GitHub’s auto-close syntax if appropriate:
+Use GitHub's auto-close syntax if appropriate:
 
 - `Fixes #<number>` or `Closes #<number>`
 
-Do **not** actually push, open the PR, or close the issue yourself (unless I explicitly say the environment supports that and ask you to do it). Instead, provide the commands I should run, for example:
+### E. Provide git commands
 
-- `git checkout -b issue/012-daily-session-generation`
-- `git apply <patch>`
-- `git commit -m "issue-012: implement daily session generation from SRE"`
-- `git push origin issue/012-daily-session-generation`
+Provide the commands needed to create the branch, apply changes, and push:
+
+```
+git checkout -b issue/<number>-<slug>
+git apply <patch>
+git commit -m "issue-<number>: <description>"
+git push origin issue/<number>-<slug>
+```
+
+Ask if I want you to execute these commands, or if I'll run them manually.
 
 ---
 
@@ -185,4 +162,4 @@ If, during implementation, you discover that the issue spec is incomplete or con
 
 ---
 
-# End of PR Factory Prompt (GitHub Issues Mode)
+# ✔️ End of Handle Issue Workflow
