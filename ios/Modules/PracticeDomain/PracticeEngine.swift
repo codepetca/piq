@@ -15,9 +15,17 @@ final class PracticeEngine {
 
     // MARK: - Public Properties
 
-    var state: PracticeEngineState = .idle
+    var state: PracticeEngineState = .idle {
+        didSet {
+            handleStateChange(from: oldValue, to: state)
+        }
+    }
     var session: PracticeSession?
     var isPaused: Bool = false
+
+    // MARK: - Private Properties
+
+    private var timer: Timer?
 
     /// Current block index, or nil if not in a block.
     var currentBlockIndex: Int? {
@@ -67,6 +75,12 @@ final class PracticeEngine {
     /// Start a new practice session with default blocks.
     func startSession() {
         session = PracticeSession.makeTodayDemo()
+        startBlock(at: 0)
+    }
+
+    /// Start a new practice session generated from the spaced repetition engine.
+    func startSession(from sre: SpacedRepetitionEngine) {
+        session = sre.generateTodaySession()
         startBlock(at: 0)
     }
 
@@ -178,7 +192,39 @@ final class PracticeEngine {
         self.session = session
     }
 
+    // MARK: - Timer Management
+
+    /// Start the internal timer for automatic ticking.
+    func startTimer() {
+        stopTimer()
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            self?.tick()
+        }
+    }
+
+    /// Stop the internal timer.
+    func stopTimer() {
+        timer?.invalidate()
+        timer = nil
+    }
+
     // MARK: - Private Helpers
+
+    private func handleStateChange(from oldState: PracticeEngineState, to newState: PracticeEngineState) {
+        // Auto-start timer when entering inBlock state
+        if case .inBlock = newState {
+            if case .inBlock = oldState {
+                // Already in a block, timer is running
+            } else {
+                startTimer()
+            }
+        } else {
+            // Stop timer when leaving inBlock state
+            if case .inBlock = oldState {
+                stopTimer()
+            }
+        }
+    }
 
     private func transitionToBetweenBlocks(fromIndex index: Int) {
         guard let session = session else { return }
