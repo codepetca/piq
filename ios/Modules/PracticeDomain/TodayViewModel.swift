@@ -46,9 +46,14 @@ final class TodayViewModel {
                 return "Session in progress"
             }
             let block = session.blocks[index]
-            return "Block \(index + 1)/4: \(block.kind.displayName)"
+            let totalBlocks = session.blocks.count
+            return "Block \(index + 1)/\(totalBlocks): \(block.kind.displayName)"
         case .betweenBlocks(let lastIndex, _):
-            return "After block \(lastIndex + 1)/4"
+            guard let session = engine.session else {
+                return "Between blocks"
+            }
+            let totalBlocks = session.blocks.count
+            return "After block \(lastIndex + 1)/\(totalBlocks)"
         }
     }
 
