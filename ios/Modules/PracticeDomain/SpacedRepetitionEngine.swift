@@ -36,6 +36,18 @@ final class SpacedRepetitionEngine {
 
     // MARK: - Feedback Processing
 
+    /// Apply feedback from multiple completed blocks to their associated PracticeItems.
+    /// Blocks without practiceItemID or feedback are skipped. Items not found are ignored gracefully.
+    func applyFeedback(for blocks: [PracticeBlock], now: Date = Date()) {
+        for block in blocks {
+            guard let itemID = block.practiceItemID,
+                  let feedback = block.feedback else {
+                continue
+            }
+            recordFeedback(forItemID: itemID, feedback: feedback, now: now)
+        }
+    }
+
     func recordFeedback(forItemID id: UUID, feedback: PracticeBlockFeedback, now: Date = Date()) {
         guard let index = items.firstIndex(where: { $0.id == id }) else { return }
 

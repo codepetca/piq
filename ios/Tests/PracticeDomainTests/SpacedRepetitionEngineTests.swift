@@ -82,4 +82,177 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         let session = engine.generateTodaySession(now: now)
         XCTAssertEqual(session.blocks.count, 4)
     }
+
+    // MARK: - Batch Feedback Tests
+
+    func testApplyFeedbackUpdatesMultipleItems() {
+        let now = Date(timeIntervalSince1970: 10000)
+        let engine = SpacedRepetitionEngine()
+
+        let item1 = PracticeItem(category: .warmup, title: "Item 1", srs: SRSState(stability: 2.0, nextDue: now))
+        let item2 = PracticeItem(category: .technique, title: "Item 2", srs: SRSState(stability: 3.0, nextDue: now))
+        engine.addItem(item1)
+        engine.addItem(item2)
+
+        let blocks = [
+            PracticeBlock(kind: .warmup, title: "Block 1", practiceItemID: item1.id, feedback: .hard),
+            PracticeBlock(kind: .techniqueOrTheory, title: "Block 2", practiceItemID: item2.id, feedback: .easy)
+        ]
+
+        engine.applyFeedback(for: blocks, now: now)
+
+        let updatedItem1 = engine.items.first { $0.id == item1.id }!
+        let updatedItem2 = engine.items.first { $0.id == item2.id }!
+
+        // Item 1 received Hard feedback → lower stability, sooner nextDue
+        XCTAssertLessThan(updatedItem1.srs.stability, 2.0)
+        XCTAssertGreaterThan(updatedItem1.srs.nextDue, now)
+        XCTAssertLessThan(updatedItem1.srs.nextDue, now.addingTimeInterval(2 * 86_400))
+
+        // Item 2 received Easy feedback → higher stability, later nextDue
+        XCTAssertGreaterThan(updatedItem2.srs.stability, 3.0)
+        XCTAssertGreaterThan(updatedItem2.srs.nextDue, now.addingTimeInterval(2 * 86_400))
+    }
+
+    func testApplyFeedbackWithHardDecreasesStability() {
+        let now = Date(timeIntervalSince1970: 5000)
+        let engine = SpacedRepetitionEngine()
+
+        let item = PracticeItem(category: .technique, title: "Tech", srs: SRSState(stability: 3.0, nextDue: now))
+        engine.addItem(item)
+
+        let blocks = [
+            PracticeBlock(kind: .techniqueOrTheory, title: "Block", practiceItemID: item.id, feedback: .hard)
+        ]
+
+        engine.applyFeedback(for: blocks, now: now)
+
+        let updated = engine.items.first { $0.id == item.id }!
+        XCTAssertEqual(updated.srs.stability, max(1.0, 3.0 * 0.6))
+        XCTAssertLessThan(updated.srs.nextDue, now.addingTimeInterval(2 * 86_400))
+    }
+
+    func testApplyFeedbackWithGoodIncreasesStabilityModerately() {
+        let now = Date(timeIntervalSince1970: 5000)
+        let engine = SpacedRepetitionEngine()
+
+        let item = PracticeItem(category: .soloing, title: "Solo", srs: SRSState(stability: 2.5, nextDue: now))
+        engine.addItem(item)
+
+        let blocks = [
+            PracticeBlock(kind: .solo, title: "Block", practiceItemID: item.id, feedback: .good)
+        ]
+
+        engine.applyFeedback(for: blocks, now: now)
+
+        let updated = engine.items.first { $0.id == item.id }!
+        XCTAssertEqual(updated.srs.stability, max(1.2, 2.5 * 1.15))
+        XCTAssertGreaterThan(updated.srs.nextDue, now.addingTimeInterval(1 * 86_400))
+        XCTAssertLessThan(updated.srs.nextDue, now.addingTimeInterval(4 * 86_400))
+    }
+
+    func testApplyFeedbackWithEasyIncreasesStabilitySignificantly() {
+        let now = Date(timeIntervalSince1970: 5000)
+        let engine = SpacedRepetitionEngine()
+
+        let item = PracticeItem(category: .fretboard, title: "Fret", srs: SRSState(stability: 2.0, nextDue: now))
+        engine.addItem(item)
+
+        let blocks = [
+            PracticeBlock(kind: .warmup, title: "Block", practiceItemID: item.id, feedback: .easy)
+        ]
+
+        engine.applyFeedback(for: blocks, now: now)
+
+        let updated = engine.items.first { $0.id == item.id }!
+        XCTAssertEqual(updated.srs.stability, 2.0 * 1.5 + 0.5)
+        XCTAssertGreaterThan(updated.srs.nextDue, now.addingTimeInterval(2 * 86_400))
+    }
+
+    func testApplyFeedbackSkipsBlocksWithoutPracticeItemID() {
+        let now = Date(timeIntervalSince1970: 5000)
+        let engine = SpacedRepetitionEngine()
+
+        let item = PracticeItem(category: .warmup, title: "Warm", srs: SRSState(stability: 2.0, nextDue: now))
+        engine.addItem(item)
+
+        let blocks = [
+            PracticeBlock(kind: .warmup, title: "Block without ID", practiceItemID: nil, feedback: .hard)
+        ]
+
+        engine.applyFeedback(for: blocks, now: now)
+
+        // Item should remain unchanged
+        let unchanged = engine.items.first { $0.id == item.id }!
+        XCTAssertEqual(unchanged.srs.stability, 2.0)
+        XCTAssertEqual(unchanged.srs.nextDue, now)
+    }
+
+    func testApplyFeedbackSkipsBlocksWithoutFeedback() {
+        let now = Date(timeIntervalSince1970: 5000)
+        let engine = SpacedRepetitionEngine()
+
+        let item = PracticeItem(category: .technique, title: "Tech", srs: SRSState(stability: 2.5, nextDue: now))
+        engine.addItem(item)
+
+        let blocks = [
+            PracticeBlock(kind: .techniqueOrTheory, title: "Block no feedback", practiceItemID: item.id, feedback: nil)
+        ]
+
+        engine.applyFeedback(for: blocks, now: now)
+
+        // Item should remain unchanged
+        let unchanged = engine.items.first { $0.id == item.id }!
+        XCTAssertEqual(unchanged.srs.stability, 2.5)
+        XCTAssertEqual(unchanged.srs.nextDue, now)
+    }
+
+    func testApplyFeedbackIgnoresMissingItemsGracefully() {
+        let now = Date(timeIntervalSince1970: 5000)
+        let engine = SpacedRepetitionEngine()
+
+        let existingItem = PracticeItem(category: .warmup, title: "Exists", srs: SRSState(stability: 2.0, nextDue: now))
+        engine.addItem(existingItem)
+
+        let nonExistentID = UUID()
+        let blocks = [
+            PracticeBlock(kind: .warmup, title: "Ghost Block", practiceItemID: nonExistentID, feedback: .good),
+            PracticeBlock(kind: .warmup, title: "Real Block", practiceItemID: existingItem.id, feedback: .easy)
+        ]
+
+        // Should not crash
+        engine.applyFeedback(for: blocks, now: now)
+
+        // Existing item should be updated
+        let updated = engine.items.first { $0.id == existingItem.id }!
+        XCTAssertGreaterThan(updated.srs.stability, 2.0)
+    }
+
+    func testApplyFeedbackWithMixedBlockStates() {
+        let now = Date(timeIntervalSince1970: 5000)
+        let engine = SpacedRepetitionEngine()
+
+        let item1 = PracticeItem(category: .warmup, title: "Item 1", srs: SRSState(stability: 2.0, nextDue: now))
+        let item2 = PracticeItem(category: .technique, title: "Item 2", srs: SRSState(stability: 3.0, nextDue: now))
+        engine.addItem(item1)
+        engine.addItem(item2)
+
+        let blocks = [
+            PracticeBlock(kind: .warmup, title: "Valid", practiceItemID: item1.id, feedback: .good),
+            PracticeBlock(kind: .song, title: "No ID", practiceItemID: nil, feedback: .easy),
+            PracticeBlock(kind: .techniqueOrTheory, title: "No Feedback", practiceItemID: item2.id, feedback: nil),
+            PracticeBlock(kind: .solo, title: "Ghost", practiceItemID: UUID(), feedback: .hard)
+        ]
+
+        engine.applyFeedback(for: blocks, now: now)
+
+        // Only item1 should be updated
+        let updated1 = engine.items.first { $0.id == item1.id }!
+        XCTAssertGreaterThan(updated1.srs.stability, 2.0)
+
+        // item2 should remain unchanged
+        let unchanged2 = engine.items.first { $0.id == item2.id }!
+        XCTAssertEqual(unchanged2.srs.stability, 3.0)
+        XCTAssertEqual(unchanged2.srs.nextDue, now)
+    }
 }
