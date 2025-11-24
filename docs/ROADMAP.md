@@ -59,23 +59,24 @@ This document tracks the development plan for piq.
 
 ## In Progress
 
-### MVP Polish (Priority 1)
+### MVP Polish (Priority 1) ✅
 
 These items complete the current feature set:
 
-- [ ] **Wire default BPM from settings**
-  - MetronomeService should initialize with SettingsViewModel's defaultBPM
-  - Apply setting when starting practice session
+- [x] **Wire default BPM from settings**
+  - MetronomeService initializes with SettingsViewModel's defaultBPM
+  - Applied when starting practice session
 
-- [ ] **Auto-start metronome by block kind**
+- [x] **Auto-start metronome by block kind**
   - Check `block.kind.defaultMetronomeOn`
-  - Auto-start for warmup and technique blocks
-  - Auto-stop between blocks
+  - Auto-starts for warmup and technique blocks
+  - Auto-stops between blocks
 
-- [ ] **Haptic feedback**
-  - Add haptics on button taps
-  - Haptic on feedback selection (Easy/Good/Hard)
-  - Respect hapticFeedbackEnabled setting
+- [x] **Haptic feedback**
+  - HapticService with UIKit feedback generators
+  - Haptics on feedback selection (Easy/Good/Hard)
+  - Success haptic on session completion
+  - Respects hapticFeedbackEnabled setting
 
 ---
 

@@ -5,6 +5,8 @@ struct PracticeSessionView: View {
     @Environment(SpacedRepetitionEngine.self) private var sre
     @Environment(HistoryViewModel.self) private var historyViewModel
     @Environment(MetronomeService.self) private var metronome
+    @Environment(HapticService.self) private var haptics
+    @Environment(SettingsViewModel.self) private var settings
     @Environment(\.dismiss) private var dismiss
 
     private let storage = PracticeStorage()
@@ -25,6 +27,36 @@ struct PracticeSessionView: View {
             case .finished:
                 finishedView()
             }
+        }
+        .onAppear {
+            // Set metronome to default BPM from settings
+            metronome.setBPM(settings.defaultBPM)
+            // Set haptics enabled from settings
+            haptics.isEnabled = settings.hapticFeedbackEnabled
+            // Start metronome for first block if needed
+            handleMetronomeForBlock(at: engine.currentBlockIndex)
+        }
+        .onChange(of: engine.currentBlockIndex) { _, newIndex in
+            // Auto-start/stop metronome based on block kind
+            handleMetronomeForBlock(at: newIndex)
+        }
+    }
+
+    // MARK: - Metronome Control
+
+    private func handleMetronomeForBlock(at index: Int?) {
+        guard let index = index,
+              let session = engine.session,
+              index < session.blocks.count else {
+            metronome.stop()
+            return
+        }
+
+        let block = session.blocks[index]
+        if block.kind.defaultMetronomeOn {
+            metronome.start()
+        } else {
+            metronome.stop()
         }
     }
 
@@ -97,14 +129,17 @@ struct PracticeSessionView: View {
 
             FeedbackBar(
                 onEasy: {
+                    haptics.feedbackEasy()
                     engine.recordFeedback(forBlockAt: lastIndex, feedback: .easy)
                     engine.startNextBlock()
                 },
                 onGood: {
+                    haptics.feedbackGood()
                     engine.recordFeedback(forBlockAt: lastIndex, feedback: .good)
                     engine.startNextBlock()
                 },
                 onHard: {
+                    haptics.feedbackHard()
                     engine.recordFeedback(forBlockAt: lastIndex, feedback: .hard)
                     engine.startNextBlock()
                 }
@@ -137,6 +172,9 @@ struct PracticeSessionView: View {
             Spacer()
 
             Button("Done") {
+                // Haptic feedback for completion
+                haptics.success()
+
                 // Save completed session to history
                 if let session = engine.session {
                     historyViewModel.addSession(session)
@@ -192,10 +230,14 @@ struct PracticeSessionView: View {
     engine.startSession(from: sre)
     let historyViewModel = HistoryViewModel()
     let metronome = MetronomeService()
+    let haptics = HapticService()
+    let settings = SettingsViewModel()
 
     return PracticeSessionView()
         .environment(engine)
         .environment(sre)
         .environment(historyViewModel)
         .environment(metronome)
+        .environment(haptics)
+        .environment(settings)
 }

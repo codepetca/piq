@@ -6,6 +6,7 @@ struct PiqApp: App {
     @State private var spacedRepetitionEngine = SpacedRepetitionEngine()
     @State private var historyViewModel = HistoryViewModel()
     @State private var metronomeService = MetronomeService()
+    @State private var hapticService = HapticService()
     @State private var settingsViewModel: SettingsViewModel?
 
     var body: some Scene {
@@ -15,6 +16,7 @@ struct PiqApp: App {
                 .environment(spacedRepetitionEngine)
                 .environment(historyViewModel)
                 .environment(metronomeService)
+                .environment(hapticService)
                 .environment(settingsViewModel ?? SettingsViewModel())
                 .onAppear {
                     loadInitialData()

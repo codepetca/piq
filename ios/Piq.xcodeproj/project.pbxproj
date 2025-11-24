@@ -30,6 +30,7 @@
 		A1000021001 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000021000 /* SessionDetailView.swift */; };
 		A1000022001 /* MetronomeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000022000 /* MetronomeService.swift */; };
 		A1000023001 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000023000 /* SettingsViewModel.swift */; };
+		A1000024001 /* HapticService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000024000 /* HapticService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -57,6 +58,7 @@
 		A1000021000 /* SessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailView.swift; sourceTree = "<group>"; };
 		A1000022000 /* MetronomeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeService.swift; sourceTree = "<group>"; };
 		A1000023000 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		A1000024000 /* HapticService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -152,6 +154,7 @@
 			isa = PBXGroup;
 			children = (
 				A1000022000 /* MetronomeService.swift */,
+				A1000024000 /* HapticService.swift */,
 			);
 			path = AudioHapticsModule;
 			sourceTree = "<group>";
@@ -255,6 +258,7 @@
 				A1000021001 /* SessionDetailView.swift in Sources */,
 				A1000022001 /* MetronomeService.swift in Sources */,
 				A1000023001 /* SettingsViewModel.swift in Sources */,
+				A1000024001 /* HapticService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
