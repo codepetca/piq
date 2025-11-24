@@ -1,8 +1,42 @@
 import Foundation
 
 /// Simple JSON file-based storage for practice data.
-/// Stores sessions and items in separate JSON files.
+/// Stores sessions and items in separate JSON files with schema versioning.
 final class PracticeStorage {
+
+    // MARK: - Schema Version
+
+    /// Current schema version for storage format.
+    /// Increment this when making breaking changes to stored data structures.
+    ///
+    /// Future: Implement migration logic in load methods based on schemaVersion.
+    /// For example, if schemaVersion changes from 1 to 2, add logic to migrate
+    /// version 1 data to version 2 format before returning to callers.
+    static let schemaVersion = 1
+
+    // MARK: - Storage Wrappers
+
+    /// Wrapper that includes schema version for sessions storage.
+    private struct SessionsStore: Codable {
+        let schemaVersion: Int
+        let sessions: [PracticeSession]
+
+        init(sessions: [PracticeSession]) {
+            self.schemaVersion = PracticeStorage.schemaVersion
+            self.sessions = sessions
+        }
+    }
+
+    /// Wrapper that includes schema version for items storage.
+    private struct ItemsStore: Codable {
+        let schemaVersion: Int
+        let items: [PracticeItem]
+
+        init(items: [PracticeItem]) {
+            self.schemaVersion = PracticeStorage.schemaVersion
+            self.items = items
+        }
+    }
 
     // MARK: - Properties
 
@@ -55,12 +89,21 @@ final class PracticeStorage {
     /// Save sessions to storage (replaces all existing sessions)
     func saveSessions(_ sessions: [PracticeSession]) {
         do {
-            let data = try encoder.encode(sessions)
+            let store = SessionsStore(sessions: sessions)
+            let data = try encoder.encode(store)
             try data.write(to: sessionsURL, options: .atomic)
         } catch {
-            // In production, we might want to log this error
+            // Storage failures are logged but not propagated; graceful degradation for MVP.
+            // Future: Consider structured logging or user notifications for critical failures.
             print("Failed to save sessions: \(error)")
         }
+    }
+
+    /// Append a single session to storage
+    func saveSession(_ session: PracticeSession) {
+        var sessions = loadSessions()
+        sessions.append(session)
+        saveSessions(sessions)
     }
 
     /// Load all sessions from storage
@@ -71,9 +114,14 @@ final class PracticeStorage {
 
         do {
             let data = try Data(contentsOf: sessionsURL)
+            // Try to decode with schema wrapper first
+            if let store = try? decoder.decode(SessionsStore.self, from: data) {
+                return store.sessions
+            }
+            // Fall back to legacy format (array without wrapper)
             return try decoder.decode([PracticeSession].self, from: data)
         } catch {
-            // Return empty on decode failure (corrupted file)
+            // Return empty on decode failure (corrupted file); graceful degradation for MVP.
             print("Failed to load sessions: \(error)")
             return []
         }
@@ -84,9 +132,11 @@ final class PracticeStorage {
     /// Save items to storage (replaces all existing items)
     func saveItems(_ items: [PracticeItem]) {
         do {
-            let data = try encoder.encode(items)
+            let store = ItemsStore(items: items)
+            let data = try encoder.encode(store)
             try data.write(to: itemsURL, options: .atomic)
         } catch {
+            // Storage failures are logged but not propagated; graceful degradation for MVP.
             print("Failed to save items: \(error)")
         }
     }
@@ -99,10 +149,48 @@ final class PracticeStorage {
 
         do {
             let data = try Data(contentsOf: itemsURL)
+            // Try to decode with schema wrapper first
+            if let store = try? decoder.decode(ItemsStore.self, from: data) {
+                return store.items
+            }
+            // Fall back to legacy format (array without wrapper)
             return try decoder.decode([PracticeItem].self, from: data)
         } catch {
+            // Return empty on decode failure (corrupted file); graceful degradation for MVP.
             print("Failed to load items: \(error)")
             return []
+        }
+    }
+
+    /// Load practice items, merging stored SRS state with the seed catalog.
+    ///
+    /// Merge strategy: Uses stable `catalogID` as the key. This ensures that
+    /// catalog title or detail changes don't cause loss of stored SRS state.
+    ///
+    /// On first run, returns default items from the catalog.
+    /// On subsequent runs, updates catalog items with stored SRS state.
+    func loadPracticeItems(now: Date = Date()) -> [PracticeItem] {
+        let storedItems = loadItems()
+        let catalogItems = PracticeItemCatalog.seedItems(now: now)
+
+        // First run: no stored items, return catalog defaults
+        if storedItems.isEmpty {
+            return catalogItems
+        }
+
+        // Merge stored SRS state with catalog using stable catalogID
+        let storedByCatalogID = Dictionary(
+            storedItems.map { ($0.catalogID, $0) },
+            uniquingKeysWith: { first, _ in first }
+        )
+
+        return catalogItems.map { catalogItem in
+            if let storedItem = storedByCatalogID[catalogItem.catalogID] {
+                var merged = catalogItem
+                merged.srs = storedItem.srs
+                return merged
+            }
+            return catalogItem
         }
     }
 

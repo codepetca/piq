@@ -12,8 +12,8 @@ final class SpacedRepetitionEngineTests: XCTestCase {
 
     func testDueItemsUsesNextDue() {
         let engine = SpacedRepetitionEngine()
-        let past = PracticeItem(category: .warmup, title: "Past", srs: SRSState(stability: 1, nextDue: .distantPast))
-        let future = PracticeItem(category: .warmup, title: "Future", srs: SRSState(stability: 1, nextDue: .distantFuture))
+        let past = PracticeItem(catalogID: "test_past", category: .warmup, title: "Past", srs: SRSState(stability: 1, nextDue: .distantPast))
+        let future = PracticeItem(catalogID: "test_future", category: .warmup, title: "Future", srs: SRSState(stability: 1, nextDue: .distantFuture))
         engine.addItem(past)
         engine.addItem(future)
 
@@ -24,7 +24,7 @@ final class SpacedRepetitionEngineTests: XCTestCase {
     func testFeedbackAdjustsStabilityAndNextDue() {
         let now = Date(timeIntervalSince1970: 1000)
         let engine = SpacedRepetitionEngine()
-        let item = PracticeItem(category: .technique, title: "Test", srs: SRSState(stability: 2.0, nextDue: now))
+        let item = PracticeItem(catalogID: "test_feedback", category: .technique, title: "Test", srs: SRSState(stability: 2.0, nextDue: now))
         engine.addItem(item)
 
         engine.recordFeedback(forItemID: item.id, feedback: .hard, now: now)
@@ -42,6 +42,21 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         XCTAssertLessThan(goodItem.srs.nextDue, easyItem.srs.nextDue)
     }
 
+    func testFeedbackSetsLastPlayed() {
+        let now = Date(timeIntervalSince1970: 5000)
+        let engine = SpacedRepetitionEngine()
+        let item = PracticeItem(catalogID: "test_last_played_sre", category: .technique, title: "Test", srs: SRSState(stability: 2.0, lastPlayed: nil, nextDue: now))
+        engine.addItem(item)
+
+        XCTAssertNil(engine.items.first!.srs.lastPlayed)
+
+        engine.recordFeedback(forItemID: item.id, feedback: .good, now: now)
+
+        let updated = engine.items.first!
+        XCTAssertNotNil(updated.srs.lastPlayed)
+        XCTAssertEqual(updated.srs.lastPlayed!.timeIntervalSince1970, now.timeIntervalSince1970, accuracy: 0.1)
+    }
+
     func testGenerateTodaySessionReturnsFourBlocks() {
         let engine = SpacedRepetitionEngine()
         engine.loadSeedCatalog(now: Date())
@@ -53,10 +68,10 @@ final class SpacedRepetitionEngineTests: XCTestCase {
 
     func testGenerateTodaySessionInterleavesCategoriesWhenPossible() {
         let now = Date()
-        let warmupA = PracticeItem(category: .warmup, title: "Warm A", srs: SRSState(nextDue: now))
-        let warmupB = PracticeItem(category: .warmup, title: "Warm B", srs: SRSState(nextDue: now))
-        let solo = PracticeItem(category: .soloing, title: "Solo", srs: SRSState(nextDue: now))
-        let technique = PracticeItem(category: .technique, title: "Tech", srs: SRSState(nextDue: now))
+        let warmupA = PracticeItem(catalogID: "test_warmup_a", category: .warmup, title: "Warm A", srs: SRSState(nextDue: now))
+        let warmupB = PracticeItem(catalogID: "test_warmup_b", category: .warmup, title: "Warm B", srs: SRSState(nextDue: now))
+        let solo = PracticeItem(catalogID: "test_solo", category: .soloing, title: "Solo", srs: SRSState(nextDue: now))
+        let technique = PracticeItem(catalogID: "test_tech", category: .technique, title: "Tech", srs: SRSState(nextDue: now))
 
         let engine = SpacedRepetitionEngine()
         [warmupA, warmupB, solo, technique].forEach(engine.addItem)
@@ -73,8 +88,8 @@ final class SpacedRepetitionEngineTests: XCTestCase {
 
     func testGenerateTodaySessionWithFewItemsStillProducesBlocks() {
         let now = Date()
-        let warmup = PracticeItem(category: .warmup, title: "Warm", srs: SRSState(nextDue: now))
-        let solo = PracticeItem(category: .soloing, title: "Solo", srs: SRSState(nextDue: now))
+        let warmup = PracticeItem(catalogID: "test_warm_few", category: .warmup, title: "Warm", srs: SRSState(nextDue: now))
+        let solo = PracticeItem(catalogID: "test_solo_few", category: .soloing, title: "Solo", srs: SRSState(nextDue: now))
 
         let engine = SpacedRepetitionEngine()
         [warmup, solo].forEach(engine.addItem)
@@ -89,8 +104,8 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         let now = Date(timeIntervalSince1970: 10000)
         let engine = SpacedRepetitionEngine()
 
-        let item1 = PracticeItem(category: .warmup, title: "Item 1", srs: SRSState(stability: 2.0, nextDue: now))
-        let item2 = PracticeItem(category: .technique, title: "Item 2", srs: SRSState(stability: 3.0, nextDue: now))
+        let item1 = PracticeItem(catalogID: "test_item_1", category: .warmup, title: "Item 1", srs: SRSState(stability: 2.0, nextDue: now))
+        let item2 = PracticeItem(catalogID: "test_item_2", category: .technique, title: "Item 2", srs: SRSState(stability: 3.0, nextDue: now))
         engine.addItem(item1)
         engine.addItem(item2)
 
@@ -118,7 +133,7 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         let now = Date(timeIntervalSince1970: 5000)
         let engine = SpacedRepetitionEngine()
 
-        let item = PracticeItem(category: .technique, title: "Tech", srs: SRSState(stability: 3.0, nextDue: now))
+        let item = PracticeItem(catalogID: "test_tech_item", category: .technique, title: "Tech", srs: SRSState(stability: 3.0, nextDue: now))
         engine.addItem(item)
 
         let blocks = [
@@ -136,7 +151,7 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         let now = Date(timeIntervalSince1970: 5000)
         let engine = SpacedRepetitionEngine()
 
-        let item = PracticeItem(category: .soloing, title: "Solo", srs: SRSState(stability: 2.5, nextDue: now))
+        let item = PracticeItem(catalogID: "test_solo_item", category: .soloing, title: "Solo", srs: SRSState(stability: 2.5, nextDue: now))
         engine.addItem(item)
 
         let blocks = [
@@ -155,7 +170,7 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         let now = Date(timeIntervalSince1970: 5000)
         let engine = SpacedRepetitionEngine()
 
-        let item = PracticeItem(category: .fretboard, title: "Fret", srs: SRSState(stability: 2.0, nextDue: now))
+        let item = PracticeItem(catalogID: "test_fret_item", category: .fretboard, title: "Fret", srs: SRSState(stability: 2.0, nextDue: now))
         engine.addItem(item)
 
         let blocks = [
@@ -173,7 +188,7 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         let now = Date(timeIntervalSince1970: 5000)
         let engine = SpacedRepetitionEngine()
 
-        let item = PracticeItem(category: .warmup, title: "Warm", srs: SRSState(stability: 2.0, nextDue: now))
+        let item = PracticeItem(catalogID: "test_warm_item", category: .warmup, title: "Warm", srs: SRSState(stability: 2.0, nextDue: now))
         engine.addItem(item)
 
         let blocks = [
@@ -192,7 +207,7 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         let now = Date(timeIntervalSince1970: 5000)
         let engine = SpacedRepetitionEngine()
 
-        let item = PracticeItem(category: .technique, title: "Tech", srs: SRSState(stability: 2.5, nextDue: now))
+        let item = PracticeItem(catalogID: "test_tech_no_feedback", category: .technique, title: "Tech", srs: SRSState(stability: 2.5, nextDue: now))
         engine.addItem(item)
 
         let blocks = [
@@ -211,7 +226,7 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         let now = Date(timeIntervalSince1970: 5000)
         let engine = SpacedRepetitionEngine()
 
-        let existingItem = PracticeItem(category: .warmup, title: "Exists", srs: SRSState(stability: 2.0, nextDue: now))
+        let existingItem = PracticeItem(catalogID: "test_existing", category: .warmup, title: "Exists", srs: SRSState(stability: 2.0, nextDue: now))
         engine.addItem(existingItem)
 
         let nonExistentID = UUID()
@@ -232,8 +247,8 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         let now = Date(timeIntervalSince1970: 5000)
         let engine = SpacedRepetitionEngine()
 
-        let item1 = PracticeItem(category: .warmup, title: "Item 1", srs: SRSState(stability: 2.0, nextDue: now))
-        let item2 = PracticeItem(category: .technique, title: "Item 2", srs: SRSState(stability: 3.0, nextDue: now))
+        let item1 = PracticeItem(catalogID: "test_item_1", category: .warmup, title: "Item 1", srs: SRSState(stability: 2.0, nextDue: now))
+        let item2 = PracticeItem(catalogID: "test_item_2", category: .technique, title: "Item 2", srs: SRSState(stability: 3.0, nextDue: now))
         engine.addItem(item1)
         engine.addItem(item2)
 
@@ -263,10 +278,10 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         let engine = SpacedRepetitionEngine()
 
         // Create items with different due dates and stabilities
-        let mostDue = PracticeItem(category: .warmup, title: "Most Due", srs: SRSState(stability: 2.0, nextDue: now.addingTimeInterval(-2 * 86_400)))
-        let sameDueLowStability = PracticeItem(category: .technique, title: "Same Due Low", srs: SRSState(stability: 1.0, nextDue: now.addingTimeInterval(-1 * 86_400)))
-        let sameDueHighStability = PracticeItem(category: .soloing, title: "Same Due High", srs: SRSState(stability: 5.0, nextDue: now.addingTimeInterval(-1 * 86_400)))
-        let lessDue = PracticeItem(category: .songwork, title: "Less Due", srs: SRSState(stability: 3.0, nextDue: now))
+        let mostDue = PracticeItem(catalogID: "test_most_due", category: .warmup, title: "Most Due", srs: SRSState(stability: 2.0, nextDue: now.addingTimeInterval(-2 * 86_400)))
+        let sameDueLowStability = PracticeItem(catalogID: "test_same_due_low", category: .technique, title: "Same Due Low", srs: SRSState(stability: 1.0, nextDue: now.addingTimeInterval(-1 * 86_400)))
+        let sameDueHighStability = PracticeItem(catalogID: "test_same_due_high", category: .soloing, title: "Same Due High", srs: SRSState(stability: 5.0, nextDue: now.addingTimeInterval(-1 * 86_400)))
+        let lessDue = PracticeItem(catalogID: "test_less_due", category: .songwork, title: "Less Due", srs: SRSState(stability: 3.0, nextDue: now))
 
         [mostDue, sameDueLowStability, sameDueHighStability, lessDue].forEach(engine.addItem)
 
@@ -294,10 +309,10 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         let engine = SpacedRepetitionEngine()
 
         // All items due in the future
-        let lowStability = PracticeItem(category: .warmup, title: "Low", srs: SRSState(stability: 1.0, nextDue: future))
-        let medStability = PracticeItem(category: .technique, title: "Med", srs: SRSState(stability: 3.0, nextDue: future))
-        let highStability = PracticeItem(category: .soloing, title: "High", srs: SRSState(stability: 5.0, nextDue: future))
-        let veryHigh = PracticeItem(category: .songwork, title: "Very High", srs: SRSState(stability: 8.0, nextDue: future))
+        let lowStability = PracticeItem(catalogID: "test_low_stab", category: .warmup, title: "Low", srs: SRSState(stability: 1.0, nextDue: future))
+        let medStability = PracticeItem(catalogID: "test_med_stab", category: .technique, title: "Med", srs: SRSState(stability: 3.0, nextDue: future))
+        let highStability = PracticeItem(catalogID: "test_high_stab", category: .soloing, title: "High", srs: SRSState(stability: 5.0, nextDue: future))
+        let veryHigh = PracticeItem(catalogID: "test_very_high_stab", category: .songwork, title: "Very High", srs: SRSState(stability: 8.0, nextDue: future))
 
         [lowStability, medStability, highStability, veryHigh].forEach(engine.addItem)
 
@@ -318,12 +333,12 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         let engine = SpacedRepetitionEngine()
 
         // Create items with different categories
-        let warmupItem = PracticeItem(category: .warmup, title: "Warmup", srs: SRSState(nextDue: now))
-        let fretboardItem = PracticeItem(category: .fretboard, title: "Fretboard", srs: SRSState(nextDue: now))
-        let songItem = PracticeItem(category: .songwork, title: "Song", srs: SRSState(nextDue: now))
-        let soloItem = PracticeItem(category: .soloing, title: "Solo", srs: SRSState(nextDue: now))
-        let techniqueItem = PracticeItem(category: .technique, title: "Tech", srs: SRSState(nextDue: now))
-        let rhythmItem = PracticeItem(category: .rhythm, title: "Rhythm", srs: SRSState(nextDue: now))
+        let warmupItem = PracticeItem(catalogID: "test_warmup_cat", category: .warmup, title: "Warmup", srs: SRSState(nextDue: now))
+        let fretboardItem = PracticeItem(catalogID: "test_fretboard_cat", category: .fretboard, title: "Fretboard", srs: SRSState(nextDue: now))
+        let songItem = PracticeItem(catalogID: "test_song_cat", category: .songwork, title: "Song", srs: SRSState(nextDue: now))
+        let soloItem = PracticeItem(catalogID: "test_solo_cat", category: .soloing, title: "Solo", srs: SRSState(nextDue: now))
+        let techniqueItem = PracticeItem(catalogID: "test_tech_cat", category: .technique, title: "Tech", srs: SRSState(nextDue: now))
+        let rhythmItem = PracticeItem(catalogID: "test_rhythm_cat", category: .rhythm, title: "Rhythm", srs: SRSState(nextDue: now))
 
         [warmupItem, fretboardItem, songItem, soloItem, techniqueItem, rhythmItem].forEach(engine.addItem)
 
@@ -359,24 +374,28 @@ final class SpacedRepetitionEngineTests: XCTestCase {
 
         // Create items with referenceIDs
         let itemWithRef = PracticeItem(
+            catalogID: "test_am_pent",
             category: .fretboard,
             title: "Am Pentatonic",
             referenceID: "scale_am_pentatonic_pos1",
             srs: SRSState(nextDue: now)
         )
         let itemWithoutRef = PracticeItem(
+            catalogID: "test_bends",
             category: .technique,
             title: "Bends",
             referenceID: nil,
             srs: SRSState(nextDue: now)
         )
         let itemWithRef2 = PracticeItem(
+            catalogID: "test_blues_licks",
             category: .soloing,
             title: "Blues Licks",
             referenceID: "licks_blues_box1",
             srs: SRSState(nextDue: now)
         )
         let itemWithRef3 = PracticeItem(
+            catalogID: "test_chromatic",
             category: .warmup,
             title: "Chromatic",
             referenceID: "warmup_chromatic",

@@ -76,6 +76,7 @@ final class SpacedRepetitionEngine {
 
         item.srs = SRSState(
             stability: newStability,
+            lastPlayed: now,
             nextDue: now.addingTimeInterval(intervalDays * 86_400)
         )
 
