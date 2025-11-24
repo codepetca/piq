@@ -255,4 +255,151 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         XCTAssertEqual(unchanged2.srs.stability, 3.0)
         XCTAssertEqual(unchanged2.srs.nextDue, now)
     }
+
+    // MARK: - Session Generation Tests (Issue #5 Requirements)
+
+    func testGenerateTodaySessionSelectsItemsByNextDueAndStability() {
+        let now = Date(timeIntervalSince1970: 10000)
+        let engine = SpacedRepetitionEngine()
+
+        // Create items with different due dates and stabilities
+        let mostDue = PracticeItem(category: .warmup, title: "Most Due", srs: SRSState(stability: 2.0, nextDue: now.addingTimeInterval(-2 * 86_400)))
+        let sameDueLowStability = PracticeItem(category: .technique, title: "Same Due Low", srs: SRSState(stability: 1.0, nextDue: now.addingTimeInterval(-1 * 86_400)))
+        let sameDueHighStability = PracticeItem(category: .soloing, title: "Same Due High", srs: SRSState(stability: 5.0, nextDue: now.addingTimeInterval(-1 * 86_400)))
+        let lessDue = PracticeItem(category: .songwork, title: "Less Due", srs: SRSState(stability: 3.0, nextDue: now))
+
+        [mostDue, sameDueLowStability, sameDueHighStability, lessDue].forEach(engine.addItem)
+
+        let session = engine.generateTodaySession(now: now)
+
+        // Extract item IDs from generated blocks
+        let blockItemIDs = session.blocks.compactMap { $0.practiceItemID }
+
+        // Should select items in priority order: earliest nextDue first, then lowest stability
+        XCTAssertTrue(blockItemIDs.contains(mostDue.id), "Should include earliest due item")
+        XCTAssertTrue(blockItemIDs.contains(sameDueLowStability.id), "Should prefer lower stability when nextDue is equal")
+
+        // Verify low stability is preferred over high stability for same due date
+        let sameDueLowIndex = blockItemIDs.firstIndex(of: sameDueLowStability.id)
+        let sameDueHighIndex = blockItemIDs.firstIndex(of: sameDueHighStability.id)
+
+        if let lowIndex = sameDueLowIndex, let highIndex = sameDueHighIndex {
+            XCTAssertLessThan(lowIndex, highIndex, "Lower stability item should be selected before higher stability item with same due date")
+        }
+    }
+
+    func testGenerateTodaySessionWhenNoItemsDueUsesLowestStability() {
+        let now = Date(timeIntervalSince1970: 10000)
+        let future = now.addingTimeInterval(5 * 86_400)
+        let engine = SpacedRepetitionEngine()
+
+        // All items due in the future
+        let lowStability = PracticeItem(category: .warmup, title: "Low", srs: SRSState(stability: 1.0, nextDue: future))
+        let medStability = PracticeItem(category: .technique, title: "Med", srs: SRSState(stability: 3.0, nextDue: future))
+        let highStability = PracticeItem(category: .soloing, title: "High", srs: SRSState(stability: 5.0, nextDue: future))
+        let veryHigh = PracticeItem(category: .songwork, title: "Very High", srs: SRSState(stability: 8.0, nextDue: future))
+
+        [lowStability, medStability, highStability, veryHigh].forEach(engine.addItem)
+
+        let session = engine.generateTodaySession(now: now)
+
+        // Should still produce 4 blocks even though nothing is strictly due
+        XCTAssertEqual(session.blocks.count, 4)
+
+        let blockItemIDs = session.blocks.compactMap { $0.practiceItemID }
+
+        // Should select items with lowest stability
+        XCTAssertTrue(blockItemIDs.contains(lowStability.id), "Should include lowest stability item")
+        XCTAssertTrue(blockItemIDs.contains(medStability.id), "Should include medium stability item")
+    }
+
+    func testGenerateTodaySessionBlocksMapCorrectKindFromCategory() {
+        let now = Date(timeIntervalSince1970: 10000)
+        let engine = SpacedRepetitionEngine()
+
+        // Create items with different categories
+        let warmupItem = PracticeItem(category: .warmup, title: "Warmup", srs: SRSState(nextDue: now))
+        let fretboardItem = PracticeItem(category: .fretboard, title: "Fretboard", srs: SRSState(nextDue: now))
+        let songItem = PracticeItem(category: .songwork, title: "Song", srs: SRSState(nextDue: now))
+        let soloItem = PracticeItem(category: .soloing, title: "Solo", srs: SRSState(nextDue: now))
+        let techniqueItem = PracticeItem(category: .technique, title: "Tech", srs: SRSState(nextDue: now))
+        let rhythmItem = PracticeItem(category: .rhythm, title: "Rhythm", srs: SRSState(nextDue: now))
+
+        [warmupItem, fretboardItem, songItem, soloItem, techniqueItem, rhythmItem].forEach(engine.addItem)
+
+        let session = engine.generateTodaySession(now: now)
+
+        // Verify each block has correct kind based on its item's category
+        for block in session.blocks {
+            guard let itemID = block.practiceItemID,
+                  let item = engine.items.first(where: { $0.id == itemID }) else {
+                XCTFail("Block should have valid practiceItemID")
+                continue
+            }
+
+            XCTAssertEqual(block.kind, item.blockKind, "Block kind should match item's blockKind")
+
+            // Verify specific mappings
+            switch item.category {
+            case .warmup, .fretboard:
+                XCTAssertEqual(block.kind, .warmup)
+            case .songwork, .repertoire:
+                XCTAssertEqual(block.kind, .song)
+            case .soloing:
+                XCTAssertEqual(block.kind, .solo)
+            case .technique, .theory, .rhythm, .chords:
+                XCTAssertEqual(block.kind, .techniqueOrTheory)
+            }
+        }
+    }
+
+    func testGenerateTodaySessionPropagatesReferenceID() {
+        let now = Date(timeIntervalSince1970: 10000)
+        let engine = SpacedRepetitionEngine()
+
+        // Create items with referenceIDs
+        let itemWithRef = PracticeItem(
+            category: .fretboard,
+            title: "Am Pentatonic",
+            referenceID: "scale_am_pentatonic_pos1",
+            srs: SRSState(nextDue: now)
+        )
+        let itemWithoutRef = PracticeItem(
+            category: .technique,
+            title: "Bends",
+            referenceID: nil,
+            srs: SRSState(nextDue: now)
+        )
+        let itemWithRef2 = PracticeItem(
+            category: .soloing,
+            title: "Blues Licks",
+            referenceID: "licks_blues_box1",
+            srs: SRSState(nextDue: now)
+        )
+        let itemWithRef3 = PracticeItem(
+            category: .warmup,
+            title: "Chromatic",
+            referenceID: "warmup_chromatic",
+            srs: SRSState(nextDue: now)
+        )
+
+        [itemWithRef, itemWithoutRef, itemWithRef2, itemWithRef3].forEach(engine.addItem)
+
+        let session = engine.generateTodaySession(now: now)
+
+        // Verify referenceID is correctly propagated to blocks
+        for block in session.blocks {
+            guard let itemID = block.practiceItemID,
+                  let item = engine.items.first(where: { $0.id == itemID }) else {
+                XCTFail("Block should have valid practiceItemID")
+                continue
+            }
+
+            XCTAssertEqual(block.referenceID, item.referenceID, "Block referenceID should match item's referenceID")
+        }
+
+        // Verify at least one block has a referenceID
+        let blocksWithRef = session.blocks.filter { $0.referenceID != nil }
+        XCTAssertGreaterThan(blocksWithRef.count, 0, "Should have at least one block with a referenceID")
+    }
 }
