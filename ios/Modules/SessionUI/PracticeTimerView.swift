@@ -1,0 +1,98 @@
+import SwiftUI
+
+/// Presentational component for displaying practice timer with progress rings.
+/// No timing logic belongs here - this is purely presentational.
+struct PracticeTimerView: View {
+    let blockKind: String
+    let title: String
+    let detail: String
+    let timeText: String
+    let blockProgress: Double      // 0.0–1.0
+    let sessionProgress: Double    // 0.0–1.0
+    let isPaused: Bool
+    let onTogglePause: () -> Void
+
+    var body: some View {
+        VStack(spacing: 24) {
+            // Block info
+            VStack(spacing: 8) {
+                Text(blockKind)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Text(title)
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                if !detail.isEmpty {
+                    Text(detail)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+            }
+
+            // Timer with concentric progress rings
+            ZStack {
+                // Outer ring - session progress
+                Circle()
+                    .stroke(Color.secondary.opacity(0.2), lineWidth: 8)
+                Circle()
+                    .trim(from: 0, to: sessionProgress)
+                    .stroke(Color.accentColor.opacity(0.5), style: StrokeStyle(lineWidth: 8, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+
+                // Inner ring - block progress
+                Circle()
+                    .stroke(Color.secondary.opacity(0.2), lineWidth: 12)
+                    .padding(20)
+                Circle()
+                    .trim(from: 0, to: blockProgress)
+                    .stroke(Color.accentColor, style: StrokeStyle(lineWidth: 12, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+                    .padding(20)
+
+                // Timer text
+                VStack(spacing: 4) {
+                    Text(timeText)
+                        .font(.system(size: 48, weight: .light, design: .monospaced))
+                        .contentTransition(.numericText())
+
+                    if isPaused {
+                        Text("PAUSED")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+            .frame(width: 240, height: 240)
+            .contentShape(Circle())
+            .onTapGesture {
+                onTogglePause()
+            }
+        }
+    }
+}
+
+#Preview("In Progress") {
+    PracticeTimerView(
+        blockKind: "Warm-Up",
+        title: "Am Pentatonic Scale",
+        detail: "Position 1",
+        timeText: "08:32",
+        blockProgress: 0.35,
+        sessionProgress: 0.125,
+        isPaused: false,
+        onTogglePause: {}
+    )
+}
+
+#Preview("Paused") {
+    PracticeTimerView(
+        blockKind: "Song",
+        title: "Wish You Were Here",
+        detail: "",
+        timeText: "05:15",
+        blockProgress: 0.5,
+        sessionProgress: 0.375,
+        isPaused: true,
+        onTogglePause: {}
+    )
+}

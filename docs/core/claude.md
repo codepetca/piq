@@ -63,9 +63,15 @@ High‑level structure (suggested):
 
 ```text
 /docs
-  design.md
-  claude.md
-  agents.md
+  /core
+    claude.md
+    design.md
+    agents.md
+    tests.md
+  /guidance
+    piq-guitar-guidance.md
+  /issues
+    (iteration-level task files)
 
 /ios
   PiqApp.swift
@@ -511,12 +517,37 @@ The general rule:
 
 ---
 
-## 11. File Reading Order for AI Agents
+## 11. Documentation Layout & Reading Order
 
-When an AI assistant is going to work on this app, it should:
+piq's documentation is organized into three layers:
 
-1. Read `design.md` for UX, flows, and visual rules.  
-2. Read `claude.md` (this file) for architecture and implementation rules.  
-3. Read `agents.md` to understand role boundaries (if using multi‑agent setup).  
-4. Then inspect existing code before generating changes.
-```
+**1. `/docs/core/` — Stable reference docs**
+- `design.md` — UI/UX and flows
+- `claude.md` — architecture, modules, platform rules
+- `agents.md` — multi-agent roles and responsibilities
+- `tests.md` — testing philosophy and priorities
+
+**2. `/docs/guidance/` — High-level domain or feature guidance**
+- `piq-guitar-guidance.md` — research-backed guitar-learning model, skill catalog, and SRS concepts
+- Future domain or feature guidance files
+
+**3. `/docs/issues/` — Iteration-level tasks**
+- Each file in this folder acts as a local "issue" or epic describing a concrete development task for the next cycle.
+
+### Required Reading Order for Any AI Agent Before Modifying Code
+
+1. `/docs/core/design.md`
+2. `/docs/core/claude.md`
+3. `/docs/core/agents.md`
+4. `/docs/core/tests.md`
+5. Any relevant file in `/docs/guidance/` (e.g., `piq-guitar-guidance.md`)
+6. The specific `/docs/issues/issue-xxx-*.md` file referenced in the current prompt
+
+Agents must always read these files *before* inspecting or modifying source code.
+This ensures architectural consistency, avoids design drift, and maintains the intended project workflow.
+
+### Workflow
+
+- The human will update `/docs/guidance/` docs when changing conceptual directions.
+- The human will create `/docs/issues/issue-xxx-*.md` docs for each development iteration.
+- AI agents must read `core/` → relevant `guidance/` → active `issues/` before coding.

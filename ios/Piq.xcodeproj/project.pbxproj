@@ -1,0 +1,467 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A1000001001 /* PiqApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001000 /* PiqApp.swift */; };
+		A1000002001 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000002000 /* RootView.swift */; };
+		A1000003001 /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000003000 /* TodayView.swift */; };
+		A1000004001 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000004000 /* HistoryView.swift */; };
+		A1000005001 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000005000 /* SettingsView.swift */; };
+		A1000006001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1000006000 /* Assets.xcassets */; };
+		A1000007001 /* PracticeBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000007000 /* PracticeBlock.swift */; };
+		A1000008001 /* PracticeBlockFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000008000 /* PracticeBlockFeedback.swift */; };
+		A1000009001 /* PracticeBlockKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000009000 /* PracticeBlockKind.swift */; };
+		A1000010001 /* PracticeSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000010000 /* PracticeSession.swift */; };
+		A1000011001 /* PracticeEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000011000 /* PracticeEngine.swift */; };
+		A1000012001 /* PracticeItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000012000 /* PracticeItem.swift */; };
+		A1000013001 /* SpacedRepetitionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000013000 /* SpacedRepetitionEngine.swift */; };
+		A1000014001 /* PracticeStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000014000 /* PracticeStorage.swift */; };
+		A1000015001 /* PracticeSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000015000 /* PracticeSessionView.swift */; };
+		A1000016001 /* PracticeTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000016000 /* PracticeTimerView.swift */; };
+		A1000017001 /* FeedbackBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000017000 /* FeedbackBar.swift */; };
+		A1000018001 /* MetronomeBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000018000 /* MetronomeBar.swift */; };
+		A1000019001 /* SongChoiceSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000019000 /* SongChoiceSheet.swift */; };
+		A1000020001 /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000020000 /* HistoryViewModel.swift */; };
+		A1000021001 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000021000 /* SessionDetailView.swift */; };
+		A1000022001 /* MetronomeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000022000 /* MetronomeService.swift */; };
+		A1000023001 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000023000 /* SettingsViewModel.swift */; };
+		A1000024001 /* HapticService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000024000 /* HapticService.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A1000000000 /* Piq.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Piq.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1000001000 /* PiqApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiqApp.swift; sourceTree = "<group>"; };
+		A1000002000 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		A1000003000 /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
+		A1000004000 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		A1000005000 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A1000006000 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A1000007000 /* PracticeBlock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeBlock.swift; sourceTree = "<group>"; };
+		A1000008000 /* PracticeBlockFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeBlockFeedback.swift; sourceTree = "<group>"; };
+		A1000009000 /* PracticeBlockKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeBlockKind.swift; sourceTree = "<group>"; };
+		A1000010000 /* PracticeSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeSession.swift; sourceTree = "<group>"; };
+		A1000011000 /* PracticeEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeEngine.swift; sourceTree = "<group>"; };
+		A1000012000 /* PracticeItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeItem.swift; sourceTree = "<group>"; };
+		A1000013000 /* SpacedRepetitionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpacedRepetitionEngine.swift; sourceTree = "<group>"; };
+		A1000014000 /* PracticeStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeStorage.swift; sourceTree = "<group>"; };
+		A1000015000 /* PracticeSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeSessionView.swift; sourceTree = "<group>"; };
+		A1000016000 /* PracticeTimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeTimerView.swift; sourceTree = "<group>"; };
+		A1000017000 /* FeedbackBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackBar.swift; sourceTree = "<group>"; };
+		A1000018000 /* MetronomeBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeBar.swift; sourceTree = "<group>"; };
+		A1000019000 /* SongChoiceSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongChoiceSheet.swift; sourceTree = "<group>"; };
+		A1000020000 /* HistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewModel.swift; sourceTree = "<group>"; };
+		A1000021000 /* SessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailView.swift; sourceTree = "<group>"; };
+		A1000022000 /* MetronomeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeService.swift; sourceTree = "<group>"; };
+		A1000023000 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		A1000024000 /* HapticService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticService.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A10000FW000 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A10000GR000 = {
+			isa = PBXGroup;
+			children = (
+				A10000GR001 /* Piq */,
+				A10000GR003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A10000GR001 /* Piq */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001000 /* PiqApp.swift */,
+				A1000002000 /* RootView.swift */,
+				A1000003000 /* TodayView.swift */,
+				A1000004000 /* HistoryView.swift */,
+				A1000005000 /* SettingsView.swift */,
+				A1000015000 /* PracticeSessionView.swift */,
+				A1000006000 /* Assets.xcassets */,
+				A10000GR002 /* Modules */,
+			);
+			path = "";
+			sourceTree = "<group>";
+		};
+		A10000GR002 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				A10000GR004 /* PracticeDomain */,
+				A10000GR005 /* SessionUI */,
+				A10000GR006 /* HistoryModule */,
+				A10000GR007 /* AudioHapticsModule */,
+				A10000GR008 /* SettingsModule */,
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
+		A10000GR003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000000 /* Piq.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A10000GR004 /* PracticeDomain */ = {
+			isa = PBXGroup;
+			children = (
+				A1000007000 /* PracticeBlock.swift */,
+				A1000008000 /* PracticeBlockFeedback.swift */,
+				A1000009000 /* PracticeBlockKind.swift */,
+				A1000011000 /* PracticeEngine.swift */,
+				A1000012000 /* PracticeItem.swift */,
+				A1000010000 /* PracticeSession.swift */,
+				A1000014000 /* PracticeStorage.swift */,
+				A1000013000 /* SpacedRepetitionEngine.swift */,
+			);
+			path = PracticeDomain;
+			sourceTree = "<group>";
+		};
+		A10000GR005 /* SessionUI */ = {
+			isa = PBXGroup;
+			children = (
+				A1000016000 /* PracticeTimerView.swift */,
+				A1000017000 /* FeedbackBar.swift */,
+				A1000018000 /* MetronomeBar.swift */,
+				A1000019000 /* SongChoiceSheet.swift */,
+			);
+			path = SessionUI;
+			sourceTree = "<group>";
+		};
+		A10000GR006 /* HistoryModule */ = {
+			isa = PBXGroup;
+			children = (
+				A1000020000 /* HistoryViewModel.swift */,
+				A1000021000 /* SessionDetailView.swift */,
+			);
+			path = HistoryModule;
+			sourceTree = "<group>";
+		};
+		A10000GR007 /* AudioHapticsModule */ = {
+			isa = PBXGroup;
+			children = (
+				A1000022000 /* MetronomeService.swift */,
+				A1000024000 /* HapticService.swift */,
+			);
+			path = AudioHapticsModule;
+			sourceTree = "<group>";
+		};
+		A10000GR008 /* SettingsModule */ = {
+			isa = PBXGroup;
+			children = (
+				A1000023000 /* SettingsViewModel.swift */,
+			);
+			path = SettingsModule;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A10000NT000 /* Piq */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10000CL001 /* Build configuration list for PBXNativeTarget "Piq" */;
+			buildPhases = (
+				A10000SR000 /* Sources */,
+				A10000FW000 /* Frameworks */,
+				A10000RS000 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Piq;
+			productName = Piq;
+			productReference = A1000000000 /* Piq.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A10000PJ000 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					A10000NT000 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = A10000CL000 /* Build configuration list for PBXProject "Piq" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A10000GR000;
+			productRefGroup = A10000GR003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A10000NT000 /* Piq */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A10000RS000 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1000006001 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A10000SR000 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1000001001 /* PiqApp.swift in Sources */,
+				A1000002001 /* RootView.swift in Sources */,
+				A1000003001 /* TodayView.swift in Sources */,
+				A1000004001 /* HistoryView.swift in Sources */,
+				A1000005001 /* SettingsView.swift in Sources */,
+				A1000015001 /* PracticeSessionView.swift in Sources */,
+				A1000007001 /* PracticeBlock.swift in Sources */,
+				A1000008001 /* PracticeBlockFeedback.swift in Sources */,
+				A1000009001 /* PracticeBlockKind.swift in Sources */,
+				A1000011001 /* PracticeEngine.swift in Sources */,
+				A1000012001 /* PracticeItem.swift in Sources */,
+				A1000010001 /* PracticeSession.swift in Sources */,
+				A1000014001 /* PracticeStorage.swift in Sources */,
+				A1000013001 /* SpacedRepetitionEngine.swift in Sources */,
+				A1000016001 /* PracticeTimerView.swift in Sources */,
+				A1000017001 /* FeedbackBar.swift in Sources */,
+				A1000018001 /* MetronomeBar.swift in Sources */,
+				A1000019001 /* SongChoiceSheet.swift in Sources */,
+				A1000020001 /* HistoryViewModel.swift in Sources */,
+				A1000021001 /* SessionDetailView.swift in Sources */,
+				A1000022001 /* MetronomeService.swift in Sources */,
+				A1000023001 /* SettingsViewModel.swift in Sources */,
+				A1000024001 /* HapticService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A10000BC000 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A10000BC001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A10000BC002 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.codepetca.piq;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A10000BC003 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.codepetca.piq;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A10000CL000 /* Build configuration list for PBXProject "Piq" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000BC000 /* Debug */,
+				A10000BC001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A10000CL001 /* Build configuration list for PBXNativeTarget "Piq" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000BC002 /* Debug */,
+				A10000BC003 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A10000PJ000 /* Project object */;
+}
