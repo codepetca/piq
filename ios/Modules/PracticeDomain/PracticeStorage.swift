@@ -8,6 +8,10 @@ final class PracticeStorage {
 
     /// Current schema version for storage format.
     /// Increment this when making breaking changes to stored data structures.
+    ///
+    /// Future: Implement migration logic in load methods based on schemaVersion.
+    /// For example, if schemaVersion changes from 1 to 2, add logic to migrate
+    /// version 1 data to version 2 format before returning to callers.
     static let schemaVersion = 1
 
     // MARK: - Storage Wrappers
@@ -89,6 +93,8 @@ final class PracticeStorage {
             let data = try encoder.encode(store)
             try data.write(to: sessionsURL, options: .atomic)
         } catch {
+            // Storage failures are logged but not propagated; graceful degradation for MVP.
+            // Future: Consider structured logging or user notifications for critical failures.
             print("Failed to save sessions: \(error)")
         }
     }
@@ -115,6 +121,7 @@ final class PracticeStorage {
             // Fall back to legacy format (array without wrapper)
             return try decoder.decode([PracticeSession].self, from: data)
         } catch {
+            // Return empty on decode failure (corrupted file); graceful degradation for MVP.
             print("Failed to load sessions: \(error)")
             return []
         }
@@ -129,6 +136,7 @@ final class PracticeStorage {
             let data = try encoder.encode(store)
             try data.write(to: itemsURL, options: .atomic)
         } catch {
+            // Storage failures are logged but not propagated; graceful degradation for MVP.
             print("Failed to save items: \(error)")
         }
     }
@@ -148,12 +156,17 @@ final class PracticeStorage {
             // Fall back to legacy format (array without wrapper)
             return try decoder.decode([PracticeItem].self, from: data)
         } catch {
+            // Return empty on decode failure (corrupted file); graceful degradation for MVP.
             print("Failed to load items: \(error)")
             return []
         }
     }
 
     /// Load practice items, merging stored SRS state with the seed catalog.
+    ///
+    /// Merge strategy: Uses stable `catalogID` as the key. This ensures that
+    /// catalog title or detail changes don't cause loss of stored SRS state.
+    ///
     /// On first run, returns default items from the catalog.
     /// On subsequent runs, updates catalog items with stored SRS state.
     func loadPracticeItems(now: Date = Date()) -> [PracticeItem] {
@@ -165,21 +178,14 @@ final class PracticeStorage {
             return catalogItems
         }
 
-        // Merge stored SRS state with catalog using (title, category) as composite key
-        // This is more robust than title alone in case items move between categories
-        struct ItemKey: Hashable {
-            let title: String
-            let category: PracticeItemCategory
-        }
-
-        let storedByKey = Dictionary(
-            storedItems.map { (ItemKey(title: $0.title, category: $0.category), $0) },
+        // Merge stored SRS state with catalog using stable catalogID
+        let storedByCatalogID = Dictionary(
+            storedItems.map { ($0.catalogID, $0) },
             uniquingKeysWith: { first, _ in first }
         )
 
         return catalogItems.map { catalogItem in
-            let key = ItemKey(title: catalogItem.title, category: catalogItem.category)
-            if let storedItem = storedByKey[key] {
+            if let storedItem = storedByCatalogID[catalogItem.catalogID] {
                 var merged = catalogItem
                 merged.srs = storedItem.srs
                 return merged

@@ -84,6 +84,7 @@ final class PracticeStorageTests: XCTestCase {
     func testItemsRoundTripPreservesSRS() {
         let dueDate = Date().addingTimeInterval(86_400 * 2)
         let item = PracticeItem(
+            catalogID: "test_round_trip",
             category: .soloing,
             title: "Test",
             targetMinutes: 9,
@@ -105,6 +106,7 @@ final class PracticeStorageTests: XCTestCase {
         let lastPlayed = Date().addingTimeInterval(-86_400) // Yesterday
         let nextDue = Date().addingTimeInterval(86_400 * 2)
         let item = PracticeItem(
+            catalogID: "test_last_played",
             category: .technique,
             title: "Test Last Played",
             srs: SRSState(stability: 2.5, lastPlayed: lastPlayed, nextDue: nextDue)
@@ -119,6 +121,7 @@ final class PracticeStorageTests: XCTestCase {
 
     func testItemsRoundTripHandlesNilLastPlayed() {
         let item = PracticeItem(
+            catalogID: "test_nil_last_played",
             category: .warmup,
             title: "Test No Last Played",
             srs: SRSState(stability: 1.0, lastPlayed: nil, nextDue: Date())
@@ -237,7 +240,7 @@ final class PracticeStorageTests: XCTestCase {
     }
 
     func testSchemaVersionIsIncludedInItemsStorage() {
-        storage.saveItems([PracticeItem(category: .warmup, title: "Test")])
+        storage.saveItems([PracticeItem(catalogID: "test_schema", category: .warmup, title: "Test")])
 
         let itemsURL = testDirectory.appendingPathComponent("items.json")
         let data = try! Data(contentsOf: itemsURL)

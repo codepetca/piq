@@ -15,6 +15,7 @@ struct SRSState: Codable, Equatable {
 /// Represents a single item that can be scheduled for practice using spaced repetition.
 struct PracticeItem: Identifiable, Codable, Equatable {
     let id: UUID
+    let catalogID: String
     let category: PracticeItemCategory
     let title: String
     let detail: String
@@ -25,6 +26,7 @@ struct PracticeItem: Identifiable, Codable, Equatable {
 
     init(
         id: UUID = UUID(),
+        catalogID: String,
         category: PracticeItemCategory,
         title: String,
         detail: String = "",
@@ -34,6 +36,7 @@ struct PracticeItem: Identifiable, Codable, Equatable {
         srs: SRSState = SRSState()
     ) {
         self.id = id
+        self.catalogID = catalogID
         self.category = category
         self.title = title
         self.detail = detail
