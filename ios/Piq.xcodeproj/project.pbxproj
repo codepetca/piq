@@ -19,6 +19,8 @@
 		A1000010001 /* PracticeSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000010000 /* PracticeSession.swift */; };
 		A1000011001 /* PracticeEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000011000 /* PracticeEngine.swift */; };
 		A1000012001 /* PracticeItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000012000 /* PracticeItem.swift */; };
+		A1000025001 /* PracticeItemCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000025000 /* PracticeItemCategory.swift */; };
+		A1000026001 /* PracticeItemCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000026000 /* PracticeItemCatalog.swift */; };
 		A1000013001 /* SpacedRepetitionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000013000 /* SpacedRepetitionEngine.swift */; };
 		A1000014001 /* PracticeStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000014000 /* PracticeStorage.swift */; };
 		A1000015001 /* PracticeSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000015000 /* PracticeSessionView.swift */; };
@@ -47,6 +49,8 @@
 		A1000010000 /* PracticeSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeSession.swift; sourceTree = "<group>"; };
 		A1000011000 /* PracticeEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeEngine.swift; sourceTree = "<group>"; };
 		A1000012000 /* PracticeItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeItem.swift; sourceTree = "<group>"; };
+		A1000025000 /* PracticeItemCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeItemCategory.swift; sourceTree = "<group>"; };
+		A1000026000 /* PracticeItemCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeItemCatalog.swift; sourceTree = "<group>"; };
 		A1000013000 /* SpacedRepetitionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpacedRepetitionEngine.swift; sourceTree = "<group>"; };
 		A1000014000 /* PracticeStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeStorage.swift; sourceTree = "<group>"; };
 		A1000015000 /* PracticeSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeSessionView.swift; sourceTree = "<group>"; };
@@ -75,12 +79,12 @@
 		A10000GR000 = {
 			isa = PBXGroup;
 			children = (
-				A10000GR001 /* Piq */,
+				A10000GR001 /*  */,
 				A10000GR003 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		A10000GR001 /* Piq */ = {
+		A10000GR001 /*  */ = {
 			isa = PBXGroup;
 			children = (
 				A1000001000 /* PiqApp.swift */,
@@ -92,7 +96,7 @@
 				A1000006000 /* Assets.xcassets */,
 				A10000GR002 /* Modules */,
 			);
-			path = "";
+			name = "";
 			sourceTree = "<group>";
 		};
 		A10000GR002 /* Modules */ = {
@@ -123,6 +127,8 @@
 				A1000009000 /* PracticeBlockKind.swift */,
 				A1000011000 /* PracticeEngine.swift */,
 				A1000012000 /* PracticeItem.swift */,
+				A1000025000 /* PracticeItemCategory.swift */,
+				A1000026000 /* PracticeItemCatalog.swift */,
 				A1000010000 /* PracticeSession.swift */,
 				A1000014000 /* PracticeStorage.swift */,
 				A1000013000 /* SpacedRepetitionEngine.swift */,
@@ -195,7 +201,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1500;
+				LastUpgradeCheck = 2610;
 				TargetAttributes = {
 					A10000NT000 = {
 						CreatedOnToolsVersion = 15.0;
@@ -247,6 +253,8 @@
 				A1000009001 /* PracticeBlockKind.swift in Sources */,
 				A1000011001 /* PracticeEngine.swift in Sources */,
 				A1000012001 /* PracticeItem.swift in Sources */,
+				A1000025001 /* PracticeItemCategory.swift in Sources */,
+				A1000026001 /* PracticeItemCatalog.swift in Sources */,
 				A1000010001 /* PracticeSession.swift in Sources */,
 				A1000014001 /* PracticeStorage.swift in Sources */,
 				A1000013001 /* SpacedRepetitionEngine.swift in Sources */,
@@ -323,6 +331,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -379,6 +388,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};

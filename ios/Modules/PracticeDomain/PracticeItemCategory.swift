@@ -40,14 +40,15 @@ enum PracticeItemCategory: String, CaseIterable, Codable {
 
     var defaultMinutes: Int {
         switch self {
-        case .warmup: return 5
-        case .fretboard: return 6
-        case .repertoire, .songwork: return 12
+        case .warmup: return 4
+        case .fretboard: return 3
+        case .repertoire: return 12
+        case .songwork: return 15
         case .soloing: return 10
-        case .technique: return 8
-        case .theory: return 8
-        case .rhythm: return 7
-        case .chords: return 6
+        case .technique: return 5
+        case .theory: return 6
+        case .rhythm: return 6
+        case .chords: return 5
         }
     }
 }
