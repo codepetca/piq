@@ -26,33 +26,11 @@ full lessons or long written explanations.
 ---
 
 
-## Platform & Framework Constraints (iOS) — CONCISE VERSION
+## Platform & Framework Constraints (iOS)
 
-Use modern Apple-native patterns only.
+**Target:** iOS 17+ (iPhone-first). **UI:** SwiftUI only (NavigationStack, TabView, .sheet/.fullScreenCover). **State:** Observation (@Observable + .environment). **Async:** Swift Concurrency (async/await, Task{}, @MainActor for UI). **App Entry:** PiqApp (@main) → RootView → TabView (Today, History, Settings). Engines injected via .environment. **Frameworks:** SwiftUI, Observation, Foundation. AVFoundation/AVAudioEngine only in MetronomeService.
 
-- **Target:** iOS 17+ (iPhone-first).  
-- **UI:** SwiftUI only.  
-  - Use `NavigationStack`, `TabView`, `.sheet` / `.fullScreenCover`.  
-  - Do NOT use `NavigationView`, storyboards, or UIKit unless explicitly required.  
-- **State:** Observation framework.  
-  - Use `@Observable` classes + `.environment(...)` injection.  
-  - Avoid `ObservableObject` + `@Published` except when bridging old APIs.  
-- **Async:** Swift Concurrency.  
-  - Prefer `async/await` over callbacks.  
-  - Use `Task {}` for background work and keep UI updates `@MainActor`.  
-- **App Entry:**  
-  - `PiqApp` (`@main`) → `RootView` with a `TabView` (Today, History, Settings).  
-  - Shared engines (`PracticeEngine`, `HistoryViewModel`, `SettingsViewModel`, etc.) injected via `.environment(...)`.  
-- **Frameworks:**  
-  - SwiftUI, Observation, Foundation.  
-  - AVFoundation/AVAudioEngine ONLY inside `MetronomeService`.  
-- **Prohibited by default:**  
-  - UIKit components, Combine, Storyboards, NavigationView.  
-  - Business logic inside SwiftUI Views.  
-- **Composition:**  
-  - Use small SwiftUI components.  
-  - Engines own logic; Views compose.  
-  - No timers in Views (PracticeEngine handles timing).
+**Rules:** Small composable views. Engines own logic/timers, Views compose. **Prohibited:** UIKit, Combine, Storyboards, NavigationView, ObservableObject (except bridging old APIs), business logic in Views, timers in Views.
 
 
 ---
@@ -187,111 +165,27 @@ or business logic directly into screen views.
 
 ### PracticeTimerView
 
-Responsibility:
-- Draw concentric rings (outer = block, inner = session).
-- Show block title and MM:SS timer.
-- Handle tap‑to‑pause via callback.
-
-Suggested inputs:
-
-```swift
-struct PracticeTimerView: View {
-    let title: String
-    let timeText: String
-    let blockProgress: Double    // 0.0–1.0
-    let sessionProgress: Double  // 0.0–1.0
-    let isPaused: Bool
-    let onTogglePause: () -> Void
-    // ...
-}
-```
-
-No timing logic belongs in `PracticeTimerView`. It is presentational only.
+Presentational only. Displays concentric rings (outer=block, inner=session), title, MM:SS timer. Accepts progress values (0.0-1.0), pause state, pause callback. No timing logic.
 
 ### MetronomeBar
 
-Responsibility:
-- Show a metronome toggle and BPM controls in a single horizontal row.
-- Use SF Symbol `metronome` instead of text.
-
-Suggested inputs:
-
-```swift
-struct MetronomeBar: View {
-    let isOn: Bool
-    let bpm: Int
-    let onToggle: () -> Void
-    let onIncreaseBPM: () -> Void
-    let onDecreaseBPM: () -> Void
-}
-```
-
-No AVFoundation logic in this view; it should call into `MetronomeService`
-indirectly via callbacks/ViewModel.
+Single horizontal row with metronome toggle (SF Symbol `metronome`), BPM value, +/- controls. Accepts on/off state, BPM int, toggle/increase/decrease callbacks. No AVFoundation logic.
 
 ### FeedbackBar
 
-Responsibility:
-- Display “How was that?” and three feedback options: [Easy] [Good] [Hard].
-
-Inputs:
-
-```swift
-struct FeedbackBar: View {
-    let onEasy: () -> Void
-    let onGood: () -> Void
-    let onHard: () -> Void
-}
-```
-
-No SRE logic in this view.
+Displays "How was that?" with three buttons: [Easy] [Good] [Hard]. Accepts three callbacks. No SRE logic.
 
 ### BlockListView
 
-Responsibility:
-- Display today’s 4 blocks on the Today screen.
-
-Inputs:
-
-```swift
-struct BlockListView: View {
-    let blocks: [PracticeBlock]
-    let onStartSession: () -> Void
-}
-```
+Displays today's 4 blocks on Today screen. Accepts blocks array, start session callback.
 
 ### SongChoiceSheet
 
-Responsibility:
-- Modal sheet listing up to 3 song options.
-
-```swift
-struct SongOption: Identifiable {
-    let id: UUID
-    let title: String
-}
-
-struct SongChoiceSheet: View {
-    let options: [SongOption]
-    let onSelect: (SongOption) -> Void
-    let onCancel: () -> Void
-}
-```
+Modal sheet with up to 3 song options. Accepts song options array (id, title), select callback, cancel callback.
 
 ### SessionSummaryView
 
-Responsibility:
-- Display a completed `PracticeSession` summary with block feedback chips and
-  total minutes.
-
-Inputs:
-
-```swift
-struct SessionSummaryView: View {
-    let session: PracticeSession
-    let onClose: () -> Void
-}
-```
+Displays completed session summary with block feedback and total minutes. Accepts session object, close callback.
 
 ---
 

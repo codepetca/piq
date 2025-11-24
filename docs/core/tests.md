@@ -12,29 +12,7 @@ The goal is to:
 
 ## 1. Principles to Avoid Doc–Code Drift
 
-To keep this file useful instead of confusing:
-
-1. **Code + Tests are the Source of Truth for Behavior**
-   - If there is a conflict between tests.md and the actual tests/code,
-     the **tests/code win**.
-   - When updating features, prefer updating tests and implementation first,
-     then adjust this file if needed.
-
-2. **Keep This File High-Level**
-   - This file describes *what kinds of things to test*, not every single case.
-   - Avoid super-specific test names or exact function signatures.
-
-3. **Update Only When Behavior Changes Meaningfully**
-   - If you tweak implementation details but behavior is the same, this file may not need changes.
-   - Update this file when we:
-     - Add a new module.
-     - Add a new feature that changes user-visible behavior.
-     - Change our testing priorities.
-
-4. **Section-Based Ownership**
-   - PracticeDomain tests → Logic/Test agents keep Section 3 in sync.
-   - Storage tests → Data/Test agents keep Section 4 in sync.
-   - UI tests → UI/Test agents keep Section 5 in sync.
+Test code is truth. This doc describes *what to test*, not exact cases. Update when behavior/modules change meaningfully, not for implementation details. See section headers for ownership.
 
 ---
 
@@ -193,49 +171,7 @@ Tests can live in `piqUITests` as a small suite, e.g. `PiqUITests.swift`.
 
 ## 7. TDD Development Flow (MVP)
 
-This section mirrors the recommended implementation flow from `claude.md`,
-but focused on tests.
-
-### Phase 0 — Models (Optional Light Tests)
-
-- Define `PracticeBlockKind`, `PracticeBlock`, `PracticeSession`, `PracticeBlockFeedback`.
-- Add tests for:
-  - Correct default sessions.
-  - Basic helpers (e.g., `totalMinutes`).
-
-### Phase 1 — PracticeEngine (TDD Focus)
-
-- Write tests for state transitions & timing behavior.  
-- Implement `PracticeEngine` just enough to pass tests.
-
-### Phase 2 — SpacedRepetitionEngine (Stub → Tested)
-
-- Start with small tests around `generateTodaySession()` behavior.  
-- Implement simple, heuristic SRE until tests pass.  
-- Expand tests as behavior evolves.
-
-### Phase 3 — PracticeStorage
-
-- Write tests for first-run and round-trip persistence.  
-- Implement minimal storage.
-
-### Phase 4 — Minimal UI Flow
-
-- Implement `PiqApp`, `RootView`, `TodayView`, `PracticeSessionView` using the engines.  
-- Write 1–2 UI smoke tests to verify:
-  - Today shows 4 blocks.
-  - You can start and complete a session.
-
-### Phase 5 — Component Extraction
-
-- Extract `PracticeTimerView`, `MetronomeBar`, `FeedbackBar`, etc.  
-- No heavy tests needed; ensure engines' tests still pass and UI smoke tests still pass.
-
-### Phase 6 — Iterate on SRE + History
-
-- Add more tests for SRE as it gets smarter.  
-- Add tests for `HistoryViewModel` (sorting, filtering).  
-- Keep the UI tests light.
+MVP sequence: Models → PracticeEngine (TDD) → SpacedRepetitionEngine (TDD) → PracticeStorage (TDD) → minimal UI → components → iterate. For engines/storage: write tests first. For UI: keep views thin, test engines instead. See claude.md Section 9 for detailed workflow.
 
 ---
 

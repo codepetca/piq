@@ -316,32 +316,9 @@ Rules:
 
 ---
 
-# 11. Reference Diagram Library (Stub List)
+# 11. Reference Diagram Library
 
-Initial planned diagrams:
-
-## Scales (A minor pentatonic focus)
-
-- `scale_am_pentatonic_pos1` — Am pentatonic, position 1.  
-- `scale_am_pentatonic_pos2` — position 2.  
-- `scale_am_pentatonic_pos3` — position 3.  
-- `scale_am_pentatonic_pos4` — position 4.  
-- `scale_am_pentatonic_pos5` — position 5.
-
-## Chords
-
-- `chord_am_open` — Am, open.  
-- `chord_c_major_open` — C, open.  
-- `chord_g_major_open` — G, open.  
-- `chord_e_major_open` — E, open.
-
-## Techniques
-
-- `tech_bends_basic` — basic bends.  
-- `tech_vibrato_basic` — basic vibrato.  
-- `tech_altpick_basic` — alternate picking.
-
-These may initially point to placeholder assets and be filled out later.
+Reference IDs follow naming patterns in Section 10. Initial catalog: 5 Am pentatonic positions, 4 basic open chords (Am, C, G, E), 3 technique diagrams (bends, vibrato, alternate picking). See asset catalog and code for full list.
 
 ---
 
