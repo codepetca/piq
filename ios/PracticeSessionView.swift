@@ -2,7 +2,11 @@ import SwiftUI
 
 struct PracticeSessionView: View {
     @Environment(PracticeEngine.self) private var engine
+    @Environment(SpacedRepetitionEngine.self) private var sre
+    @Environment(HistoryViewModel.self) private var historyViewModel
     @Environment(\.dismiss) private var dismiss
+
+    private let storage = PracticeStorage()
 
     var body: some View {
         VStack {
@@ -116,6 +120,21 @@ struct PracticeSessionView: View {
             Spacer()
 
             Button("Done") {
+                // Save completed session to history
+                if let session = engine.session {
+                    historyViewModel.addSession(session)
+
+                    // Update SRE with feedback from each block
+                    for block in session.blocks {
+                        if let itemID = block.practiceItemID,
+                           let feedback = block.feedback {
+                            sre.recordFeedback(forItemID: itemID, feedback: feedback)
+                        }
+                    }
+
+                    // Persist updated SRE items
+                    storage.saveItems(sre.items)
+                }
                 dismiss()
             }
             .font(.headline)
@@ -148,8 +167,13 @@ struct PracticeSessionView: View {
 
 #Preview {
     let engine = PracticeEngine()
-    engine.startSession()
+    let sre = SpacedRepetitionEngine()
+    sre.loadDemoItems()
+    engine.startSession(from: sre)
+    let historyViewModel = HistoryViewModel()
 
     return PracticeSessionView()
         .environment(engine)
+        .environment(sre)
+        .environment(historyViewModel)
 }

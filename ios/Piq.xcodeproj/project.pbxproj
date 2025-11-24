@@ -26,6 +26,8 @@
 		A1000017001 /* FeedbackBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000017000 /* FeedbackBar.swift */; };
 		A1000018001 /* MetronomeBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000018000 /* MetronomeBar.swift */; };
 		A1000019001 /* SongChoiceSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000019000 /* SongChoiceSheet.swift */; };
+		A1000020001 /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000020000 /* HistoryViewModel.swift */; };
+		A1000021001 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000021000 /* SessionDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +51,8 @@
 		A1000017000 /* FeedbackBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackBar.swift; sourceTree = "<group>"; };
 		A1000018000 /* MetronomeBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeBar.swift; sourceTree = "<group>"; };
 		A1000019000 /* SongChoiceSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongChoiceSheet.swift; sourceTree = "<group>"; };
+		A1000020000 /* HistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewModel.swift; sourceTree = "<group>"; };
+		A1000021000 /* SessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +94,7 @@
 			children = (
 				A10000GR004 /* PracticeDomain */,
 				A10000GR005 /* SessionUI */,
+				A10000GR006 /* HistoryModule */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -126,6 +131,15 @@
 				A1000019000 /* SongChoiceSheet.swift */,
 			);
 			path = SessionUI;
+			sourceTree = "<group>";
+		};
+		A10000GR006 /* HistoryModule */ = {
+			isa = PBXGroup;
+			children = (
+				A1000020000 /* HistoryViewModel.swift */,
+				A1000021000 /* SessionDetailView.swift */,
+			);
+			path = HistoryModule;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -215,6 +229,8 @@
 				A1000017001 /* FeedbackBar.swift in Sources */,
 				A1000018001 /* MetronomeBar.swift in Sources */,
 				A1000019001 /* SongChoiceSheet.swift in Sources */,
+				A1000020001 /* HistoryViewModel.swift in Sources */,
+				A1000021001 /* SessionDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

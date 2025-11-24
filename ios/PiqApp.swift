@@ -4,12 +4,14 @@ import SwiftUI
 struct PiqApp: App {
     @State private var practiceEngine = PracticeEngine()
     @State private var spacedRepetitionEngine = SpacedRepetitionEngine()
+    @State private var historyViewModel = HistoryViewModel()
 
     var body: some Scene {
         WindowGroup {
             RootView()
                 .environment(practiceEngine)
                 .environment(spacedRepetitionEngine)
+                .environment(historyViewModel)
                 .onAppear {
                     loadInitialData()
                 }
