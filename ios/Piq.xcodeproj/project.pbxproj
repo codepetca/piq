@@ -28,6 +28,8 @@
 		A1000019001 /* SongChoiceSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000019000 /* SongChoiceSheet.swift */; };
 		A1000020001 /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000020000 /* HistoryViewModel.swift */; };
 		A1000021001 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000021000 /* SessionDetailView.swift */; };
+		A1000022001 /* MetronomeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000022000 /* MetronomeService.swift */; };
+		A1000023001 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000023000 /* SettingsViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -53,6 +55,8 @@
 		A1000019000 /* SongChoiceSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongChoiceSheet.swift; sourceTree = "<group>"; };
 		A1000020000 /* HistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewModel.swift; sourceTree = "<group>"; };
 		A1000021000 /* SessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailView.swift; sourceTree = "<group>"; };
+		A1000022000 /* MetronomeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeService.swift; sourceTree = "<group>"; };
+		A1000023000 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +99,8 @@
 				A10000GR004 /* PracticeDomain */,
 				A10000GR005 /* SessionUI */,
 				A10000GR006 /* HistoryModule */,
+				A10000GR007 /* AudioHapticsModule */,
+				A10000GR008 /* SettingsModule */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -140,6 +146,22 @@
 				A1000021000 /* SessionDetailView.swift */,
 			);
 			path = HistoryModule;
+			sourceTree = "<group>";
+		};
+		A10000GR007 /* AudioHapticsModule */ = {
+			isa = PBXGroup;
+			children = (
+				A1000022000 /* MetronomeService.swift */,
+			);
+			path = AudioHapticsModule;
+			sourceTree = "<group>";
+		};
+		A10000GR008 /* SettingsModule */ = {
+			isa = PBXGroup;
+			children = (
+				A1000023000 /* SettingsViewModel.swift */,
+			);
+			path = SettingsModule;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -231,6 +253,8 @@
 				A1000019001 /* SongChoiceSheet.swift in Sources */,
 				A1000020001 /* HistoryViewModel.swift in Sources */,
 				A1000021001 /* SessionDetailView.swift in Sources */,
+				A1000022001 /* MetronomeService.swift in Sources */,
+				A1000023001 /* SettingsViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

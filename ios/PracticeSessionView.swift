@@ -4,6 +4,7 @@ struct PracticeSessionView: View {
     @Environment(PracticeEngine.self) private var engine
     @Environment(SpacedRepetitionEngine.self) private var sre
     @Environment(HistoryViewModel.self) private var historyViewModel
+    @Environment(MetronomeService.self) private var metronome
     @Environment(\.dismiss) private var dismiss
 
     private let storage = PracticeStorage()
@@ -49,6 +50,22 @@ struct PracticeSessionView: View {
             }
 
             Spacer()
+
+            // Metronome controls
+            MetronomeBar(
+                isOn: metronome.isPlaying,
+                bpm: metronome.bpm,
+                onToggle: {
+                    if metronome.isPlaying {
+                        metronome.stop()
+                    } else {
+                        metronome.start()
+                    }
+                },
+                onIncreaseBPM: { metronome.increaseBPM() },
+                onDecreaseBPM: { metronome.decreaseBPM() }
+            )
+            .padding(.horizontal)
 
             // Control buttons
             HStack(spacing: 40) {
@@ -135,6 +152,9 @@ struct PracticeSessionView: View {
                     // Persist updated SRE items
                     storage.saveItems(sre.items)
                 }
+
+                // Stop metronome when leaving
+                metronome.stop()
                 dismiss()
             }
             .font(.headline)
@@ -171,9 +191,11 @@ struct PracticeSessionView: View {
     sre.loadDemoItems()
     engine.startSession(from: sre)
     let historyViewModel = HistoryViewModel()
+    let metronome = MetronomeService()
 
     return PracticeSessionView()
         .environment(engine)
         .environment(sre)
         .environment(historyViewModel)
+        .environment(metronome)
 }

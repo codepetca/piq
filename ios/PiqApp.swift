@@ -5,6 +5,8 @@ struct PiqApp: App {
     @State private var practiceEngine = PracticeEngine()
     @State private var spacedRepetitionEngine = SpacedRepetitionEngine()
     @State private var historyViewModel = HistoryViewModel()
+    @State private var metronomeService = MetronomeService()
+    @State private var settingsViewModel: SettingsViewModel?
 
     var body: some Scene {
         WindowGroup {
@@ -12,8 +14,15 @@ struct PiqApp: App {
                 .environment(practiceEngine)
                 .environment(spacedRepetitionEngine)
                 .environment(historyViewModel)
+                .environment(metronomeService)
+                .environment(settingsViewModel ?? SettingsViewModel())
                 .onAppear {
                     loadInitialData()
+                    // Initialize settings with dependencies
+                    settingsViewModel = SettingsViewModel(
+                        historyViewModel: historyViewModel,
+                        sre: spacedRepetitionEngine
+                    )
                 }
         }
     }
