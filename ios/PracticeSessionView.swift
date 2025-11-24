@@ -7,7 +7,10 @@ struct PracticeSessionView: View {
     @Environment(MetronomeService.self) private var metronome
     @Environment(HapticService.self) private var haptics
     @Environment(SettingsViewModel.self) private var settings
+    @Environment(PracticeReferenceService.self) private var referenceService
     @Environment(\.dismiss) private var dismiss
+
+    @State private var showingReference = false
 
     private let storage = PracticeStorage()
 
@@ -100,7 +103,7 @@ struct PracticeSessionView: View {
             .padding(.horizontal)
 
             // Control buttons
-            HStack(spacing: 40) {
+            HStack(spacing: 32) {
                 Button(action: { engine.skipCurrentBlock() }) {
                     Image(systemName: "forward.fill")
                         .font(.title2)
@@ -115,8 +118,28 @@ struct PracticeSessionView: View {
                     Image(systemName: "plus.circle")
                         .font(.title2)
                 }
+
+                // Reference button (only if block has a reference)
+                if let block = engine.currentBlock,
+                   let refID = block.referenceID,
+                   referenceService.reference(for: refID) != nil {
+                    Button(action: { showingReference = true }) {
+                        Image(systemName: "questionmark.circle")
+                            .font(.title2)
+                    }
+                }
             }
             .padding(.bottom, 40)
+            .sheet(isPresented: $showingReference) {
+                if let block = engine.currentBlock,
+                   let refID = block.referenceID,
+                   let reference = referenceService.reference(for: refID) {
+                    PracticeReferenceView(
+                        reference: reference,
+                        onDismiss: { showingReference = false }
+                    )
+                }
+            }
         }
     }
 
@@ -232,6 +255,7 @@ struct PracticeSessionView: View {
     let metronome = MetronomeService()
     let haptics = HapticService()
     let settings = SettingsViewModel()
+    let referenceService = PracticeReferenceService()
 
     return PracticeSessionView()
         .environment(engine)
@@ -240,4 +264,5 @@ struct PracticeSessionView: View {
         .environment(metronome)
         .environment(haptics)
         .environment(settings)
+        .environment(referenceService)
 }
