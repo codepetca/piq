@@ -2,424 +2,84 @@ import XCTest
 @testable import piq
 
 final class SpacedRepetitionEngineTests: XCTestCase {
-
-    // MARK: - Initial State Tests
-
-    func testInitialState_hasNoItems() {
+    func testSeedCatalogLoadsItems() {
         let engine = SpacedRepetitionEngine()
-        XCTAssertTrue(engine.items.isEmpty)
+        engine.loadSeedCatalog(now: Date(timeIntervalSince1970: 0))
+
+        XCTAssertEqual(engine.items.count, 20)
+        XCTAssertEqual(engine.items.filter { $0.category == .warmup }.count, 2)
     }
 
-    func testInitialState_canAddItems() {
+    func testDueItemsUsesNextDue() {
         let engine = SpacedRepetitionEngine()
-        let item = PracticeItem(kind: .warmup, title: "Test")
-        engine.addItem(item)
-        XCTAssertEqual(engine.items.count, 1)
-        XCTAssertEqual(engine.items.first?.id, item.id)
+        let past = PracticeItem(category: .warmup, title: "Past", srs: SRSState(stability: 1, nextDue: .distantPast))
+        let future = PracticeItem(category: .warmup, title: "Future", srs: SRSState(stability: 1, nextDue: .distantFuture))
+        engine.addItem(past)
+        engine.addItem(future)
+
+        XCTAssertEqual(engine.dueItems(asOf: Date()).count, 1)
+        XCTAssertEqual(engine.dueItems(asOf: Date()).first?.id, past.id)
     }
 
-    func testInitialState_canLoadDemoItems() {
+    func testFeedbackAdjustsStabilityAndNextDue() {
+        let now = Date(timeIntervalSince1970: 1000)
         let engine = SpacedRepetitionEngine()
-        engine.loadDemoItems()
-        XCTAssertEqual(engine.items.count, 8)
-    }
-
-    // MARK: - Due Item Tests
-
-    func testDueItems_returnsItemsDueToday() {
-        let engine = SpacedRepetitionEngine()
-        let pastDue = PracticeItem(
-            kind: .warmup,
-            title: "Past Due",
-            dueDate: Date().addingTimeInterval(-86400) // Yesterday
-        )
-        let futureDue = PracticeItem(
-            kind: .warmup,
-            title: "Future",
-            dueDate: Date().addingTimeInterval(86400) // Tomorrow
-        )
-        engine.addItem(pastDue)
-        engine.addItem(futureDue)
-
-        let dueItems = engine.dueItems()
-        XCTAssertEqual(dueItems.count, 1)
-        XCTAssertEqual(dueItems.first?.id, pastDue.id)
-    }
-
-    func testDueItems_includesItemsDueNow() {
-        let engine = SpacedRepetitionEngine()
-        let dueNow = PracticeItem(
-            kind: .solo,
-            title: "Due Now",
-            dueDate: Date()
-        )
-        engine.addItem(dueNow)
-
-        let dueItems = engine.dueItems()
-        XCTAssertEqual(dueItems.count, 1)
-    }
-
-    // MARK: - New Item Priority Tests
-
-    func testNewItems_appearMoreOften() {
-        let engine = SpacedRepetitionEngine()
-
-        // New item (reviewCount = 0)
-        let newItem = PracticeItem(
-            kind: .warmup,
-            title: "New",
-            dueDate: Date(),
-            reviewCount: 0
-        )
-
-        // Reviewed item with same due date
-        let reviewedItem = PracticeItem(
-            kind: .warmup,
-            title: "Reviewed",
-            dueDate: Date(),
-            reviewCount: 5,
-            consecutiveCorrect: 5
-        )
-
-        engine.addItem(reviewedItem)
-        engine.addItem(newItem)
-
-        let prioritized = engine.prioritizedItems(forKind: .warmup)
-        XCTAssertEqual(prioritized.first?.id, newItem.id, "New items should appear first")
-    }
-
-    // MARK: - Feedback Processing Tests
-
-    func testRecordFeedback_easy_increasesInterval() {
-        let engine = SpacedRepetitionEngine()
-        var item = PracticeItem(
-            kind: .warmup,
-            title: "Test",
-            dueDate: Date(),
-            intervalDays: 1.0,
-            easeFactor: 2.5,
-            reviewCount: 1
-        )
+        let item = PracticeItem(category: .technique, title: "Test", srs: SRSState(stability: 2.0, nextDue: now))
         engine.addItem(item)
 
-        engine.recordFeedback(forItemID: item.id, feedback: .easy)
+        engine.recordFeedback(forItemID: item.id, feedback: .hard, now: now)
+        let hardItem = engine.items.first!
 
-        let updated = engine.items.first!
-        XCTAssertGreaterThan(updated.intervalDays, 1.0, "Easy feedback should increase interval")
-        XCTAssertGreaterThan(updated.easeFactor, 2.5, "Easy feedback should increase ease factor")
-        XCTAssertEqual(updated.reviewCount, 2)
+        engine.recordFeedback(forItemID: item.id, feedback: .good, now: now)
+        let goodItem = engine.items.first!
+
+        engine.recordFeedback(forItemID: item.id, feedback: .easy, now: now)
+        let easyItem = engine.items.first!
+
+        XCTAssertLessThan(hardItem.srs.stability, goodItem.srs.stability)
+        XCTAssertLessThan(goodItem.srs.stability, easyItem.srs.stability)
+        XCTAssertLessThan(hardItem.srs.nextDue, goodItem.srs.nextDue)
+        XCTAssertLessThan(goodItem.srs.nextDue, easyItem.srs.nextDue)
     }
 
-    func testRecordFeedback_good_increasesInterval() {
+    func testGenerateTodaySessionReturnsFourBlocks() {
         let engine = SpacedRepetitionEngine()
-        let item = PracticeItem(
-            kind: .warmup,
-            title: "Test",
-            dueDate: Date(),
-            intervalDays: 1.0,
-            easeFactor: 2.5,
-            reviewCount: 1
-        )
-        engine.addItem(item)
-
-        engine.recordFeedback(forItemID: item.id, feedback: .good)
-
-        let updated = engine.items.first!
-        XCTAssertGreaterThan(updated.intervalDays, 1.0, "Good feedback should increase interval")
-        XCTAssertEqual(updated.easeFactor, 2.5, "Good feedback should maintain ease factor")
-    }
-
-    func testRecordFeedback_hard_resetsOrReducesInterval() {
-        let engine = SpacedRepetitionEngine()
-        let item = PracticeItem(
-            kind: .warmup,
-            title: "Test",
-            dueDate: Date(),
-            intervalDays: 10.0,
-            easeFactor: 2.5,
-            reviewCount: 5,
-            consecutiveCorrect: 5
-        )
-        engine.addItem(item)
-
-        engine.recordFeedback(forItemID: item.id, feedback: .hard)
-
-        let updated = engine.items.first!
-        XCTAssertLessThan(updated.intervalDays, 10.0, "Hard feedback should reduce interval")
-        XCTAssertLessThan(updated.easeFactor, 2.5, "Hard feedback should reduce ease factor")
-        XCTAssertEqual(updated.consecutiveCorrect, 0, "Hard feedback should reset consecutive correct")
-    }
-
-    func testRecordFeedback_easy_itemsAppearLessFrequently() {
-        let engine = SpacedRepetitionEngine()
-        let item = PracticeItem(
-            kind: .warmup,
-            title: "Test",
-            dueDate: Date(),
-            intervalDays: 1.0
-        )
-        engine.addItem(item)
-
-        // Record easy feedback multiple times
-        engine.recordFeedback(forItemID: item.id, feedback: .easy)
-        let afterFirst = engine.items.first!.intervalDays
-
-        engine.recordFeedback(forItemID: item.id, feedback: .easy)
-        let afterSecond = engine.items.first!.intervalDays
-
-        XCTAssertGreaterThan(afterSecond, afterFirst, "Consecutive easy should keep increasing interval")
-    }
-
-    func testRecordFeedback_hard_itemsAppearMoreFrequently() {
-        let engine = SpacedRepetitionEngine()
-        let item = PracticeItem(
-            kind: .warmup,
-            title: "Test",
-            dueDate: Date(),
-            intervalDays: 30.0, // Long interval
-            easeFactor: 2.5
-        )
-        engine.addItem(item)
-
-        engine.recordFeedback(forItemID: item.id, feedback: .hard)
-
-        let updated = engine.items.first!
-        // Item should now be due much sooner
-        XCTAssertLessThanOrEqual(updated.intervalDays, 3.0, "Hard items should have short interval")
-    }
-
-    // MARK: - Ease Factor Bounds Tests
-
-    func testEaseFactor_neverGoesBelow1_3() {
-        let engine = SpacedRepetitionEngine()
-        let item = PracticeItem(
-            kind: .warmup,
-            title: "Test",
-            dueDate: Date(),
-            easeFactor: 1.4 // Already low
-        )
-        engine.addItem(item)
-
-        // Record multiple hard feedbacks
-        engine.recordFeedback(forItemID: item.id, feedback: .hard)
-        engine.recordFeedback(forItemID: item.id, feedback: .hard)
-        engine.recordFeedback(forItemID: item.id, feedback: .hard)
-
-        let updated = engine.items.first!
-        XCTAssertGreaterThanOrEqual(updated.easeFactor, 1.3, "Ease factor should not go below 1.3")
-    }
-
-    // MARK: - Due Date Update Tests
-
-    func testRecordFeedback_updatesDueDate() {
-        let engine = SpacedRepetitionEngine()
-        let item = PracticeItem(
-            kind: .warmup,
-            title: "Test",
-            dueDate: Date(),
-            intervalDays: 1.0
-        )
-        engine.addItem(item)
-
-        engine.recordFeedback(forItemID: item.id, feedback: .good)
-
-        let updated = engine.items.first!
-        XCTAssertGreaterThan(updated.dueDate, Date(), "Due date should be in the future after feedback")
-    }
-
-    // MARK: - Generate Today Session Tests
-
-    func testGenerateTodaySession_returns4Blocks() {
-        let engine = SpacedRepetitionEngine()
-        engine.loadDemoItems()
+        engine.loadSeedCatalog(now: Date())
 
         let session = engine.generateTodaySession()
-
         XCTAssertEqual(session.blocks.count, 4)
+        XCTAssertTrue(session.blocks.allSatisfy { $0.practiceItemID != nil })
     }
 
-    func testGenerateTodaySession_hasCorrectBlockOrder() {
+    func testGenerateTodaySessionInterleavesCategoriesWhenPossible() {
+        let now = Date()
+        let warmupA = PracticeItem(category: .warmup, title: "Warm A", srs: SRSState(nextDue: now))
+        let warmupB = PracticeItem(category: .warmup, title: "Warm B", srs: SRSState(nextDue: now))
+        let solo = PracticeItem(category: .soloing, title: "Solo", srs: SRSState(nextDue: now))
+        let technique = PracticeItem(category: .technique, title: "Tech", srs: SRSState(nextDue: now))
+
         let engine = SpacedRepetitionEngine()
-        engine.loadDemoItems()
+        [warmupA, warmupB, solo, technique].forEach(engine.addItem)
 
-        let session = engine.generateTodaySession()
+        let session = engine.generateTodaySession(now: now)
+        let categories = session.blocks.compactMap { block in
+            engine.items.first(where: { $0.id == block.practiceItemID })?.category
+        }
 
-        XCTAssertEqual(session.blocks[0].kind, .warmup)
-        XCTAssertEqual(session.blocks[1].kind, .song)
-        XCTAssertEqual(session.blocks[2].kind, .solo)
-        XCTAssertEqual(session.blocks[3].kind, .techniqueOrTheory)
-    }
-
-    func testGenerateTodaySession_linksPracticeItemIDs() {
-        let engine = SpacedRepetitionEngine()
-        engine.loadDemoItems()
-
-        let session = engine.generateTodaySession()
-
-        // Each block should have a practiceItemID linking to an item
-        for block in session.blocks {
-            XCTAssertNotNil(block.practiceItemID, "Block should link to practice item")
-
-            // Verify the item exists
-            let item = engine.items.first { $0.id == block.practiceItemID }
-            XCTAssertNotNil(item, "Linked item should exist")
-            XCTAssertEqual(item?.kind, block.kind, "Item kind should match block kind")
+        for pair in zip(categories, categories.dropFirst()) {
+            XCTAssertNotEqual(pair.0, pair.1, "Should interleave categories when possible")
         }
     }
 
-    func testGenerateTodaySession_copiesItemDataToBlock() {
+    func testGenerateTodaySessionWithFewItemsStillProducesBlocks() {
+        let now = Date()
+        let warmup = PracticeItem(category: .warmup, title: "Warm", srs: SRSState(nextDue: now))
+        let solo = PracticeItem(category: .soloing, title: "Solo", srs: SRSState(nextDue: now))
+
         let engine = SpacedRepetitionEngine()
-        engine.loadDemoItems()
+        [warmup, solo].forEach(engine.addItem)
 
-        let session = engine.generateTodaySession()
-
-        for block in session.blocks {
-            let item = engine.items.first { $0.id == block.practiceItemID }!
-            XCTAssertEqual(block.title, item.title)
-            XCTAssertEqual(block.detail, item.detail)
-            XCTAssertEqual(block.key, item.key)
-            XCTAssertEqual(block.referenceID, item.referenceID)
-            XCTAssertEqual(block.targetMinutes, item.targetMinutes)
-        }
-    }
-
-    func testGenerateTodaySession_prioritizesDueItems() {
-        let engine = SpacedRepetitionEngine()
-
-        // Add two warmup items: one due, one not due
-        let dueItem = PracticeItem(
-            kind: .warmup,
-            title: "Due Item",
-            dueDate: Date().addingTimeInterval(-86400)
-        )
-        let notDueItem = PracticeItem(
-            kind: .warmup,
-            title: "Not Due",
-            dueDate: Date().addingTimeInterval(86400 * 7)
-        )
-        engine.addItem(notDueItem)
-        engine.addItem(dueItem)
-
-        // Add items for other kinds so session can be generated
-        engine.addItem(PracticeItem(kind: .song, title: "Song"))
-        engine.addItem(PracticeItem(kind: .solo, title: "Solo"))
-        engine.addItem(PracticeItem(kind: .techniqueOrTheory, title: "Technique"))
-
-        let session = engine.generateTodaySession()
-        let warmupBlock = session.blocks[0]
-
-        XCTAssertEqual(warmupBlock.practiceItemID, dueItem.id, "Should prioritize due item")
-    }
-
-    func testGenerateTodaySession_withNoItems_returnsEmptyBlocks() {
-        let engine = SpacedRepetitionEngine()
-
-        let session = engine.generateTodaySession()
-
-        // Should still return 4 blocks, but with placeholder content
+        let session = engine.generateTodaySession(now: now)
         XCTAssertEqual(session.blocks.count, 4)
-    }
-
-    // MARK: - Prioritization Tests
-
-    func testPrioritizedItems_ordersByDueDateThenNewness() {
-        let engine = SpacedRepetitionEngine()
-
-        let oldDue = PracticeItem(
-            kind: .warmup,
-            title: "Old Due",
-            dueDate: Date().addingTimeInterval(-86400 * 2),
-            reviewCount: 3
-        )
-        let recentDue = PracticeItem(
-            kind: .warmup,
-            title: "Recent Due",
-            dueDate: Date().addingTimeInterval(-3600),
-            reviewCount: 3
-        )
-        let newItem = PracticeItem(
-            kind: .warmup,
-            title: "New",
-            dueDate: Date(),
-            reviewCount: 0
-        )
-
-        engine.addItem(recentDue)
-        engine.addItem(newItem)
-        engine.addItem(oldDue)
-
-        let prioritized = engine.prioritizedItems(forKind: .warmup)
-
-        // Most overdue first, then new items
-        XCTAssertEqual(prioritized[0].id, oldDue.id)
-        XCTAssertEqual(prioritized[1].id, newItem.id)
-        XCTAssertEqual(prioritized[2].id, recentDue.id)
-    }
-
-    // MARK: - First Review Tests
-
-    func testFirstReview_setsInitialInterval() {
-        let engine = SpacedRepetitionEngine()
-        let item = PracticeItem(
-            kind: .warmup,
-            title: "New Item",
-            reviewCount: 0
-        )
-        engine.addItem(item)
-
-        engine.recordFeedback(forItemID: item.id, feedback: .good)
-
-        let updated = engine.items.first!
-        XCTAssertEqual(updated.reviewCount, 1)
-        XCTAssertGreaterThan(updated.intervalDays, 0)
-    }
-
-    // MARK: - Consecutive Correct Tests
-
-    func testConsecutiveCorrect_incrementsOnGoodOrEasy() {
-        let engine = SpacedRepetitionEngine()
-        let item = PracticeItem(
-            kind: .warmup,
-            title: "Test",
-            consecutiveCorrect: 0
-        )
-        engine.addItem(item)
-
-        engine.recordFeedback(forItemID: item.id, feedback: .good)
-        XCTAssertEqual(engine.items.first!.consecutiveCorrect, 1)
-
-        engine.recordFeedback(forItemID: item.id, feedback: .easy)
-        XCTAssertEqual(engine.items.first!.consecutiveCorrect, 2)
-    }
-
-    // MARK: - Item Removal Tests
-
-    func testRemoveItem_removesFromList() {
-        let engine = SpacedRepetitionEngine()
-        let item = PracticeItem(kind: .warmup, title: "Test")
-        engine.addItem(item)
-
-        engine.removeItem(withID: item.id)
-
-        XCTAssertTrue(engine.items.isEmpty)
-    }
-
-    // MARK: - Items By Kind Tests
-
-    func testItemsByKind_filtersCorrectly() {
-        let engine = SpacedRepetitionEngine()
-        engine.loadDemoItems()
-
-        let warmups = engine.items(forKind: .warmup)
-        let songs = engine.items(forKind: .song)
-        let solos = engine.items(forKind: .solo)
-        let techniques = engine.items(forKind: .techniqueOrTheory)
-
-        XCTAssertEqual(warmups.count, 2)
-        XCTAssertEqual(songs.count, 2)
-        XCTAssertEqual(solos.count, 2)
-        XCTAssertEqual(techniques.count, 2)
-
-        XCTAssertTrue(warmups.allSatisfy { $0.kind == .warmup })
     }
 }

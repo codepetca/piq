@@ -36,7 +36,7 @@ struct PiqApp: App {
         let storage = PracticeStorage()
         let savedItems = storage.loadItems()
         if savedItems.isEmpty {
-            spacedRepetitionEngine.loadDemoItems()
+            spacedRepetitionEngine.loadSeedCatalog()
             storage.saveItems(spacedRepetitionEngine.items)
         } else {
             for item in savedItems {

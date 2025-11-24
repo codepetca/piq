@@ -78,7 +78,7 @@ final class SettingsViewModel {
 
     /// Reset all SRE items to initial state
     func resetProgress() {
-        sre?.loadDemoItems()
+        sre?.loadSeedCatalog()
         if let items = sre?.items {
             storage.saveItems(items)
         }
@@ -87,7 +87,7 @@ final class SettingsViewModel {
     /// Clear all data (history + progress)
     func clearAllData() {
         storage.clearAll()
-        sre?.loadDemoItems()
+        sre?.loadSeedCatalog()
         historyViewModel?.loadSessions()
     }
 

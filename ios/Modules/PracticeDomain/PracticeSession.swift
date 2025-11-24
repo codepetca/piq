@@ -30,34 +30,22 @@ struct PracticeSession: Identifiable, Codable {
 // MARK: - Factory Methods
 
 extension PracticeSession {
-    /// Creates a demo session for today with the standard 4 blocks.
+    /// Creates a demo session for today using the seed catalog.
     static func makeTodayDemo() -> PracticeSession {
-        let blocks = [
+        let items = PracticeItemCatalog.seedItems()
+        let blocks = items.prefix(4).map { item in
             PracticeBlock(
-                kind: .warmup,
-                title: "Am pentatonic",
-                detail: "Position 1",
-                key: "Am",
-                referenceID: "scale_am_pentatonic_pos1"
-            ),
-            PracticeBlock(
-                kind: .song,
-                title: "Wonderwall",
-                detail: "Verse"
-            ),
-            PracticeBlock(
-                kind: .solo,
-                title: "Improvise in Am",
-                key: "Am"
-            ),
-            PracticeBlock(
-                kind: .techniqueOrTheory,
-                title: "Bends",
-                referenceID: "tech_bends_basic"
+                kind: item.blockKind,
+                title: item.title,
+                detail: item.detail,
+                targetMinutes: item.targetMinutes,
+                key: item.key,
+                practiceItemID: item.id,
+                referenceID: item.referenceID
             )
-        ]
+        }
 
-        return PracticeSession(blocks: blocks)
+        return PracticeSession(blocks: Array(blocks))
     }
 
     /// Standard block order for a session.
