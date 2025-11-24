@@ -55,6 +55,19 @@ You must **never** start work on an issue without me confirming the issue number
 
 ---
 
+## 1.5. Assign the Issue
+
+Once the issue is confirmed:
+
+1. Assign the issue to yourself:
+   ```bash
+   gh issue edit <number> --add-assignee "@me"
+   ```
+2. This signals to other contributors that you're working on it.
+3. If assignment fails (e.g., permission issues), note the error but proceed—assignment is helpful but not blocking.
+
+---
+
 ## 2. Before Implementing
 
 For the chosen GitHub Issue:
@@ -122,11 +135,17 @@ Include:
 - **Testing** — what tests were added/updated and what was run.
 - **Notes** — any caveats or follow-ups.
 
-### D. Reference the GitHub Issue in the PR description
+### D. Reference the GitHub Issue in the PR description (Required)
 
-Use GitHub's auto-close syntax if appropriate:
+You **must** include GitHub's auto-close syntax in your PR description so the issue automatically closes when the PR is merged:
 
-- `Fixes #<number>` or `Closes #<number>`
+- Use `Fixes #<number>` for bug fixes
+- Use `Closes #<number>` for features or enhancements
+
+**Validation before PR creation:**
+- Confirm the PR description contains `Fixes #<number>` or `Closes #<number>`
+- Verify the number matches the issue you implemented
+- If the PR does not fully resolve the issue (rare), explain why and omit the auto-close syntax
 
 ### E. Provide git commands
 
