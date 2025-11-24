@@ -209,24 +209,26 @@ It does **not**:
 
 For an MVP, we want a **simple, explainable** rule:
 
-- Use stability levels S1–S5 (integer).  
+- Use **continuous stability values** starting at 1.0 (not discrete integers).
 - Compute `nextDue` based on feedback:
 
   - **Hard**:
-    - Decrease stability toward 1 (min 1).  
-    - Schedule soon: `nextDue` ~ 1 day out (or even later the same day if we ever support multiple sessions).
+    - Decrease stability (e.g., multiply by 0.6, min 1.0).
+    - Schedule soon: `nextDue` ~ `max(1 day, stability * 0.8 days)`.
 
   - **Good**:
-    - Keep stability the same.  
-    - Schedule moderately: `nextDue` ~ `now + stability * 2 days`.
+    - Increase stability moderately (e.g., multiply by 1.15, min 1.2).
+    - Schedule moderately: `nextDue` ~ `max(1.5 days, stability * 1.0 days)`.
 
   - **Easy**:
-    - Increase stability up to 5.  
-    - Schedule far: `nextDue` ~ `now + stability * 4 days`.
+    - Increase stability significantly (e.g., multiply by 1.5 + add 0.5).
+    - Schedule far: `nextDue` ~ `max(2 days, stability * 1.25 days)`.
 
-The exact day multipliers can be tuned in code; the important part for this file is:
+The exact multipliers can be tuned in code; the important part for this file is:
 
-> Easy → further spacing, Hard → closer spacing, Good → medium spacing.
+> Easy → further spacing + higher stability, Hard → closer spacing + lower stability, Good → medium spacing + moderate stability growth.
+
+The continuous model allows for more granular adaptation than discrete 1-5 levels.
 
 ### 5.4 Selecting Today’s Items
 
