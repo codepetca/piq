@@ -42,6 +42,21 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         XCTAssertLessThan(goodItem.srs.nextDue, easyItem.srs.nextDue)
     }
 
+    func testFeedbackSetsLastPlayed() {
+        let now = Date(timeIntervalSince1970: 5000)
+        let engine = SpacedRepetitionEngine()
+        let item = PracticeItem(category: .technique, title: "Test", srs: SRSState(stability: 2.0, lastPlayed: nil, nextDue: now))
+        engine.addItem(item)
+
+        XCTAssertNil(engine.items.first!.srs.lastPlayed)
+
+        engine.recordFeedback(forItemID: item.id, feedback: .good, now: now)
+
+        let updated = engine.items.first!
+        XCTAssertNotNil(updated.srs.lastPlayed)
+        XCTAssertEqual(updated.srs.lastPlayed!.timeIntervalSince1970, now.timeIntervalSince1970, accuracy: 0.1)
+    }
+
     func testGenerateTodaySessionReturnsFourBlocks() {
         let engine = SpacedRepetitionEngine()
         engine.loadSeedCatalog(now: Date())

@@ -2,10 +2,12 @@ import Foundation
 
 struct SRSState: Codable, Equatable {
     var stability: Double
+    var lastPlayed: Date?
     var nextDue: Date
 
-    init(stability: Double = 1.0, nextDue: Date = Date()) {
+    init(stability: Double = 1.0, lastPlayed: Date? = nil, nextDue: Date = Date()) {
         self.stability = stability
+        self.lastPlayed = lastPlayed
         self.nextDue = nextDue
     }
 }
