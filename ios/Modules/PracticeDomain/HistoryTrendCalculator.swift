@@ -71,6 +71,7 @@ struct HistoryTrendCalculator {
         let thisWeek = minutesThisWeek(from: sessions)
         let lastWeek = minutesLastWeek(from: sessions)
 
+        // Sessions may exist but all be older than last week (e.g., two weeks ago)
         if thisWeek == 0 && lastWeek == 0 {
             return nil
         }

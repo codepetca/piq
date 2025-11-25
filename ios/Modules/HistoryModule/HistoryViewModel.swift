@@ -72,34 +72,36 @@ final class HistoryViewModel {
 
     // MARK: - Trends
 
-    /// The trend calculator for this view model.
-    private var trendCalculator: HistoryTrendCalculator {
+    /// Returns trend statistics using current date.
+    /// Note: Creates fresh calculator each access to ensure current date is used.
+    /// This is intentional for accuracy across app sessions that span midnight.
+    private func makeTrendCalculator() -> HistoryTrendCalculator {
         HistoryTrendCalculator()
     }
 
     /// Total minutes practiced this week.
     var minutesThisWeek: Int {
-        trendCalculator.minutesThisWeek(from: sessions)
+        makeTrendCalculator().minutesThisWeek(from: sessions)
     }
 
     /// Total minutes practiced last week.
     var minutesLastWeek: Int {
-        trendCalculator.minutesLastWeek(from: sessions)
+        makeTrendCalculator().minutesLastWeek(from: sessions)
     }
 
     /// Number of unique days with sessions this week.
     var daysWithSessionsThisWeek: Int {
-        trendCalculator.daysWithSessionsThisWeek(from: sessions)
+        makeTrendCalculator().daysWithSessionsThisWeek(from: sessions)
     }
 
     /// Formatted trend text comparing this week vs last week.
     var weeklyTrendText: String? {
-        trendCalculator.weeklyTrendText(from: sessions)
+        makeTrendCalculator().weeklyTrendText(from: sessions)
     }
 
     /// Formatted practice days text for this week.
     var practiceDaysText: String? {
-        trendCalculator.practiceDaysText(from: sessions)
+        makeTrendCalculator().practiceDaysText(from: sessions)
     }
 
     // MARK: - Grouping
