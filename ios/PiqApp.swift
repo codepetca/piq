@@ -10,6 +10,8 @@ struct PiqApp: App {
     @State private var settingsViewModel: SettingsViewModel?
     @State private var referenceService = PracticeReferenceService()
 
+    private let storage = PracticeStorage()
+
     var body: some Scene {
         WindowGroup {
             RootView()
@@ -22,6 +24,7 @@ struct PiqApp: App {
                 .environment(referenceService)
                 .onAppear {
                     loadInitialData()
+                    setupSessionCompletionHandler()
                     // Initialize settings with dependencies
                     settingsViewModel = SettingsViewModel(
                         historyViewModel: historyViewModel,
@@ -33,7 +36,6 @@ struct PiqApp: App {
 
     private func loadInitialData() {
         // Load saved items or use demo items on first run
-        let storage = PracticeStorage()
         let savedItems = storage.loadItems()
         if savedItems.isEmpty {
             spacedRepetitionEngine.loadSeedCatalog()
@@ -42,6 +44,20 @@ struct PiqApp: App {
             for item in savedItems {
                 spacedRepetitionEngine.addItem(item)
             }
+        }
+    }
+
+    /// Sets up automatic session persistence when a session completes.
+    private func setupSessionCompletionHandler() {
+        practiceEngine.onSessionFinished = { [self] session in
+            // Save completed session to history
+            historyViewModel.addSession(session)
+
+            // Apply feedback from blocks to SRE
+            spacedRepetitionEngine.applyFeedback(for: session.blocks)
+
+            // Persist updated SRE items
+            storage.saveItems(spacedRepetitionEngine.items)
         }
     }
 }

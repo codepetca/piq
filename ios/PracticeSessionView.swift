@@ -2,8 +2,6 @@ import SwiftUI
 
 struct PracticeSessionView: View {
     @Environment(PracticeEngine.self) private var engine
-    @Environment(SpacedRepetitionEngine.self) private var sre
-    @Environment(HistoryViewModel.self) private var historyViewModel
     @Environment(MetronomeService.self) private var metronome
     @Environment(HapticService.self) private var haptics
     @Environment(SettingsViewModel.self) private var settings
@@ -11,8 +9,6 @@ struct PracticeSessionView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var showingReference = false
-
-    private let storage = PracticeStorage()
 
     var body: some View {
         VStack {
@@ -215,21 +211,8 @@ struct PracticeSessionView: View {
                 // Haptic feedback for completion
                 haptics.success()
 
-                // Save completed session to history
-                if let session = engine.session {
-                    historyViewModel.addSession(session)
-
-                    // Update SRE with feedback from each block
-                    for block in session.blocks {
-                        if let itemID = block.practiceItemID,
-                           let feedback = block.feedback {
-                            sre.recordFeedback(forItemID: itemID, feedback: feedback)
-                        }
-                    }
-
-                    // Persist updated SRE items
-                    storage.saveItems(sre.items)
-                }
+                // Session persistence is handled automatically by PracticeEngine.onSessionFinished
+                // which saves to history, applies SRE feedback, and persists items.
 
                 // Stop metronome when leaving
                 metronome.stop()
@@ -268,7 +251,6 @@ struct PracticeSessionView: View {
     let sre = SpacedRepetitionEngine()
     sre.loadDemoItems()
     engine.startSession(from: sre)
-    let historyViewModel = HistoryViewModel()
     let metronome = MetronomeService()
     let haptics = HapticService()
     let settings = SettingsViewModel()
@@ -276,8 +258,6 @@ struct PracticeSessionView: View {
 
     return PracticeSessionView()
         .environment(engine)
-        .environment(sre)
-        .environment(historyViewModel)
         .environment(metronome)
         .environment(haptics)
         .environment(settings)
