@@ -21,6 +21,7 @@ let package = Package(
         .target(
             name: "ReferenceModule",
             path: "ios/Modules/ReferenceModule",
+            exclude: ["PracticeReferenceView.swift"],
             sources: ["PracticeReference.swift", "PracticeReferenceService.swift"]
         ),
         .testTarget(
