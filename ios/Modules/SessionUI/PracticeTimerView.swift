@@ -31,21 +31,21 @@ struct PracticeTimerView: View {
 
             // Timer with concentric progress rings
             ZStack {
-                // Outer ring - session progress
-                Circle()
-                    .stroke(Color.secondary.opacity(0.2), lineWidth: 8)
-                Circle()
-                    .trim(from: 0, to: sessionProgress)
-                    .stroke(Color.accentColor.opacity(0.5), style: StrokeStyle(lineWidth: 8, lineCap: .round))
-                    .rotationEffect(.degrees(-90))
-
-                // Inner ring - block progress
+                // Outer ring - block progress (current block time remaining)
                 Circle()
                     .stroke(Color.secondary.opacity(0.2), lineWidth: 12)
-                    .padding(20)
                 Circle()
                     .trim(from: 0, to: blockProgress)
                     .stroke(Color.accentColor, style: StrokeStyle(lineWidth: 12, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+
+                // Inner ring - session progress (overall session progress)
+                Circle()
+                    .stroke(Color.secondary.opacity(0.2), lineWidth: 8)
+                    .padding(20)
+                Circle()
+                    .trim(from: 0, to: sessionProgress)
+                    .stroke(Color.accentColor.opacity(0.5), style: StrokeStyle(lineWidth: 8, lineCap: .round))
                     .rotationEffect(.degrees(-90))
                     .padding(20)
 

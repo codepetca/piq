@@ -103,11 +103,11 @@ This is the central UI element of piq.
 
 ## Rings
 
-- **Outer ring** = time remaining in the current block.  
-  - 4–6 pt stroke, primary accent color.  
-- **Inner ring** = time remaining in the full session.  
-  - 1–2 pt stroke, same color at low opacity.  
-- Both rings are centered horizontally.
+- **Outer ring** = progress through the current block.
+  - 10–12 pt stroke, primary accent color.
+- **Inner ring** = progress through the full session.
+  - 6–8 pt stroke, same color at low opacity (~50%).
+- Both rings are centered horizontally and fill clockwise from 12 o'clock.
 
 ## Timer Area (inside rings)
 
@@ -149,19 +149,25 @@ No extra label like “Metronome” should be shown.
 
 ## Bottom Controls Row
 
-Three equally spaced controls with icon + very short label:
+Icon-based controls for practice flow management:
 
-- Skip:
-  - Icon: `forward.end`  
-  - Label: `Skip`
-- Add time:
-  - Icon: `plus.circle`  
-  - Label: `+2:00`
-- Finish:
-  - Icon: `checkmark.circle`  
-  - Label: `Finish`
+**Core controls (always visible):**
+- **Skip** - Skip to next block
+  - Icon: `forward.fill`
+  - Position: Left
+- **Pause/Resume** - Toggle timer pause state
+  - Icon: `pause.fill` / `play.fill`
+  - Position: Center (emphasized, larger)
+- **Extend** - Add extra time to current block
+  - Icon: `plus.circle`
+  - Position: Right
 
-Buttons should be minimal (bordered or plain), with consistent size and spacing.
+**Contextual controls (appear when relevant):**
+- **Reference** - View diagram for current block
+  - Icon: `questionmark.circle`
+  - Only shown when block has `referenceID`
+
+Buttons use icon-only design (no text labels). Pause/Resume is visually emphasized as the primary control.
 
 ---
 
