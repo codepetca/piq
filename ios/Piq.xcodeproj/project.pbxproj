@@ -33,6 +33,9 @@
 		A1000022001 /* MetronomeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000022000 /* MetronomeService.swift */; };
 		A1000023001 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000023000 /* SettingsViewModel.swift */; };
 		A1000024001 /* HapticService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000024000 /* HapticService.swift */; };
+		A1000027001 /* PracticeReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000027000 /* PracticeReference.swift */; };
+		A1000028001 /* PracticeReferenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000028000 /* PracticeReferenceService.swift */; };
+		A1000029001 /* PracticeReferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000029000 /* PracticeReferenceView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -63,6 +66,9 @@
 		A1000022000 /* MetronomeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeService.swift; sourceTree = "<group>"; };
 		A1000023000 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		A1000024000 /* HapticService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticService.swift; sourceTree = "<group>"; };
+		A1000027000 /* PracticeReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeReference.swift; sourceTree = "<group>"; };
+		A1000028000 /* PracticeReferenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeReferenceService.swift; sourceTree = "<group>"; };
+		A1000029000 /* PracticeReferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeReferenceView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +113,7 @@
 				A10000GR006 /* HistoryModule */,
 				A10000GR007 /* AudioHapticsModule */,
 				A10000GR008 /* SettingsModule */,
+				A10000GR009 /* ReferenceModule */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -171,6 +178,16 @@
 				A1000023000 /* SettingsViewModel.swift */,
 			);
 			path = SettingsModule;
+			sourceTree = "<group>";
+		};
+		A10000GR009 /* ReferenceModule */ = {
+			isa = PBXGroup;
+			children = (
+				A1000027000 /* PracticeReference.swift */,
+				A1000028000 /* PracticeReferenceService.swift */,
+				A1000029000 /* PracticeReferenceView.swift */,
+			);
+			path = ReferenceModule;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -267,6 +284,9 @@
 				A1000022001 /* MetronomeService.swift in Sources */,
 				A1000023001 /* SettingsViewModel.swift in Sources */,
 				A1000024001 /* HapticService.swift in Sources */,
+				A1000027001 /* PracticeReference.swift in Sources */,
+				A1000028001 /* PracticeReferenceService.swift in Sources */,
+				A1000029001 /* PracticeReferenceView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
