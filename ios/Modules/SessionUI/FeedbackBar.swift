@@ -35,7 +35,7 @@ struct FeedbackButton: View {
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background(color)
-                .cornerRadius(8)
+                .cornerRadius(12)
         }
     }
 }
