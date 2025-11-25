@@ -33,9 +33,10 @@
 		A1000022001 /* MetronomeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000022000 /* MetronomeService.swift */; };
 		A1000023001 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000023000 /* SettingsViewModel.swift */; };
 		A1000024001 /* HapticService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000024000 /* HapticService.swift */; };
-		A1000027001 /* PracticeReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000027000 /* PracticeReference.swift */; };
-		A1000028001 /* PracticeReferenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000028000 /* PracticeReferenceService.swift */; };
-		A1000029001 /* PracticeReferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000029000 /* PracticeReferenceView.swift */; };
+		A1000027001 /* TodayViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000027000 /* TodayViewModel.swift */; };
+		A1000028001 /* PracticeReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000028000 /* PracticeReference.swift */; };
+		A1000029001 /* PracticeReferenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000029000 /* PracticeReferenceService.swift */; };
+		A1000030001 /* PracticeReferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000030000 /* PracticeReferenceView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -66,9 +67,10 @@
 		A1000022000 /* MetronomeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeService.swift; sourceTree = "<group>"; };
 		A1000023000 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		A1000024000 /* HapticService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticService.swift; sourceTree = "<group>"; };
-		A1000027000 /* PracticeReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeReference.swift; sourceTree = "<group>"; };
-		A1000028000 /* PracticeReferenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeReferenceService.swift; sourceTree = "<group>"; };
-		A1000029000 /* PracticeReferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeReferenceView.swift; sourceTree = "<group>"; };
+		A1000027000 /* TodayViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewModel.swift; sourceTree = "<group>"; };
+		A1000028000 /* PracticeReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeReference.swift; sourceTree = "<group>"; };
+		A1000029000 /* PracticeReferenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeReferenceService.swift; sourceTree = "<group>"; };
+		A1000030000 /* PracticeReferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeReferenceView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,9 +113,10 @@
 				A10000GR004 /* PracticeDomain */,
 				A10000GR005 /* SessionUI */,
 				A10000GR006 /* HistoryModule */,
+				A10000GR009 /* TodayModule */,
 				A10000GR007 /* AudioHapticsModule */,
 				A10000GR008 /* SettingsModule */,
-				A10000GR009 /* ReferenceModule */,
+				A10000GR010 /* ReferenceModule */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -180,12 +183,20 @@
 			path = SettingsModule;
 			sourceTree = "<group>";
 		};
-		A10000GR009 /* ReferenceModule */ = {
+		A10000GR009 /* TodayModule */ = {
 			isa = PBXGroup;
 			children = (
-				A1000027000 /* PracticeReference.swift */,
-				A1000028000 /* PracticeReferenceService.swift */,
-				A1000029000 /* PracticeReferenceView.swift */,
+				A1000027000 /* TodayViewModel.swift */,
+			);
+			path = TodayModule;
+			sourceTree = "<group>";
+		};
+		A10000GR010 /* ReferenceModule */ = {
+			isa = PBXGroup;
+			children = (
+				A1000028000 /* PracticeReference.swift */,
+				A1000029000 /* PracticeReferenceService.swift */,
+				A1000030000 /* PracticeReferenceView.swift */,
 			);
 			path = ReferenceModule;
 			sourceTree = "<group>";
@@ -275,6 +286,7 @@
 				A1000010001 /* PracticeSession.swift in Sources */,
 				A1000014001 /* PracticeStorage.swift in Sources */,
 				A1000013001 /* SpacedRepetitionEngine.swift in Sources */,
+				A1000027001 /* TodayViewModel.swift in Sources */,
 				A1000016001 /* PracticeTimerView.swift in Sources */,
 				A1000017001 /* FeedbackBar.swift in Sources */,
 				A1000018001 /* MetronomeBar.swift in Sources */,
@@ -284,9 +296,9 @@
 				A1000022001 /* MetronomeService.swift in Sources */,
 				A1000023001 /* SettingsViewModel.swift in Sources */,
 				A1000024001 /* HapticService.swift in Sources */,
-				A1000027001 /* PracticeReference.swift in Sources */,
-				A1000028001 /* PracticeReferenceService.swift in Sources */,
-				A1000029001 /* PracticeReferenceView.swift in Sources */,
+				A1000028001 /* PracticeReference.swift in Sources */,
+				A1000029001 /* PracticeReferenceService.swift in Sources */,
+				A1000030001 /* PracticeReferenceView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
