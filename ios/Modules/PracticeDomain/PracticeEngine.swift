@@ -237,10 +237,8 @@ final class PracticeEngine {
             }
         }
 
-        // Invoke completion callback when transitioning to finished state
-        if case .finished = newState, case .finished = oldState {
-            // Already finished, don't fire again
-        } else if case .finished = newState {
+        // Invoke completion callback when transitioning to finished state (not when already finished)
+        if case .finished = newState, !(oldState == .finished) {
             if let session = session, !sessionSaved {
                 sessionSaved = true
                 onSessionFinished?(session)
