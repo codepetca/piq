@@ -2,6 +2,31 @@ import Foundation
 
 /// Simple JSON file-based storage for practice data.
 /// Stores sessions and items in separate JSON files with schema versioning.
+///
+/// # Migration Strategy
+///
+/// This storage layer uses a simple schema versioning approach:
+///
+/// - **Current version**: Stored in `PracticeStorage.schemaVersion`
+/// - **Legacy format**: Unwrapped arrays (pre-versioning, treated as v0)
+/// - **Migration**: Automatic and transparent when loading data
+///
+/// ## How to Add a New Schema Version
+///
+/// 1. Increment `PracticeStorage.schemaVersion`
+/// 2. Update domain models as needed (PracticeSession, PracticeItem, etc.)
+/// 3. Add migration logic in `migrate*` methods for the previous version
+/// 4. Add tests in `PracticeStorageTests` to verify migration from old version
+/// 5. Ensure new version can still fall back to legacy format if needed
+///
+/// ## Error Handling
+///
+/// Storage failures are logged but not propagated (graceful degradation):
+/// - **Corrupted data**: Returns empty array, logs "corrupted file"
+/// - **Unknown version**: Returns empty array, logs "unknown schema version"
+/// - **Legacy format**: Migrates automatically from unwrapped array format
+/// - **Save failures**: Logs error, does not crash app
+///
 final class PracticeStorage {
 
     // MARK: - Schema Version
@@ -9,9 +34,9 @@ final class PracticeStorage {
     /// Current schema version for storage format.
     /// Increment this when making breaking changes to stored data structures.
     ///
-    /// Future: Implement migration logic in load methods based on schemaVersion.
-    /// For example, if schemaVersion changes from 1 to 2, add logic to migrate
-    /// version 1 data to version 2 format before returning to callers.
+    /// Version history:
+    /// - v0: Legacy format (unwrapped arrays, no version field)
+    /// - v1: Added SessionsStore/ItemsStore wrappers with schemaVersion field
     static let schemaVersion = 1
 
     // MARK: - Storage Wrappers
@@ -84,6 +109,27 @@ final class PracticeStorage {
         self.init(directory: documents)
     }
 
+    // MARK: - Internal Error Handling
+
+    /// Internal enum to categorize load failures for better logging.
+    private enum LoadError: Error {
+        case corruptedData(underlying: Error)
+        case unknownSchemaVersion(Int)
+        case fileReadError(underlying: Error)
+    }
+
+    /// Log a load error with context about the error type.
+    private func logLoadError(_ error: LoadError, context: String) {
+        switch error {
+        case .corruptedData(let underlying):
+            print("⚠️ PracticeStorage: Corrupted \(context) file - returning empty. Error: \(underlying)")
+        case .unknownSchemaVersion(let version):
+            print("⚠️ PracticeStorage: Unknown schema version \(version) in \(context) - returning empty. Current version: \(Self.schemaVersion)")
+        case .fileReadError(let underlying):
+            print("⚠️ PracticeStorage: Failed to read \(context) file - returning empty. Error: \(underlying)")
+        }
+    }
+
     // MARK: - Session Storage
 
     /// Save sessions to storage (replaces all existing sessions)
@@ -93,9 +139,7 @@ final class PracticeStorage {
             let data = try encoder.encode(store)
             try data.write(to: sessionsURL, options: .atomic)
         } catch {
-            // Storage failures are logged but not propagated; graceful degradation for MVP.
-            // Future: Consider structured logging or user notifications for critical failures.
-            print("Failed to save sessions: \(error)")
+            print("⚠️ PracticeStorage: Failed to save sessions: \(error)")
         }
     }
 
@@ -106,7 +150,13 @@ final class PracticeStorage {
         saveSessions(sessions)
     }
 
-    /// Load all sessions from storage
+    /// Load all sessions from storage with automatic migration.
+    ///
+    /// Handles multiple schema versions:
+    /// - v1 (current): SessionsStore wrapper with schemaVersion
+    /// - v0 (legacy): Unwrapped array format
+    ///
+    /// Returns empty array on any load failure (corrupted data, unknown version, etc.)
     func loadSessions() -> [PracticeSession] {
         guard FileManager.default.fileExists(atPath: sessionsURL.path) else {
             return []
@@ -114,17 +164,45 @@ final class PracticeStorage {
 
         do {
             let data = try Data(contentsOf: sessionsURL)
-            // Try to decode with schema wrapper first
-            if let store = try? decoder.decode(SessionsStore.self, from: data) {
-                return store.sessions
-            }
-            // Fall back to legacy format (array without wrapper)
-            return try decoder.decode([PracticeSession].self, from: data)
+            return try loadSessionsWithMigration(from: data)
+        } catch let error as LoadError {
+            logLoadError(error, context: "sessions")
+            return []
         } catch {
-            // Return empty on decode failure (corrupted file); graceful degradation for MVP.
-            print("Failed to load sessions: \(error)")
+            logLoadError(.fileReadError(underlying: error), context: "sessions")
             return []
         }
+    }
+
+    /// Internal method to load and migrate sessions data.
+    private func loadSessionsWithMigration(from data: Data) throws -> [PracticeSession] {
+        // Try to decode as current version (v1)
+        if let store = try? decoder.decode(SessionsStore.self, from: data) {
+            // Check if this is a known version
+            if store.schemaVersion > Self.schemaVersion {
+                throw LoadError.unknownSchemaVersion(store.schemaVersion)
+            }
+            // Currently only v1 exists, return as-is
+            // Future: Add migration logic here for older versions
+            return store.sessions
+        }
+
+        // Try legacy format (v0): unwrapped array
+        if let sessions = try? decoder.decode([PracticeSession].self, from: data) {
+            return migrateLegacySessionsToV1(sessions)
+        }
+
+        // Unable to decode as any known format
+        throw LoadError.corruptedData(underlying: DecodingError.dataCorrupted(
+            DecodingError.Context(codingPath: [], debugDescription: "Not a valid SessionsStore or legacy array")
+        ))
+    }
+
+    /// Migrate sessions from legacy format (v0) to current format.
+    private func migrateLegacySessionsToV1(_ sessions: [PracticeSession]) -> [PracticeSession] {
+        // v0 -> v1: No structural changes to PracticeSession itself,
+        // just the addition of the wrapper. Return as-is.
+        return sessions
     }
 
     // MARK: - Item Storage
@@ -136,12 +214,17 @@ final class PracticeStorage {
             let data = try encoder.encode(store)
             try data.write(to: itemsURL, options: .atomic)
         } catch {
-            // Storage failures are logged but not propagated; graceful degradation for MVP.
-            print("Failed to save items: \(error)")
+            print("⚠️ PracticeStorage: Failed to save items: \(error)")
         }
     }
 
-    /// Load all items from storage
+    /// Load all items from storage with automatic migration.
+    ///
+    /// Handles multiple schema versions:
+    /// - v1 (current): ItemsStore wrapper with schemaVersion
+    /// - v0 (legacy): Unwrapped array format
+    ///
+    /// Returns empty array on any load failure (corrupted data, unknown version, etc.)
     func loadItems() -> [PracticeItem] {
         guard FileManager.default.fileExists(atPath: itemsURL.path) else {
             return []
@@ -149,17 +232,45 @@ final class PracticeStorage {
 
         do {
             let data = try Data(contentsOf: itemsURL)
-            // Try to decode with schema wrapper first
-            if let store = try? decoder.decode(ItemsStore.self, from: data) {
-                return store.items
-            }
-            // Fall back to legacy format (array without wrapper)
-            return try decoder.decode([PracticeItem].self, from: data)
+            return try loadItemsWithMigration(from: data)
+        } catch let error as LoadError {
+            logLoadError(error, context: "items")
+            return []
         } catch {
-            // Return empty on decode failure (corrupted file); graceful degradation for MVP.
-            print("Failed to load items: \(error)")
+            logLoadError(.fileReadError(underlying: error), context: "items")
             return []
         }
+    }
+
+    /// Internal method to load and migrate items data.
+    private func loadItemsWithMigration(from data: Data) throws -> [PracticeItem] {
+        // Try to decode as current version (v1)
+        if let store = try? decoder.decode(ItemsStore.self, from: data) {
+            // Check if this is a known version
+            if store.schemaVersion > Self.schemaVersion {
+                throw LoadError.unknownSchemaVersion(store.schemaVersion)
+            }
+            // Currently only v1 exists, return as-is
+            // Future: Add migration logic here for older versions
+            return store.items
+        }
+
+        // Try legacy format (v0): unwrapped array
+        if let items = try? decoder.decode([PracticeItem].self, from: data) {
+            return migrateLegacyItemsToV1(items)
+        }
+
+        // Unable to decode as any known format
+        throw LoadError.corruptedData(underlying: DecodingError.dataCorrupted(
+            DecodingError.Context(codingPath: [], debugDescription: "Not a valid ItemsStore or legacy array")
+        ))
+    }
+
+    /// Migrate items from legacy format (v0) to current format.
+    private func migrateLegacyItemsToV1(_ items: [PracticeItem]) -> [PracticeItem] {
+        // v0 -> v1: No structural changes to PracticeItem itself,
+        // just the addition of the wrapper. Return as-is.
+        return items
     }
 
     /// Load practice items, merging stored SRS state with the seed catalog.
