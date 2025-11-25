@@ -186,8 +186,25 @@ struct PracticeSessionView: View {
             Text("Session Complete!")
                 .font(.title)
 
+            // Block list with feedback
             if let session = engine.session {
-                Text("\(session.totalActualMinutes) minutes practiced")
+                VStack(spacing: 8) {
+                    ForEach(session.blocks) { block in
+                        HStack {
+                            Text(block.kind.displayName)
+                                .font(.subheadline)
+                            Text(":")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                            Text(block.feedback?.displayName ?? "—")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                        }
+                    }
+                }
+                .padding(.vertical, 8)
+
+                Text("Total: \(session.totalActualMinutes) min")
                     .font(.headline)
                     .foregroundColor(.secondary)
             }
