@@ -70,6 +70,38 @@ final class HistoryViewModel {
         return totalMinutes / sessions.count
     }
 
+    // MARK: - Trends
+
+    /// The trend calculator for this view model.
+    private var trendCalculator: HistoryTrendCalculator {
+        HistoryTrendCalculator()
+    }
+
+    /// Total minutes practiced this week.
+    var minutesThisWeek: Int {
+        trendCalculator.minutesThisWeek(from: sessions)
+    }
+
+    /// Total minutes practiced last week.
+    var minutesLastWeek: Int {
+        trendCalculator.minutesLastWeek(from: sessions)
+    }
+
+    /// Number of unique days with sessions this week.
+    var daysWithSessionsThisWeek: Int {
+        trendCalculator.daysWithSessionsThisWeek(from: sessions)
+    }
+
+    /// Formatted trend text comparing this week vs last week.
+    var weeklyTrendText: String? {
+        trendCalculator.weeklyTrendText(from: sessions)
+    }
+
+    /// Formatted practice days text for this week.
+    var practiceDaysText: String? {
+        trendCalculator.practiceDaysText(from: sessions)
+    }
+
     // MARK: - Grouping
 
     /// Sessions grouped by date (for sectioned list display).

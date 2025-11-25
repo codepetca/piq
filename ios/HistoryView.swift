@@ -48,6 +48,13 @@ struct HistoryView: View {
                 statsRow
             }
 
+            // Trends section
+            if hasTrendInfo {
+                Section {
+                    trendsRow
+                }
+            }
+
             // Sessions grouped by date
             ForEach(viewModel.sessionsByDate, id: \.date) { group in
                 Section(header: Text(formatSectionDate(group.date))) {
@@ -92,6 +99,30 @@ struct HistoryView: View {
             )
         }
         .padding(.vertical, 8)
+    }
+
+    // MARK: - Trends Row
+
+    /// Whether there is any trend info to display.
+    private var hasTrendInfo: Bool {
+        viewModel.weeklyTrendText != nil || viewModel.practiceDaysText != nil
+    }
+
+    private var trendsRow: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if let weeklyTrend = viewModel.weeklyTrendText {
+                Label(weeklyTrend, systemImage: "chart.line.uptrend.xyaxis")
+                    .font(.subheadline)
+                    .foregroundColor(.primary)
+            }
+
+            if let practiceDays = viewModel.practiceDaysText {
+                Label(practiceDays, systemImage: "calendar")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(.vertical, 4)
     }
 
     // MARK: - Helpers

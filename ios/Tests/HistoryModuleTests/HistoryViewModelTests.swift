@@ -191,4 +191,148 @@ struct HistoryViewModelTests {
         let grouped = viewModel.sessionsByDate
         #expect(grouped.count == 2)
     }
+
+    // MARK: - Trend Tests
+
+    @Test("Minutes this week calculates correctly")
+    func minutesThisWeekCalculatesCorrectly() {
+        let storage = makeTestStorage()
+        let calendar = Calendar.current
+        let today = Date()
+        let startOfWeek = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: today))!
+        let inWeek = calendar.date(byAdding: .day, value: 1, to: startOfWeek)!
+
+        let session1 = makeSampleSession(date: inWeek, totalMinutes: 30)
+        let session2 = makeSampleSession(date: today, totalMinutes: 20)
+        storage.saveSessions([session1, session2])
+
+        let viewModel = HistoryViewModel(storage: storage)
+        viewModel.loadSessions()
+
+        #expect(viewModel.minutesThisWeek == 50)
+    }
+
+    @Test("Minutes last week calculates correctly")
+    func minutesLastWeekCalculatesCorrectly() {
+        let storage = makeTestStorage()
+        let calendar = Calendar.current
+        let today = Date()
+        let startOfThisWeek = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: today))!
+        let lastWeekDay = calendar.date(byAdding: .day, value: -3, to: startOfThisWeek)!
+
+        let thisWeekSession = makeSampleSession(date: today, totalMinutes: 40)
+        let lastWeekSession = makeSampleSession(date: lastWeekDay, totalMinutes: 60)
+        storage.saveSessions([thisWeekSession, lastWeekSession])
+
+        let viewModel = HistoryViewModel(storage: storage)
+        viewModel.loadSessions()
+
+        #expect(viewModel.minutesLastWeek == 60)
+    }
+
+    @Test("Days with sessions this week counts unique days")
+    func daysWithSessionsThisWeekCountsUniqueDays() {
+        let storage = makeTestStorage()
+        let calendar = Calendar.current
+        let today = Date()
+        let startOfWeek = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: today))!
+        let dayOne = calendar.date(byAdding: .day, value: 1, to: startOfWeek)!
+        let dayTwo = calendar.date(byAdding: .day, value: 2, to: startOfWeek)!
+
+        // Two sessions on day one, one on day two
+        let session1 = makeSampleSession(date: dayOne)
+        let session2 = makeSampleSession(date: dayOne)
+        let session3 = makeSampleSession(date: dayTwo)
+        storage.saveSessions([session1, session2, session3])
+
+        let viewModel = HistoryViewModel(storage: storage)
+        viewModel.loadSessions()
+
+        #expect(viewModel.daysWithSessionsThisWeek == 2)
+    }
+
+    @Test("Weekly trend text shows increase")
+    func weeklyTrendTextShowsIncrease() {
+        let storage = makeTestStorage()
+        let calendar = Calendar.current
+        let today = Date()
+        let startOfThisWeek = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: today))!
+        let lastWeekDay = calendar.date(byAdding: .day, value: -3, to: startOfThisWeek)!
+
+        let thisWeekSession = makeSampleSession(date: today, totalMinutes: 60)
+        let lastWeekSession = makeSampleSession(date: lastWeekDay, totalMinutes: 40)
+        storage.saveSessions([thisWeekSession, lastWeekSession])
+
+        let viewModel = HistoryViewModel(storage: storage)
+        viewModel.loadSessions()
+
+        let trendText = viewModel.weeklyTrendText
+        #expect(trendText != nil)
+        #expect(trendText!.contains("60"))
+        #expect(trendText!.contains("+20"))
+    }
+
+    @Test("Weekly trend text shows decrease")
+    func weeklyTrendTextShowsDecrease() {
+        let storage = makeTestStorage()
+        let calendar = Calendar.current
+        let today = Date()
+        let startOfThisWeek = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: today))!
+        let lastWeekDay = calendar.date(byAdding: .day, value: -3, to: startOfThisWeek)!
+
+        let thisWeekSession = makeSampleSession(date: today, totalMinutes: 20)
+        let lastWeekSession = makeSampleSession(date: lastWeekDay, totalMinutes: 60)
+        storage.saveSessions([thisWeekSession, lastWeekSession])
+
+        let viewModel = HistoryViewModel(storage: storage)
+        viewModel.loadSessions()
+
+        let trendText = viewModel.weeklyTrendText
+        #expect(trendText != nil)
+        #expect(trendText!.contains("20"))
+        #expect(trendText!.contains("-40"))
+    }
+
+    @Test("Practice days text is nil when no sessions")
+    func practiceDaysTextNilWhenNoSessions() {
+        let storage = makeTestStorage()
+        let viewModel = HistoryViewModel(storage: storage)
+        viewModel.loadSessions()
+
+        #expect(viewModel.practiceDaysText == nil)
+    }
+
+    @Test("Practice days text shows singular day")
+    func practiceDaysTextShowsSingularDay() {
+        let storage = makeTestStorage()
+        let today = Date()
+        let session = makeSampleSession(date: today)
+        storage.saveSessions([session])
+
+        let viewModel = HistoryViewModel(storage: storage)
+        viewModel.loadSessions()
+
+        #expect(viewModel.practiceDaysText == "Practiced 1 day this week")
+    }
+
+    @Test("Practice days text shows plural days")
+    func practiceDaysTextShowsPluralDays() {
+        let storage = makeTestStorage()
+        let calendar = Calendar.current
+        let today = Date()
+        let startOfWeek = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: today))!
+        let dayOne = calendar.date(byAdding: .day, value: 1, to: startOfWeek)!
+        let dayTwo = calendar.date(byAdding: .day, value: 2, to: startOfWeek)!
+        let dayThree = calendar.date(byAdding: .day, value: 3, to: startOfWeek)!
+
+        let session1 = makeSampleSession(date: dayOne)
+        let session2 = makeSampleSession(date: dayTwo)
+        let session3 = makeSampleSession(date: dayThree)
+        storage.saveSessions([session1, session2, session3])
+
+        let viewModel = HistoryViewModel(storage: storage)
+        viewModel.loadSessions()
+
+        #expect(viewModel.practiceDaysText == "Practiced 3 days this week")
+    }
 }
