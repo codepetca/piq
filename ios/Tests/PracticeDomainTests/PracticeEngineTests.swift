@@ -148,10 +148,21 @@ final class PracticeEngineTests: XCTestCase {
         engine.state = .inBlock(index: 3, remainingSeconds: 100)
         engine.finishCurrentBlock()
 
+        // After finishing last block, engine should be in betweenBlocks with no next
+        if case .betweenBlocks(let lastIndex, let nextIndex) = engine.state {
+            XCTAssertEqual(lastIndex, 3)
+            XCTAssertNil(nextIndex)
+        } else {
+            XCTFail("Engine should be between blocks after finishing last block")
+        }
+
+        // startNextBlock with no next block should transition to finished
+        engine.startNextBlock()
+
         if case .finished = engine.state {
             // Success
         } else {
-            XCTFail("Engine should be finished after last block")
+            XCTFail("Engine should be finished after startNextBlock with no next block")
         }
     }
 
@@ -223,10 +234,21 @@ final class PracticeEngineTests: XCTestCase {
         engine.state = .inBlock(index: 3, remainingSeconds: 360)
         engine.skipCurrentBlock()
 
+        // After skipping last block, engine should be in betweenBlocks with no next
+        if case .betweenBlocks(let lastIndex, let nextIndex) = engine.state {
+            XCTAssertEqual(lastIndex, 3)
+            XCTAssertNil(nextIndex)
+        } else {
+            XCTFail("Engine should be between blocks after skipping last block")
+        }
+
+        // startNextBlock should transition to finished
+        engine.startNextBlock()
+
         if case .finished = engine.state {
             // Success
         } else {
-            XCTFail("Engine should be finished after skipping last block")
+            XCTFail("Engine should be finished after startNextBlock with no next block")
         }
     }
 
@@ -386,10 +408,7 @@ final class PracticeEngineTests: XCTestCase {
 
             engine.finishCurrentBlock()
             engine.recordFeedback(forBlockAt: i, feedback: .good)
-
-            if i < 3 {
-                engine.startNextBlock()
-            }
+            engine.startNextBlock()  // For last block, this transitions to .finished
         }
 
         if case .finished = engine.state {
@@ -413,10 +432,7 @@ final class PracticeEngineTests: XCTestCase {
         for i in 0..<4 {
             engine.finishCurrentBlock()
             engine.recordFeedback(forBlockAt: i, feedback: feedbacks[i])
-
-            if i < 3 {
-                engine.startNextBlock()
-            }
+            engine.startNextBlock()  // For last block, this transitions to .finished
         }
 
         XCTAssertEqual(engine.session?.blocks[0].feedback, .easy)
@@ -448,9 +464,7 @@ final class PracticeEngineTests: XCTestCase {
 
         for i in 0..<4 {
             engine.finishCurrentBlock()
-            if i < 3 {
-                engine.startNextBlock()
-            }
+            engine.startNextBlock()  // For last block, this transitions to .finished
         }
 
         XCTAssertEqual(engine.sessionProgress, 1.0, accuracy: 0.01)
@@ -473,5 +487,184 @@ final class PracticeEngineTests: XCTestCase {
         }
 
         XCTAssertEqual(engine.blockProgress, 0.5, accuracy: 0.01)
+    }
+
+    // MARK: - Session Completion Callback Tests
+
+    func testOnSessionFinishedCalledWhenSessionFinishes() {
+        let engine = PracticeEngine()
+        var callbackSession: PracticeSession?
+        var callbackCount = 0
+
+        engine.onSessionFinished = { session in
+            callbackSession = session
+            callbackCount += 1
+        }
+
+        engine.startSession()
+
+        // Complete all 4 blocks (always call startNextBlock after feedback)
+        for i in 0..<4 {
+            engine.finishCurrentBlock()
+            engine.recordFeedback(forBlockAt: i, feedback: .good)
+            engine.startNextBlock()  // For last block, this transitions to .finished
+        }
+
+        // Callback should have been called exactly once
+        XCTAssertEqual(callbackCount, 1)
+        XCTAssertNotNil(callbackSession)
+        XCTAssertEqual(callbackSession?.blocks.count, 4)
+    }
+
+    func testOnSessionFinishedReceivesSessionWithFeedback() {
+        let engine = PracticeEngine()
+        var callbackSession: PracticeSession?
+
+        engine.onSessionFinished = { session in
+            callbackSession = session
+        }
+
+        engine.startSession()
+
+        let feedbacks: [PracticeBlockFeedback] = [.easy, .good, .hard, .good]
+
+        for i in 0..<4 {
+            engine.finishCurrentBlock()
+            engine.recordFeedback(forBlockAt: i, feedback: feedbacks[i])
+            engine.startNextBlock()  // For last block, this transitions to .finished
+        }
+
+        XCTAssertNotNil(callbackSession)
+        XCTAssertEqual(callbackSession?.blocks[0].feedback, .easy)
+        XCTAssertEqual(callbackSession?.blocks[1].feedback, .good)
+        XCTAssertEqual(callbackSession?.blocks[2].feedback, .hard)
+        XCTAssertEqual(callbackSession?.blocks[3].feedback, .good)
+    }
+
+    func testOnSessionFinishedNotCalledWhenNotFinished() {
+        let engine = PracticeEngine()
+        var callbackCount = 0
+
+        engine.onSessionFinished = { _ in
+            callbackCount += 1
+        }
+
+        engine.startSession()
+
+        // Complete only 2 blocks
+        for i in 0..<2 {
+            engine.finishCurrentBlock()
+            engine.recordFeedback(forBlockAt: i, feedback: .good)
+            engine.startNextBlock()
+        }
+
+        // Callback should not have been called
+        XCTAssertEqual(callbackCount, 0)
+    }
+
+    func testOnSessionFinishedNotCalledMultipleTimes() {
+        let engine = PracticeEngine()
+        var callbackCount = 0
+
+        engine.onSessionFinished = { _ in
+            callbackCount += 1
+        }
+
+        engine.startSession()
+
+        // Complete all blocks to finish session
+        for i in 0..<4 {
+            engine.finishCurrentBlock()
+            engine.recordFeedback(forBlockAt: i, feedback: .good)
+            engine.startNextBlock()  // For last block, this transitions to .finished
+        }
+
+        // Setting state to finished again should not trigger callback
+        engine.state = .finished
+
+        XCTAssertEqual(callbackCount, 1)
+    }
+
+    func testOnSessionFinishedResetsForNewSession() {
+        let engine = PracticeEngine()
+        var callbackCount = 0
+
+        engine.onSessionFinished = { _ in
+            callbackCount += 1
+        }
+
+        // First session
+        engine.startSession()
+        for i in 0..<4 {
+            engine.finishCurrentBlock()
+            engine.recordFeedback(forBlockAt: i, feedback: .good)
+            engine.startNextBlock()  // For last block, this transitions to .finished
+        }
+
+        XCTAssertEqual(callbackCount, 1)
+
+        // Second session
+        engine.startSession()
+        for i in 0..<4 {
+            engine.finishCurrentBlock()
+            engine.recordFeedback(forBlockAt: i, feedback: .good)
+            engine.startNextBlock()  // For last block, this transitions to .finished
+        }
+
+        XCTAssertEqual(callbackCount, 2)
+    }
+
+    func testOnSessionFinishedWithSkippedBlocks() {
+        let engine = PracticeEngine()
+        var callbackSession: PracticeSession?
+
+        engine.onSessionFinished = { session in
+            callbackSession = session
+        }
+
+        engine.startSession()
+
+        // Skip first block
+        engine.skipCurrentBlock()
+        engine.recordFeedback(forBlockAt: 0, feedback: .hard)
+        engine.startNextBlock()
+
+        // Complete remaining blocks normally
+        for i in 1..<4 {
+            engine.finishCurrentBlock()
+            engine.recordFeedback(forBlockAt: i, feedback: .good)
+            engine.startNextBlock()  // For last block, this transitions to .finished
+        }
+
+        XCTAssertNotNil(callbackSession)
+        XCTAssertEqual(callbackSession?.blocks[0].actualMinutes, 0)
+        XCTAssertEqual(callbackSession?.blocks[0].feedback, .hard)
+    }
+
+    func testOnSessionFinishedWithPartialFeedback() {
+        let engine = PracticeEngine()
+        var callbackSession: PracticeSession?
+
+        engine.onSessionFinished = { session in
+            callbackSession = session
+        }
+
+        engine.startSession()
+
+        // Complete blocks but only provide feedback for some
+        for i in 0..<4 {
+            engine.finishCurrentBlock()
+            // Only provide feedback for first two blocks
+            if i < 2 {
+                engine.recordFeedback(forBlockAt: i, feedback: .good)
+            }
+            engine.startNextBlock()  // For last block, this transitions to .finished
+        }
+
+        XCTAssertNotNil(callbackSession)
+        XCTAssertEqual(callbackSession?.blocks[0].feedback, .good)
+        XCTAssertEqual(callbackSession?.blocks[1].feedback, .good)
+        XCTAssertNil(callbackSession?.blocks[2].feedback)
+        XCTAssertNil(callbackSession?.blocks[3].feedback)
     }
 }
