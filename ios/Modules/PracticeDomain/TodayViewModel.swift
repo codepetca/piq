@@ -4,8 +4,8 @@ import Observation
 /// ViewModel for the Today screen, handling session generation and active session state.
 ///
 /// Design decisions (per Issue requirements):
-/// - Session is generated lazily when "Start session" is pressed (not at app launch or tab appear).
-///   This ensures the SRE state is fresh at the moment the user starts practicing.
+/// - Session preview is generated on tab appear to display today's blocks.
+///   Actual session is generated fresh when "Start session" is pressed to ensure up-to-date SRS state.
 /// - TodayViewModel exposes today's blocks by asking the SRE for a session preview.
 /// - PracticeEngine remains the owner of session state once started.
 /// - Active session handling: If user returns to Today during an active session,
