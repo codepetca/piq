@@ -127,15 +127,20 @@ struct PracticeSessionView: View {
             }
             .padding(.bottom, 40)
             .sheet(isPresented: $showingReference) {
-                if let block = engine.currentBlock,
-                   let refID = block.referenceID,
-                   let reference = referenceService.reference(for: refID) {
-                    PracticeReferenceView(
-                        reference: reference,
-                        onDismiss: { showingReference = false }
-                    )
-                }
+                referenceSheet
             }
+        }
+    }
+
+    @ViewBuilder
+    private var referenceSheet: some View {
+        if let block = engine.currentBlock,
+           let refID = block.referenceID,
+           let reference = referenceService.reference(for: refID) {
+            PracticeReferenceView(
+                reference: reference,
+                onDismiss: { showingReference = false }
+            )
         }
     }
 
@@ -249,14 +254,16 @@ struct PracticeSessionView: View {
 #Preview {
     let engine = PracticeEngine()
     let sre = SpacedRepetitionEngine()
-    sre.loadDemoItems()
-    engine.startSession(from: sre)
+    let _ = {
+        sre.loadSeedCatalog()
+        engine.startSession(from: sre)
+    }()
     let metronome = MetronomeService()
     let haptics = HapticService()
     let settings = SettingsViewModel()
     let referenceService = PracticeReferenceService()
 
-    return PracticeSessionView()
+    PracticeSessionView()
         .environment(engine)
         .environment(metronome)
         .environment(haptics)
