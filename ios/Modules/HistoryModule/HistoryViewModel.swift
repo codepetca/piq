@@ -70,6 +70,40 @@ final class HistoryViewModel {
         return totalMinutes / sessions.count
     }
 
+    // MARK: - Trends
+
+    /// Returns trend statistics using current date.
+    /// Note: Creates fresh calculator each access to ensure current date is used.
+    /// This is intentional for accuracy across app sessions that span midnight.
+    private func makeTrendCalculator() -> HistoryTrendCalculator {
+        HistoryTrendCalculator()
+    }
+
+    /// Total minutes practiced this week.
+    var minutesThisWeek: Int {
+        makeTrendCalculator().minutesThisWeek(from: sessions)
+    }
+
+    /// Total minutes practiced last week.
+    var minutesLastWeek: Int {
+        makeTrendCalculator().minutesLastWeek(from: sessions)
+    }
+
+    /// Number of unique days with sessions this week.
+    var daysWithSessionsThisWeek: Int {
+        makeTrendCalculator().daysWithSessionsThisWeek(from: sessions)
+    }
+
+    /// Formatted trend text comparing this week vs last week.
+    var weeklyTrendText: String? {
+        makeTrendCalculator().weeklyTrendText(from: sessions)
+    }
+
+    /// Formatted practice days text for this week.
+    var practiceDaysText: String? {
+        makeTrendCalculator().practiceDaysText(from: sessions)
+    }
+
     // MARK: - Grouping
 
     /// Sessions grouped by date (for sectioned list display).
