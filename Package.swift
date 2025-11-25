@@ -10,7 +10,7 @@ let package = Package(
     products: [
         .library(
             name: "piq",
-            targets: ["piq"]
+            targets: ["piq", "ReferenceModule"]
         )
     ],
     targets: [
@@ -18,10 +18,20 @@ let package = Package(
             name: "piq",
             path: "ios/Modules/PracticeDomain"
         ),
+        .target(
+            name: "ReferenceModule",
+            path: "ios/Modules/ReferenceModule",
+            sources: ["PracticeReference.swift", "PracticeReferenceService.swift"]
+        ),
         .testTarget(
             name: "piqTests",
             dependencies: ["piq"],
             path: "ios/Tests/PracticeDomainTests"
+        ),
+        .testTarget(
+            name: "ReferenceModuleTests",
+            dependencies: ["ReferenceModule"],
+            path: "ios/Tests/ReferenceModuleTests"
         )
     ]
 )

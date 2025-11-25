@@ -46,7 +46,7 @@ struct PracticeReferenceView: View {
             Button {
                 openURL(url)
             } label: {
-                Label("Open Lesson", systemImage: "play.circle")
+                Label("Open lesson", systemImage: "arrow.up.right.square")
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
@@ -58,7 +58,7 @@ struct PracticeReferenceView: View {
     PracticeReferenceView(
         reference: PracticeReference(
             id: "scale_am_pentatonic_pos1",
-            title: "Am Pentatonic - Position 1",
+            title: "Am Pentatonic – pos 1",
             externalURL: URL(string: "https://example.com")
         ),
         onDismiss: {}

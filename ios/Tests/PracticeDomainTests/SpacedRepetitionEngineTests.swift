@@ -6,7 +6,7 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         let engine = SpacedRepetitionEngine()
         engine.loadSeedCatalog(now: Date(timeIntervalSince1970: 0))
 
-        XCTAssertEqual(engine.items.count, 20)
+        XCTAssertEqual(engine.items.count, 30)
         XCTAssertEqual(engine.items.filter { $0.category == .warmup }.count, 2)
     }
 
