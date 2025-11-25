@@ -248,4 +248,184 @@ final class PracticeStorageTests: XCTestCase {
 
         XCTAssertEqual(json["schemaVersion"] as? Int, PracticeStorage.schemaVersion)
     }
+
+    // MARK: - Migration Tests
+
+    func testLoadSessionsFromLegacyFormat() {
+        // Create a session and manually write it in legacy format (unwrapped array)
+        let session = PracticeSession.makeTodayDemo()
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+
+        let legacyData = try! encoder.encode([session])
+        let sessionsURL = testDirectory.appendingPathComponent("sessions.json")
+        try! legacyData.write(to: sessionsURL)
+
+        // Load should automatically migrate from legacy format
+        let loaded = storage.loadSessions()
+
+        XCTAssertEqual(loaded.count, 1)
+        XCTAssertEqual(loaded.first?.id, session.id)
+        XCTAssertEqual(loaded.first?.blocks.count, 4)
+    }
+
+    func testLoadItemsFromLegacyFormat() {
+        // Create items and manually write them in legacy format (unwrapped array)
+        let item = PracticeItem(
+            catalogID: "test_legacy",
+            category: .technique,
+            title: "Legacy Item",
+            srs: SRSState(stability: 2.5, nextDue: Date())
+        )
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+
+        let legacyData = try! encoder.encode([item])
+        let itemsURL = testDirectory.appendingPathComponent("items.json")
+        try! legacyData.write(to: itemsURL)
+
+        // Load should automatically migrate from legacy format
+        let loaded = storage.loadItems()
+
+        XCTAssertEqual(loaded.count, 1)
+        let loadedItem = loaded.first!
+        XCTAssertEqual(loadedItem.id, item.id)
+        XCTAssertEqual(loadedItem.catalogID, "test_legacy")
+        XCTAssertEqual(loadedItem.srs.stability, 2.5, accuracy: 0.001)
+    }
+
+    func testLoadSessionsFromFutureVersionReturnsEmpty() {
+        // Create a session store with a future schema version
+        let futureVersion = PracticeStorage.schemaVersion + 10
+        let session = PracticeSession.makeTodayDemo()
+
+        let futureStore: [String: Any] = [
+            "schemaVersion": futureVersion,
+            "sessions": [[
+                "id": session.id.uuidString,
+                "date": ISO8601DateFormatter().string(from: session.date),
+                "blocks": []
+            ]]
+        ]
+
+        let data = try! JSONSerialization.data(withJSONObject: futureStore)
+        let sessionsURL = testDirectory.appendingPathComponent("sessions.json")
+        try! data.write(to: sessionsURL)
+
+        // Should return empty for unknown future version
+        let loaded = storage.loadSessions()
+        XCTAssertTrue(loaded.isEmpty)
+    }
+
+    func testLoadItemsFromFutureVersionReturnsEmpty() {
+        // Create an items store with a future schema version
+        let futureVersion = PracticeStorage.schemaVersion + 10
+
+        let futureStore: [String: Any] = [
+            "schemaVersion": futureVersion,
+            "items": [[
+                "id": UUID().uuidString,
+                "catalogID": "future_item",
+                "category": "warmup",
+                "title": "Future Item",
+                "detail": "",
+                "targetMinutes": 3,
+                "srs": [
+                    "stability": 1.0,
+                    "nextDue": ISO8601DateFormatter().string(from: Date())
+                ]
+            ]]
+        ]
+
+        let data = try! JSONSerialization.data(withJSONObject: futureStore)
+        let itemsURL = testDirectory.appendingPathComponent("items.json")
+        try! data.write(to: itemsURL)
+
+        // Should return empty for unknown future version
+        let loaded = storage.loadItems()
+        XCTAssertTrue(loaded.isEmpty)
+    }
+
+    func testMigrationPreservesAllSessionData() {
+        // Create a detailed session with feedback and actual minutes
+        var session = PracticeSession.makeTodayDemo()
+        session.blocks[0].actualMinutes = 8
+        session.blocks[0].feedback = .good
+        session.blocks[1].actualMinutes = 12
+        session.blocks[1].feedback = .hard
+
+        // Save in legacy format
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let legacyData = try! encoder.encode([session])
+        let sessionsURL = testDirectory.appendingPathComponent("sessions.json")
+        try! legacyData.write(to: sessionsURL)
+
+        // Load and verify all data is preserved after migration
+        let loaded = storage.loadSessions().first!
+
+        XCTAssertEqual(loaded.id, session.id)
+        XCTAssertEqual(loaded.blocks.count, 4)
+        XCTAssertEqual(loaded.blocks[0].actualMinutes, 8)
+        XCTAssertEqual(loaded.blocks[0].feedback, .good)
+        XCTAssertEqual(loaded.blocks[1].actualMinutes, 12)
+        XCTAssertEqual(loaded.blocks[1].feedback, .hard)
+    }
+
+    func testMigrationPreservesAllItemData() {
+        // Create a detailed item with full SRS state
+        let lastPlayed = Date().addingTimeInterval(-86_400)
+        let nextDue = Date().addingTimeInterval(86_400 * 3)
+        let item = PracticeItem(
+            catalogID: "test_migration_detail",
+            category: .soloing,
+            title: "Detailed Item",
+            detail: "Some detail",
+            key: "Am",
+            referenceID: "scale_am_pentatonic_pos1",
+            targetMinutes: 5,
+            srs: SRSState(stability: 3.7, lastPlayed: lastPlayed, nextDue: nextDue)
+        )
+
+        // Save in legacy format
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let legacyData = try! encoder.encode([item])
+        let itemsURL = testDirectory.appendingPathComponent("items.json")
+        try! legacyData.write(to: itemsURL)
+
+        // Load and verify all data is preserved after migration
+        let loaded = storage.loadItems().first!
+
+        XCTAssertEqual(loaded.id, item.id)
+        XCTAssertEqual(loaded.catalogID, "test_migration_detail")
+        XCTAssertEqual(loaded.category, .soloing)
+        XCTAssertEqual(loaded.title, "Detailed Item")
+        XCTAssertEqual(loaded.detail, "Some detail")
+        XCTAssertEqual(loaded.key, "Am")
+        XCTAssertEqual(loaded.referenceID, "scale_am_pentatonic_pos1")
+        XCTAssertEqual(loaded.targetMinutes, 5)
+        XCTAssertEqual(loaded.srs.stability, 3.7, accuracy: 0.001)
+        XCTAssertNotNil(loaded.srs.lastPlayed)
+        XCTAssertEqual(loaded.srs.lastPlayed!.timeIntervalSince1970, lastPlayed.timeIntervalSince1970, accuracy: 1.0)
+        XCTAssertEqual(loaded.srs.nextDue.timeIntervalSince1970, nextDue.timeIntervalSince1970, accuracy: 1.0)
+    }
+
+    func testCurrentVersionLoadsWithoutMigration() {
+        // Save in current version format
+        let session = PracticeSession.makeTodayDemo()
+        storage.saveSessions([session])
+
+        // Load should work without any migration needed
+        let loaded = storage.loadSessions()
+
+        XCTAssertEqual(loaded.count, 1)
+        XCTAssertEqual(loaded.first?.id, session.id)
+
+        // Verify the file is in v1 format
+        let sessionsURL = testDirectory.appendingPathComponent("sessions.json")
+        let data = try! Data(contentsOf: sessionsURL)
+        let json = try! JSONSerialization.jsonObject(with: data) as! [String: Any]
+        XCTAssertEqual(json["schemaVersion"] as? Int, PracticeStorage.schemaVersion)
+    }
 }
