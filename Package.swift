@@ -16,7 +16,28 @@ let package = Package(
     targets: [
         .target(
             name: "piq",
-            path: "ios/Modules/PracticeDomain"
+            path: "ios/Modules",
+            exclude: [
+                "ReferenceModule/PracticeReferenceView.swift",
+                "SessionUI",
+                "AudioHapticsModule",
+                "HistoryModule",
+                "SettingsModule"
+            ],
+            sources: [
+                "PracticeDomain/HistoryTrendCalculator.swift",
+                "PracticeDomain/PracticeBlock.swift",
+                "PracticeDomain/PracticeBlockFeedback.swift",
+                "PracticeDomain/PracticeBlockKind.swift",
+                "PracticeDomain/PracticeEngine.swift",
+                "PracticeDomain/PracticeItem.swift",
+                "PracticeDomain/PracticeItemCatalog.swift",
+                "PracticeDomain/PracticeItemCategory.swift",
+                "PracticeDomain/PracticeSession.swift",
+                "PracticeDomain/PracticeStorage.swift",
+                "PracticeDomain/SpacedRepetitionEngine.swift",
+                "TodayModule/TodayViewModel.swift"
+            ]
         ),
         .target(
             name: "ReferenceModule",
@@ -28,6 +49,11 @@ let package = Package(
             name: "piqTests",
             dependencies: ["piq"],
             path: "ios/Tests/PracticeDomainTests"
+        ),
+        .testTarget(
+            name: "TodayModuleTests",
+            dependencies: ["piq"],
+            path: "ios/Tests/TodayModuleTests"
         ),
         .testTarget(
             name: "ReferenceModuleTests",
