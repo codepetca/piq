@@ -23,9 +23,14 @@ final class PracticeEngine {
     var session: PracticeSession?
     var isPaused: Bool = false
 
+    /// Callback invoked when session transitions to `.finished` state.
+    /// Set this to handle session completion (e.g., persistence, SRE updates).
+    var onSessionFinished: ((PracticeSession) -> Void)?
+
     // MARK: - Private Properties
 
     private var timer: Timer?
+    private var sessionSaved: Bool = false
 
     /// Current block index, or nil if not in a block.
     var currentBlockIndex: Int? {
@@ -74,12 +79,14 @@ final class PracticeEngine {
 
     /// Start a new practice session with default blocks.
     func startSession() {
+        sessionSaved = false
         session = PracticeSession.makeTodayDemo()
         startBlock(at: 0)
     }
 
     /// Start a new practice session generated from the spaced repetition engine.
     func startSession(from sre: SpacedRepetitionEngine) {
+        sessionSaved = false
         session = sre.generateTodaySession()
         startBlock(at: 0)
     }
@@ -147,13 +154,18 @@ final class PracticeEngine {
     }
 
     /// Start the next block after being in betweenBlocks state.
+    /// If there's no next block (last block was completed), transitions to finished state.
     func startNextBlock() {
-        guard case .betweenBlocks(_, let nextIndex) = state,
-              let nextIndex = nextIndex else {
+        guard case .betweenBlocks(_, let nextIndex) = state else {
             return
         }
 
-        startBlock(at: nextIndex)
+        if let nextIndex = nextIndex {
+            startBlock(at: nextIndex)
+        } else {
+            // No next block - session is complete
+            state = .finished
+        }
     }
 
     /// Skip the current block without completing it.
@@ -224,17 +236,22 @@ final class PracticeEngine {
                 stopTimer()
             }
         }
+
+        // Invoke completion callback when transitioning to finished state
+        if case .finished = newState, case .finished = oldState {
+            // Already finished, don't fire again
+        } else if case .finished = newState {
+            if let session = session, !sessionSaved {
+                sessionSaved = true
+                onSessionFinished?(session)
+            }
+        }
     }
 
     private func transitionToBetweenBlocks(fromIndex index: Int) {
         guard let session = session else { return }
 
         let nextIndex = index + 1 < session.blocks.count ? index + 1 : nil
-
-        if nextIndex == nil {
-            state = .finished
-        } else {
-            state = .betweenBlocks(lastIndex: index, nextIndex: nextIndex)
-        }
+        state = .betweenBlocks(lastIndex: index, nextIndex: nextIndex)
     }
 }
