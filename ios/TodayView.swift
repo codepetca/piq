@@ -16,23 +16,25 @@ struct TodayView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 24) {
-                // Active session indicator (if in progress)
-                if let vm = viewModel, vm.hasActiveSession {
-                    activeSessionBanner(statusText: vm.activeSessionStatusText)
-                }
-
-                // Block list
-                VStack(spacing: 12) {
-                    ForEach(todayBlocks) { block in
-                        BlockRow(block: block)
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Active session indicator (if in progress)
+                    if let vm = viewModel, vm.hasActiveSession {
+                        activeSessionBanner(statusText: vm.activeSessionStatusText)
                     }
+
+                    // Block list
+                    VStack(spacing: 12) {
+                        ForEach(todayBlocks) { block in
+                            BlockRow(block: block)
+                        }
+                    }
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal)
-
-                Spacer()
-
-                // Start or resume session button
+                .padding(.top)
+            }
+            .safeAreaInset(edge: .bottom) {
+                // Start or resume session button (fixed at bottom)
                 if let vm = viewModel {
                     if vm.hasActiveSession {
                         Button(action: resumeSession) {
@@ -45,7 +47,8 @@ struct TodayView: View {
                                 .cornerRadius(12)
                         }
                         .padding(.horizontal)
-                        .padding(.bottom)
+                        .padding(.vertical, 12)
+                        .background(.regularMaterial)
                     } else {
                         Button(action: startSession) {
                             Text("Start Session")
@@ -57,11 +60,11 @@ struct TodayView: View {
                                 .cornerRadius(12)
                         }
                         .padding(.horizontal)
-                        .padding(.bottom)
+                        .padding(.vertical, 12)
+                        .background(.regularMaterial)
                     }
                 }
             }
-            .padding(.top)
             .navigationTitle("Today")
             .onAppear {
                 initializeViewModelIfNeeded()
