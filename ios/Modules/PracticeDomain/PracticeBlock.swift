@@ -13,6 +13,10 @@ struct PracticeBlock: Identifiable, Codable {
     var feedback: PracticeBlockFeedback?
     var referenceID: String?
 
+    // Instructions to display during practice
+    var instructions: [String]
+    var focusCue: String?
+
     init(
         id: UUID = UUID(),
         kind: PracticeBlockKind,
@@ -23,7 +27,9 @@ struct PracticeBlock: Identifiable, Codable {
         key: String? = nil,
         practiceItemID: UUID? = nil,
         feedback: PracticeBlockFeedback? = nil,
-        referenceID: String? = nil
+        referenceID: String? = nil,
+        instructions: [String] = [],
+        focusCue: String? = nil
     ) {
         self.id = id
         self.kind = kind
@@ -35,5 +41,7 @@ struct PracticeBlock: Identifiable, Codable {
         self.practiceItemID = practiceItemID
         self.feedback = feedback
         self.referenceID = referenceID
+        self.instructions = instructions
+        self.focusCue = focusCue
     }
 }

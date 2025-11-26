@@ -9,6 +9,7 @@ struct PracticeSessionView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var showingReference = false
+    @State private var showSessionPrompt = true
 
     var body: some View {
         VStack {
@@ -63,8 +64,40 @@ struct PracticeSessionView: View {
 
     @ViewBuilder
     private func inBlockView(remainingSeconds: Int) -> some View {
-        VStack(spacing: 32) {
+        VStack(spacing: 16) {
+            // Session prompt (first block only)
+            if showSessionPrompt && engine.currentBlockIndex == 0,
+               let session = engine.session {
+                HStack {
+                    Text(session.sessionPrompt)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+
+                    Button {
+                        withAnimation {
+                            showSessionPrompt = false
+                        }
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.top, 8)
+            }
+
             Spacer()
+
+            // Block instructions (if available)
+            if let block = engine.currentBlock,
+               !block.instructions.isEmpty || block.focusCue != nil {
+                BlockInstructionView(
+                    instructions: block.instructions,
+                    focusCue: block.focusCue
+                )
+            }
 
             // Timer with progress rings
             if let block = engine.currentBlock {
