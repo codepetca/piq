@@ -10,6 +10,8 @@ enum PracticeItemCategory: String, CaseIterable, Codable {
     case theory
     case rhythm
     case chords
+    case ear_training
+    case musicality
 
     var displayName: String {
         switch self {
@@ -22,16 +24,18 @@ enum PracticeItemCategory: String, CaseIterable, Codable {
         case .theory: return "Theory"
         case .rhythm: return "Rhythm"
         case .chords: return "Chords"
+        case .ear_training: return "Ear Training"
+        case .musicality: return "Musicality"
         }
     }
 
     var blockKind: PracticeBlockKind {
         switch self {
-        case .warmup, .fretboard:
+        case .warmup, .fretboard, .ear_training:
             return .warmup
         case .songwork, .repertoire:
             return .song
-        case .soloing:
+        case .soloing, .musicality:
             return .solo
         case .technique, .theory, .rhythm, .chords:
             return .techniqueOrTheory
@@ -49,6 +53,8 @@ enum PracticeItemCategory: String, CaseIterable, Codable {
         case .theory: return 4
         case .rhythm: return 4
         case .chords: return 4
+        case .ear_training: return 3
+        case .musicality: return 5
         }
     }
 }

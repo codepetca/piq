@@ -51,7 +51,19 @@ enum PracticeItemCatalog {
             PracticeItem(catalogID: "chords_am_open", category: .chords, title: "Am Chord", detail: "Open position", referenceID: "chord_am_open", srs: baseState),
             PracticeItem(catalogID: "chords_c_major_open", category: .chords, title: "C Major Chord", detail: "Open position", referenceID: "chord_c_major_open", srs: baseState),
             PracticeItem(catalogID: "chords_g_major_open", category: .chords, title: "G Major Chord", detail: "Open position", referenceID: "chord_g_major_open", srs: baseState),
-            PracticeItem(catalogID: "chords_e_major_open", category: .chords, title: "E Major Chord", detail: "Open position", referenceID: "chord_e_major_open", srs: baseState)
+            PracticeItem(catalogID: "chords_e_major_open", category: .chords, title: "E Major Chord", detail: "Open position", referenceID: "chord_e_major_open", srs: baseState),
+
+            // Ear training items
+            PracticeItem(catalogID: "ear_training_major_minor", category: .ear_training, title: "Major or Minor?", detail: "Key feel check", srs: baseState),
+            PracticeItem(catalogID: "ear_training_hum_root", category: .ear_training, title: "Hum & Match Root", detail: "Find the tonic", srs: baseState),
+            PracticeItem(catalogID: "ear_training_straight_swing", category: .ear_training, title: "Straight vs Swing", detail: "Feel the groove", srs: baseState),
+            PracticeItem(catalogID: "ear_training_interval_feel", category: .ear_training, title: "Interval Feel", detail: "Recognize intervals", srs: baseState),
+
+            // Musicality items
+            PracticeItem(catalogID: "musicality_dynamics", category: .musicality, title: "Dynamic Control", detail: "Quiet → loud", srs: baseState),
+            PracticeItem(catalogID: "musicality_slow_vibrato", category: .musicality, title: "Controlled Vibrato", detail: "Slow & expressive", srs: baseState),
+            PracticeItem(catalogID: "musicality_bend_accuracy", category: .musicality, title: "Bend Accuracy", detail: "Half-step precision", srs: baseState),
+            PracticeItem(catalogID: "musicality_tone_touch", category: .musicality, title: "Tone & Touch", detail: "Pick attack variation", srs: baseState)
         ]
     }
 }

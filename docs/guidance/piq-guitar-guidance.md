@@ -112,12 +112,14 @@ Examples:
 
 Categories group skills into meaningful types and help map them into blocks:
 
-- `technique` — picking, legato, bends, vibrato, etc.  
-- `fretboard` — scale shapes, note mapping, patterns.  
-- `rhythm` — strumming patterns, groove drills.  
-- `repertoire` — licks, riffs, short musical phrases.  
-- `song` — specific song sections (e.g., “Wonderwall – verse”).  
+- `technique` — picking, legato, bends, vibrato, etc.
+- `fretboard` — scale shapes, note mapping, patterns.
+- `rhythm` — strumming patterns, groove drills.
+- `repertoire` — licks, riffs, short musical phrases.
+- `song` — specific song sections (e.g., "Wonderwall – verse").
 - `soloing` — improvisation prompts, motif drills, etc.
+- `ear_training` — key/tonic finding, interval feel, rhythmic feel, melodic contour recognition.
+- `musicality` — tone, dynamics, touch, bends and vibrato as expressive tools.
 
 A simple `enum` in the domain is enough here.
 
@@ -139,37 +141,49 @@ This keeps `PracticeBlock` as “today’s schedule” and `PracticeItem` as “
 
 piq should ship with a **small, opinionated Skill Catalog** that is:
 
-- focused on **beginner+ to intermediate** players  
-- biased toward A minor pentatonic, basic open chords, core rock/pop/blues skills  
-- easily extended later  
+- focused on **beginner+ to intermediate** players
+- biased toward A minor pentatonic, basic open chords, core rock/pop/blues skills
+- easily extended later
 
-We don’t need to encode the entire catalog in this file. Instead, define:
+We don't need to encode the entire catalog in this file. Instead, define:
 
-- There should be **15–30 seed `PracticeItem`s** at first launch.  
+- There should be **30–60 seed `PracticeItem`s** at first launch.
 - They should cover:
 
   - Technique:
-    - alternate picking (inside + outside string crossings)  
-    - basic legato  
-    - basic bends  
-    - basic vibrato  
+    - alternate picking (inside + outside string crossings)
+    - basic legato
+    - basic bends
+    - basic vibrato
 
   - Fretboard:
-    - A minor pentatonic positions 1–5 (`scale_am_pentatonic_pos1` … `pos5`)  
+    - A minor pentatonic positions 1–5 (`scale_am_pentatonic_pos1` … `pos5`)
 
   - Rhythm:
-    - simple 8th-note strumming pattern  
-    - basic 16th-note feel  
-    - simple shuffle feel  
+    - simple 8th-note strumming pattern
+    - basic 16th-note feel
+    - simple shuffle feel
 
   - Repertoire:
-    - a few short blues/rock licks  
-    - a simple riff or turnaround  
+    - a few short blues/rock licks
+    - a simple riff or turnaround
 
   - Song:
-    - 2–3 example song sections (e.g. “Wonderwall verse”, “12-bar blues in E”)
+    - 2–3 example song sections (e.g. "Wonderwall verse", "12-bar blues in E")
 
-The concrete items, IDs, and diagrams should be implemented in the codebase and asset catalog, but **this file’s role** is to say:
+  - Ear Training:
+    - major/minor key feel
+    - hum and match root note
+    - straight vs swing feel
+    - interval recognition
+
+  - Musicality:
+    - dynamic control (quiet → loud)
+    - slow controlled vibrato
+    - bend accuracy
+    - tone and touch variation
+
+The concrete items, IDs, and diagrams should be implemented in the codebase and asset catalog, but **this file's role** is to say:
 
 > piq should always have a curated, finite catalog of atomic skills, not an open-ended, unstructured list.
 
@@ -256,12 +270,14 @@ If there are fewer items than desired, it may:
 
 High-level mapping:
 
-- `technique`  → usually `techniqueOrTheory` block.  
-- `fretboard`  → usually `warmup` block.  
-- `rhythm`     → `warmup` or `song` block.  
-- `repertoire` → `solo` or `song` block (short licks / riffs).  
-- `song`       → `song` block.  
-- `soloing`    → `solo` block.
+- `technique`     → usually `techniqueOrTheory` block.
+- `fretboard`     → usually `warmup` block.
+- `rhythm`        → `warmup` or `song` block.
+- `repertoire`    → `solo` or `song` block (short licks / riffs).
+- `song`          → `song` block.
+- `soloing`       → `solo` block.
+- `ear_training`  → typically `warmup` block (short listening/key/contour drills).
+- `musicality`    → usually `solo` block (tone, dynamics, expression).
 
 The exact mapping function can live in the domain (e.g., a helper that, given a set of items, yields 4 `PracticeBlock`s of different kinds).
 
@@ -402,12 +418,13 @@ When in doubt:
 
 For future development, these are the **non-negotiable principles** this file is defending:
 
-1. **piq is a practice coach, not a lesson platform.**  
-2. **Skills are atomic (`PracticeItem`s), scheduled by SRS, and mapped into blocks.**  
-3. **Practice is short, frequent, and interleaved.**  
-4. **SRS is based on Easy/Good/Hard feedback and stability-based spacing.**  
-5. **Engines own logic; SwiftUI views stay thin and minimal.**  
-6. **The Skill Catalog is curated and finite, especially for the MVP.**  
+1. **piq is a practice coach, not a lesson platform.**
+2. **Skills are atomic (`PracticeItem`s), scheduled by SRS, and mapped into blocks.**
+3. **Practice is short, frequent, and interleaved.**
+4. **SRS is based on Easy/Good/Hard feedback and stability-based spacing.**
+5. **Engines own logic; SwiftUI views stay thin and minimal.**
+6. **The Skill Catalog is curated and finite, especially for the MVP.**
 7. **History and SRS state are persisted separately from the static catalog.**
+8. **Ear training and musicality are modeled as first-class atomic `PracticeItem`s, scheduled by the same SRS with Easy/Good/Hard feedback.**
 
 As long as those are respected, Claude is free to design reasonable APIs, data shapes, and implementations inside the architecture already defined for piq.
