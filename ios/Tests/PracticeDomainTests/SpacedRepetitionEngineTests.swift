@@ -6,8 +6,10 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         let engine = SpacedRepetitionEngine()
         engine.loadSeedCatalog(now: Date(timeIntervalSince1970: 0))
 
-        XCTAssertEqual(engine.items.count, 30)
+        XCTAssertEqual(engine.items.count, 38)
         XCTAssertEqual(engine.items.filter { $0.category == .warmup }.count, 2)
+        XCTAssertEqual(engine.items.filter { $0.category == .ear_training }.count, 4)
+        XCTAssertEqual(engine.items.filter { $0.category == .musicality }.count, 4)
     }
 
     func testDueItemsUsesNextDue() {
@@ -356,11 +358,11 @@ final class SpacedRepetitionEngineTests: XCTestCase {
 
             // Verify specific mappings
             switch item.category {
-            case .warmup, .fretboard:
+            case .warmup, .fretboard, .ear_training:
                 XCTAssertEqual(block.kind, .warmup)
             case .songwork, .repertoire:
                 XCTAssertEqual(block.kind, .song)
-            case .soloing:
+            case .soloing, .musicality:
                 XCTAssertEqual(block.kind, .solo)
             case .technique, .theory, .rhythm, .chords:
                 XCTAssertEqual(block.kind, .techniqueOrTheory)
