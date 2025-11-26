@@ -140,12 +140,8 @@ private struct BlockDetailRow: View {
             .foregroundColor(.white)
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
-            .background(feedbackColor(feedback))
+            .background(feedback.color)
             .cornerRadius(4)
-    }
-
-    private func feedbackColor(_ feedback: PracticeBlockFeedback) -> Color {
-        feedback.color
     }
 }
 

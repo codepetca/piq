@@ -204,15 +204,10 @@ private struct SessionRowView: View {
         HStack(spacing: 2) {
             ForEach(session.blocks) { block in
                 Circle()
-                    .fill(feedbackColor(block.feedback))
+                    .fill(block.feedback?.color ?? .gray)
                     .frame(width: 8, height: 8)
             }
         }
-    }
-
-    private func feedbackColor(_ feedback: PracticeBlockFeedback?) -> Color {
-        guard let feedback = feedback else { return .gray }
-        return feedback.color
     }
 
     private func formatTime(_ date: Date) -> String {
