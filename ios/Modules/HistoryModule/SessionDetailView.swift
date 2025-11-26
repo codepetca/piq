@@ -54,19 +54,19 @@ struct SessionDetailView: View {
             // Feedback distribution
             HStack(spacing: 16) {
                 FeedbackCount(
-                    label: "Easy",
+                    label: PracticeBlockFeedback.easy.displayName,
                     count: feedbackCount(.easy),
-                    color: .green
+                    color: PracticeBlockFeedback.easy.color
                 )
                 FeedbackCount(
-                    label: "Good",
+                    label: PracticeBlockFeedback.good.displayName,
                     count: feedbackCount(.good),
-                    color: .blue
+                    color: PracticeBlockFeedback.good.color
                 )
                 FeedbackCount(
-                    label: "Hard",
+                    label: PracticeBlockFeedback.hard.displayName,
                     count: feedbackCount(.hard),
-                    color: .orange
+                    color: PracticeBlockFeedback.hard.color
                 )
             }
         }
@@ -145,11 +145,7 @@ private struct BlockDetailRow: View {
     }
 
     private func feedbackColor(_ feedback: PracticeBlockFeedback) -> Color {
-        switch feedback {
-        case .easy: return .green
-        case .good: return .blue
-        case .hard: return .orange
-        }
+        feedback.color
     }
 }
 

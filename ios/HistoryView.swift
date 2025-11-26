@@ -211,12 +211,8 @@ private struct SessionRowView: View {
     }
 
     private func feedbackColor(_ feedback: PracticeBlockFeedback?) -> Color {
-        switch feedback {
-        case .easy: return .green
-        case .good: return .blue
-        case .hard: return .orange
-        case nil: return .gray
-        }
+        guard let feedback = feedback else { return .gray }
+        return feedback.color
     }
 
     private func formatTime(_ date: Date) -> String {

@@ -12,9 +12,9 @@ struct FeedbackBar: View {
                 .font(.title2)
 
             HStack(spacing: 16) {
-                FeedbackButton(label: "Easy", color: .green, action: onEasy)
-                FeedbackButton(label: "Good", color: .blue, action: onGood)
-                FeedbackButton(label: "Hard", color: .orange, action: onHard)
+                FeedbackButton(label: PracticeBlockFeedback.easy.displayName, color: PracticeBlockFeedback.easy.color, action: onEasy)
+                FeedbackButton(label: PracticeBlockFeedback.good.displayName, color: PracticeBlockFeedback.good.color, action: onGood)
+                FeedbackButton(label: PracticeBlockFeedback.hard.displayName, color: PracticeBlockFeedback.hard.color, action: onHard)
             }
         }
         .padding(.horizontal)
