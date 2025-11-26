@@ -215,7 +215,7 @@ struct PracticeSessionView: View {
 
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 64))
-                .foregroundColor(.green)
+                .foregroundColor(.accentColor)
 
             Text("Session Complete!")
                 .font(.title)
