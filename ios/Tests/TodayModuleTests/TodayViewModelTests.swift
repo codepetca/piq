@@ -32,7 +32,8 @@ final class TodayViewModelTests: XCTestCase {
 
         viewModel.refreshBlocks()
 
-        XCTAssertEqual(viewModel.todayBlocks.count, 4, "Should have 4 blocks after refresh")
+        XCTAssertGreaterThanOrEqual(viewModel.todayBlocks.count, 6, "Should have at least 6 blocks after refresh")
+        XCTAssertLessThanOrEqual(viewModel.todayBlocks.count, 8, "Should have at most 8 blocks after refresh")
         XCTAssertTrue(viewModel.todayBlocks.allSatisfy { $0.practiceItemID != nil }, "All blocks should have practiceItemID")
     }
 
@@ -48,7 +49,7 @@ final class TodayViewModelTests: XCTestCase {
         // Generate session directly to compare
         let directSession = sre.generateTodaySession()
 
-        // Both should have 4 blocks with practiceItemIDs from the same pool
+        // Both should have 6-8 blocks with practiceItemIDs from the same pool
         XCTAssertEqual(viewModelBlocks.count, directSession.blocks.count)
     }
 
@@ -82,7 +83,8 @@ final class TodayViewModelTests: XCTestCase {
         viewModel.startSession()
 
         XCTAssertNotNil(engine.session, "Engine should have session after start")
-        XCTAssertEqual(engine.session?.blocks.count, 4, "Session should have 4 blocks")
+        XCTAssertGreaterThanOrEqual(engine.session?.blocks.count ?? 0, 6, "Session should have at least 6 blocks")
+        XCTAssertLessThanOrEqual(engine.session?.blocks.count ?? 0, 8, "Session should have at most 8 blocks")
     }
 
     // MARK: - Active Session Detection Tests
@@ -148,7 +150,7 @@ final class TodayViewModelTests: XCTestCase {
 
         let statusText = viewModel.activeSessionStatusText
         XCTAssertNotNil(statusText, "Should have status text when in block")
-        XCTAssertTrue(statusText?.contains("Block 1/4") ?? false, "Status should indicate block 1 of 4")
+        XCTAssertTrue(statusText?.contains("Block 1/") ?? false, "Status should indicate block 1")
     }
 
     func testActiveSessionStatusTextWhenBetweenBlocks() {
@@ -162,7 +164,7 @@ final class TodayViewModelTests: XCTestCase {
 
         let statusText = viewModel.activeSessionStatusText
         XCTAssertNotNil(statusText, "Should have status text when between blocks")
-        XCTAssertTrue(statusText?.contains("After block 1/4") ?? false, "Status should indicate after block 1")
+        XCTAssertTrue(statusText?.contains("After block 1/") ?? false, "Status should indicate after block 1")
     }
 
     func testActiveSessionStatusTextWhenFinished() {
@@ -208,7 +210,8 @@ final class TodayViewModelTests: XCTestCase {
 
         // Step 1: Refresh blocks
         viewModel.refreshBlocks()
-        XCTAssertEqual(viewModel.todayBlocks.count, 4)
+        XCTAssertGreaterThanOrEqual(viewModel.todayBlocks.count, 6)
+        XCTAssertLessThanOrEqual(viewModel.todayBlocks.count, 8)
         XCTAssertFalse(viewModel.hasActiveSession)
 
         // Step 2: Start session

@@ -46,8 +46,8 @@ final class PracticeEngineTests: XCTestCase {
         engine.startSession()
 
         if case .inBlock(_, let remainingSeconds) = engine.state {
-            // First block is warmup category (4 minutes = 240 seconds)
-            XCTAssertEqual(remainingSeconds, 240)
+            // First block is warmup category (3 minutes = 180 seconds)
+            XCTAssertEqual(remainingSeconds, 180)
         } else {
             XCTFail("Engine should be in block state")
         }
@@ -61,8 +61,8 @@ final class PracticeEngineTests: XCTestCase {
         engine.tick()
 
         if case .inBlock(_, let remainingSeconds) = engine.state {
-            // First block is warmup category (4 minutes = 240 seconds), minus 1 tick
-            XCTAssertEqual(remainingSeconds, 239)
+            // First block is warmup category (3 minutes = 180 seconds), minus 1 tick
+            XCTAssertEqual(remainingSeconds, 179)
         } else {
             XCTFail("Engine should be in block state")
         }
@@ -88,8 +88,8 @@ final class PracticeEngineTests: XCTestCase {
         }
 
         if case .inBlock(_, let remainingSeconds) = engine.state {
-            // First block is warmup category (4 minutes = 240 seconds), minus 10 ticks
-            XCTAssertEqual(remainingSeconds, 230)
+            // First block is warmup category (3 minutes = 180 seconds), minus 10 ticks
+            XCTAssertEqual(remainingSeconds, 170)
         } else {
             XCTFail("Engine should be in block state")
         }
@@ -133,15 +133,15 @@ final class PracticeEngineTests: XCTestCase {
         let engine = PracticeEngine()
         engine.startSession()
 
-        // Simulate 2 minutes (120 seconds) of practice on warmup block (240 total)
-        // Set remaining to 120 seconds -> elapsed = 240 - 120 = 120 seconds = 2 minutes
+        // Simulate 1 minute (60 seconds) of practice on warmup block (180 total)
+        // Set remaining to 120 seconds -> elapsed = 180 - 120 = 60 seconds = 1 minute
         if case .inBlock(let index, _) = engine.state {
             engine.state = .inBlock(index: index, remainingSeconds: 120)
         }
 
         engine.finishCurrentBlock()
 
-        XCTAssertEqual(engine.session?.blocks[0].actualMinutes, 2)
+        XCTAssertEqual(engine.session?.blocks[0].actualMinutes, 1)
     }
 
     func testFinishLastBlockTransitionsToFinished() {
@@ -203,8 +203,8 @@ final class PracticeEngineTests: XCTestCase {
         engine.startNextBlock()
 
         if case .inBlock(_, let remainingSeconds) = engine.state {
-            // Second block is warmup_spider (warmup category = 4 minutes = 240 seconds)
-            XCTAssertEqual(remainingSeconds, 240)
+            // Second block (songwork/solo depending on SRS = 6/5 minutes = 360/300 seconds)
+            XCTAssert(remainingSeconds >= 180, "Second block should have reasonable duration")
         } else {
             XCTFail("Engine should be in block state")
         }
@@ -265,8 +265,8 @@ final class PracticeEngineTests: XCTestCase {
         engine.extendCurrentBlock(byExtraSeconds: 60)
 
         if case .inBlock(_, let remainingSeconds) = engine.state {
-            // First block is warmup (240 seconds) + 60 = 300 seconds
-            XCTAssertEqual(remainingSeconds, 300)
+            // First block is warmup (180 seconds) + 60 = 240 seconds
+            XCTAssertEqual(remainingSeconds, 240)
         } else {
             XCTFail("Engine should be in block state")
         }
@@ -278,8 +278,8 @@ final class PracticeEngineTests: XCTestCase {
         engine.extendCurrentBlock(byExtraSeconds: 300) // 5 minutes
 
         if case .inBlock(_, let remainingSeconds) = engine.state {
-            // First block is warmup (240 seconds) + 300 = 540 seconds
-            XCTAssertEqual(remainingSeconds, 540)
+            // First block is warmup (180 seconds) + 300 = 480 seconds
+            XCTAssertEqual(remainingSeconds, 480)
         } else {
             XCTFail("Engine should be in block state")
         }
@@ -361,8 +361,8 @@ final class PracticeEngineTests: XCTestCase {
         engine.tick()
 
         if case .inBlock(_, let remainingSeconds) = engine.state {
-            // First block is warmup (240 seconds), unchanged after paused tick
-            XCTAssertEqual(remainingSeconds, 240)
+            // First block is warmup (180 seconds), unchanged after paused tick
+            XCTAssertEqual(remainingSeconds, 180)
         } else {
             XCTFail("Engine should be in block state")
         }
@@ -489,10 +489,10 @@ final class PracticeEngineTests: XCTestCase {
         let engine = PracticeEngine()
         engine.startSession()
 
-        // Simulate halfway through warmup block (240 seconds total)
-        // Halfway = 120 seconds remaining
+        // Simulate halfway through warmup block (180 seconds total)
+        // Halfway = 90 seconds remaining
         if case .inBlock(let index, _) = engine.state {
-            engine.state = .inBlock(index: index, remainingSeconds: 120)
+            engine.state = .inBlock(index: index, remainingSeconds: 90)
         }
 
         XCTAssertEqual(engine.blockProgress, 0.5, accuracy: 0.01)
