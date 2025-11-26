@@ -5,17 +5,17 @@ struct RootView: View {
         TabView {
             TodayView()
                 .tabItem {
-                    Label("Today", systemImage: "music.note")
+                    Label("Today", systemImage: "guitars")
                 }
 
             HistoryView()
                 .tabItem {
-                    Label("History", systemImage: "calendar")
+                    Label("History", systemImage: "clock.arrow.circlepath")
                 }
 
             SettingsView()
                 .tabItem {
-                    Label("Settings", systemImage: "gearshape")
+                    Label("Settings", systemImage: "gear")
                 }
         }
     }
