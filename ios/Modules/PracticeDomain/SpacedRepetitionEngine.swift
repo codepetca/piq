@@ -85,18 +85,47 @@ final class SpacedRepetitionEngine {
 
     // MARK: - Session Generation
 
-    func generateTodaySession(now: Date = Date()) -> PracticeSession {
-        let ordered = prioritizedItems(asOf: now)
-        let due = dueItems(asOf: now)
+    func generateTodaySession(
+        now: Date = Date(),
+        targetMinutes: Int = 35,
+        minBlocks: Int = 6,
+        maxBlocks: Int = 8
+    ) -> PracticeSession {
 
-        var pool = due
-        if pool.count < 4 {
-            let remaining = ordered.filter { item in !pool.contains(where: { $0.id == item.id }) }
-            pool.append(contentsOf: remaining)
+        // 1. Get all available items (SRS prioritized)
+        let allItems = prioritizedItems(asOf: now)
+        guard !allItems.isEmpty else {
+            return PracticeSession(blocks: [])
         }
 
-        let selected = selectInterleavedItems(from: pool, count: 4)
-        let blocks = selected.map { item in
+        // 2. Reserve warmup (ALWAYS first)
+        let warmupItem = selectWarmupItem(from: allItems)
+        let warmupDuration = warmupItem?.targetMinutes ?? 3
+
+        // 3. Reserve fun ending (ALWAYS last)
+        let funItem = selectFunEndingItem(from: allItems, excluding: warmupItem)
+        let funDuration = funItem?.targetMinutes ?? 6
+
+        // 4. Calculate middle section budget
+        let middleBudget = targetMinutes - warmupDuration - funDuration
+        let middleCount = minBlocks - 2  // Reserve slots for warmup + fun
+
+        // 5. Select middle blocks (interleaved, duration-aware)
+        let middleItems = selectMiddleBlocks(
+            from: allItems,
+            excluding: [warmupItem, funItem].compactMap { $0 },
+            targetMinutes: middleBudget,
+            targetCount: middleCount
+        )
+
+        // 6. Assemble final session
+        var sessionItems: [PracticeItem] = []
+        if let warmup = warmupItem { sessionItems.append(warmup) }
+        sessionItems.append(contentsOf: middleItems)
+        if let fun = funItem { sessionItems.append(fun) }
+
+        // 7. Convert to blocks
+        let blocks = sessionItems.map { item in
             PracticeBlock(
                 kind: item.blockKind,
                 title: item.title,
@@ -132,5 +161,80 @@ final class SpacedRepetitionEngine {
         }
 
         return Array(result.prefix(count))
+    }
+
+    private func selectWarmupItem(from items: [PracticeItem]) -> PracticeItem? {
+        // Prefer warmup category, fallback to fretboard
+        items.first { $0.category == .warmup }
+            ?? items.first { $0.category == .fretboard }
+    }
+
+    private func selectFunEndingItem(
+        from items: [PracticeItem],
+        excluding: PracticeItem?
+    ) -> PracticeItem? {
+        // Prefer songwork (full songs), fallback to repertoire (licks/riffs)
+        let candidates = items.filter { $0.id != excluding?.id }
+
+        return candidates.first { $0.category == .songwork }
+            ?? candidates.first { $0.category == .repertoire }
+    }
+
+    private func selectMiddleBlocks(
+        from items: [PracticeItem],
+        excluding: [PracticeItem],
+        targetMinutes: Int,
+        targetCount: Int
+    ) -> [PracticeItem] {
+
+        let excludedIDs = Set(excluding.map { $0.id })
+        let pool = items.filter { !excludedIDs.contains($0.id) }
+
+        var selected: [PracticeItem] = []
+        var totalMinutes = 0
+        var lastCategory: PracticeItemCategory?
+
+        // Track which items we've used
+        var remainingPool = pool
+
+        while selected.count < targetCount && !remainingPool.isEmpty {
+            // Try to find item from different category than last
+            let candidates = remainingPool.filter { item in
+                item.category != lastCategory
+            }
+
+            // Pick next item
+            let nextItem: PracticeItem?
+            if !candidates.isEmpty {
+                nextItem = candidates.first
+            } else {
+                nextItem = remainingPool.first
+            }
+
+            guard let item = nextItem else { break }
+
+            // Check if adding this would exceed target
+            let projectedTotal = totalMinutes + item.targetMinutes
+            let avgRemaining = targetMinutes - projectedTotal
+            let slotsRemaining = targetCount - selected.count - 1
+
+            // Only add if we can still fit remaining blocks
+            if slotsRemaining == 0 || avgRemaining >= slotsRemaining * 3 {
+                selected.append(item)
+                totalMinutes += item.targetMinutes
+                lastCategory = item.category
+                remainingPool.removeAll { $0.id == item.id }
+            } else {
+                // Item too long, remove from pool and try next
+                remainingPool.removeAll { $0.id == item.id }
+            }
+
+            // Stop if we're within acceptable range
+            if totalMinutes >= targetMinutes - 5 && selected.count >= targetCount - 2 {
+                break
+            }
+        }
+
+        return selected
     }
 }

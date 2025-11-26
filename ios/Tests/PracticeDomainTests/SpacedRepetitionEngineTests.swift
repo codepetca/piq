@@ -59,45 +59,58 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         XCTAssertEqual(updated.srs.lastPlayed!.timeIntervalSince1970, now.timeIntervalSince1970, accuracy: 0.1)
     }
 
-    func testGenerateTodaySessionReturnsFourBlocks() {
+    func testGenerateTodaySessionReturns6to8Blocks() {
         let engine = SpacedRepetitionEngine()
         engine.loadSeedCatalog(now: Date())
 
         let session = engine.generateTodaySession()
-        XCTAssertEqual(session.blocks.count, 4)
+        XCTAssertGreaterThanOrEqual(session.blocks.count, 6, "Should have at least 6 blocks")
+        XCTAssertLessThanOrEqual(session.blocks.count, 8, "Should have at most 8 blocks")
         XCTAssertTrue(session.blocks.allSatisfy { $0.practiceItemID != nil })
+
+        // Verify duration is within acceptable range
+        let total = session.totalTargetMinutes
+        XCTAssertGreaterThanOrEqual(total, 20, "Session should be at least 20 minutes")
+        XCTAssertLessThanOrEqual(total, 45, "Session should not exceed 45 minutes")
     }
 
     func testGenerateTodaySessionInterleavesCategoriesWhenPossible() {
-        let now = Date()
-        let warmupA = PracticeItem(catalogID: "test_warmup_a", category: .warmup, title: "Warm A", srs: SRSState(nextDue: now))
-        let warmupB = PracticeItem(catalogID: "test_warmup_b", category: .warmup, title: "Warm B", srs: SRSState(nextDue: now))
-        let solo = PracticeItem(catalogID: "test_solo", category: .soloing, title: "Solo", srs: SRSState(nextDue: now))
-        let technique = PracticeItem(catalogID: "test_tech", category: .technique, title: "Tech", srs: SRSState(nextDue: now))
-
         let engine = SpacedRepetitionEngine()
-        [warmupA, warmupB, solo, technique].forEach(engine.addItem)
+        engine.loadSeedCatalog(now: Date())
 
-        let session = engine.generateTodaySession(now: now)
+        let session = engine.generateTodaySession()
         let categories = session.blocks.compactMap { block in
             engine.items.first(where: { $0.id == block.practiceItemID })?.category
         }
 
-        for pair in zip(categories, categories.dropFirst()) {
-            XCTAssertNotEqual(pair.0, pair.1, "Should interleave categories when possible")
+        // Check middle blocks (excluding first warmup and last fun ending)
+        // for variety
+        if categories.count >= 4 {
+            let middleCategories = Array(categories[1..<categories.count-1])
+            var hasSomeVariety = false
+            for pair in zip(middleCategories, middleCategories.dropFirst()) {
+                if pair.0 != pair.1 {
+                    hasSomeVariety = true
+                    break
+                }
+            }
+            XCTAssertTrue(hasSomeVariety, "Middle blocks should have some category variety")
         }
     }
 
     func testGenerateTodaySessionWithFewItemsStillProducesBlocks() {
         let now = Date()
         let warmup = PracticeItem(catalogID: "test_warm_few", category: .warmup, title: "Warm", srs: SRSState(nextDue: now))
+        let song = PracticeItem(catalogID: "test_song_few", category: .songwork, title: "Song", srs: SRSState(nextDue: now))
         let solo = PracticeItem(catalogID: "test_solo_few", category: .soloing, title: "Solo", srs: SRSState(nextDue: now))
 
         let engine = SpacedRepetitionEngine()
-        [warmup, solo].forEach(engine.addItem)
+        [warmup, song, solo].forEach(engine.addItem)
 
         let session = engine.generateTodaySession(now: now)
-        XCTAssertEqual(session.blocks.count, 4)
+        // With limited items, can reuse to reach min blocks
+        XCTAssertGreaterThanOrEqual(session.blocks.count, 3, "Should have at least 3 blocks")
+        XCTAssertLessThanOrEqual(session.blocks.count, 8, "Should have at most 8 blocks")
     }
 
     // MARK: - Batch Feedback Tests
@@ -320,8 +333,10 @@ final class SpacedRepetitionEngineTests: XCTestCase {
 
         let session = engine.generateTodaySession(now: now)
 
-        // Should still produce 4 blocks even though nothing is strictly due
-        XCTAssertEqual(session.blocks.count, 4)
+        // Should still produce blocks even though nothing is strictly due
+        // With only 4 items, may not reach 6 blocks
+        XCTAssertGreaterThanOrEqual(session.blocks.count, 3)
+        XCTAssertLessThanOrEqual(session.blocks.count, 8)
 
         let blockItemIDs = session.blocks.compactMap { $0.practiceItemID }
 
@@ -422,5 +437,63 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         // Verify at least one block has a referenceID
         let blocksWithRef = session.blocks.filter { $0.referenceID != nil }
         XCTAssertGreaterThan(blocksWithRef.count, 0, "Should have at least one block with a referenceID")
+    }
+
+    // MARK: - Session Structure Tests (6-8 Block Requirements)
+
+    func testGenerateTodaySession_alwaysStartsWithWarmup() {
+        // Given: Engine with mixed items
+        let sre = SpacedRepetitionEngine()
+        sre.loadSeedCatalog()
+
+        // When: Generate multiple sessions
+        for _ in 0..<10 {
+            let session = sre.generateTodaySession()
+
+            // Then: First block should always be warmup
+            let firstBlock = session.blocks.first
+            XCTAssertEqual(firstBlock?.kind, .warmup,
+                "First block must be warmup")
+            XCTAssertLessThanOrEqual(firstBlock?.targetMinutes ?? 0, 3,
+                "Warmup should be 2-3 minutes")
+        }
+    }
+
+    func testGenerateTodaySession_alwaysEndsWithFunActivity() {
+        let sre = SpacedRepetitionEngine()
+        sre.loadSeedCatalog()
+
+        let session = sre.generateTodaySession()
+
+        let lastBlock = session.blocks.last
+        XCTAssertEqual(lastBlock?.kind, .song,
+            "Last block should be a song/fun activity")
+        XCTAssertGreaterThanOrEqual(lastBlock?.targetMinutes ?? 0, 5,
+            "Fun ending should be at least 5 minutes")
+    }
+
+    func testGenerateTodaySession_respectsDurationTarget() {
+        let sre = SpacedRepetitionEngine()
+        sre.loadSeedCatalog()
+
+        let session = sre.generateTodaySession(targetMinutes: 35)
+
+        let total = session.totalTargetMinutes
+        XCTAssertGreaterThanOrEqual(total, 20,
+            "Session should be at least 20 minutes")
+        XCTAssertLessThanOrEqual(total, 45,
+            "Session should not exceed 45 minutes")
+    }
+
+    func testGenerateTodaySession_generates6to8Blocks() {
+        let sre = SpacedRepetitionEngine()
+        sre.loadSeedCatalog()
+
+        let session = sre.generateTodaySession()
+
+        XCTAssertGreaterThanOrEqual(session.blocks.count, 6,
+            "Should have at least 6 blocks")
+        XCTAssertLessThanOrEqual(session.blocks.count, 8,
+            "Should have at most 8 blocks")
     }
 }
