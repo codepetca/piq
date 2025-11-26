@@ -124,17 +124,30 @@ final class SpacedRepetitionEngine {
         sessionItems.append(contentsOf: middleItems)
         if let fun = funItem { sessionItems.append(fun) }
 
-        // 7. Convert to blocks
-        let blocks = sessionItems.map { item in
-            PracticeBlock(
+        // 7. Convert to blocks with instructions
+        var blocks: [PracticeBlock] = []
+        for item in sessionItems {
+            let (instructions, focusCue, updatedSRS) = item.selectInstructionsForDisplay()
+
+            // Update item with new rotation indices
+            if let index = items.firstIndex(where: { $0.id == item.id }) {
+                var updatedItem = items[index]
+                updatedItem.srs = updatedSRS
+                items[index] = updatedItem
+            }
+
+            let block = PracticeBlock(
                 kind: item.blockKind,
                 title: item.title,
                 detail: item.detail,
                 targetMinutes: item.targetMinutes,
                 key: item.key,
                 practiceItemID: item.id,
-                referenceID: item.referenceID
+                referenceID: item.referenceID,
+                instructions: instructions,
+                focusCue: focusCue
             )
+            blocks.append(block)
         }
 
         return PracticeSession(blocks: blocks)

@@ -169,6 +169,49 @@ Icon-based controls for practice flow management:
 
 Buttons use icon-only design (no text labels). Pause/Resume is visually emphasized as the primary control.
 
+## Block Instructions (Optional Guidance)
+
+Brief practice tips appear below the block title when helpful:
+
+- **Format:** 2–4 bullet points (5–10 words each, action-oriented)
+- **Focus Cue:** One encouraging sentence in accent color
+- **Behavior:**
+  - Collapsed by default (shows focus cue only)
+  - Tap the focus cue to expand/collapse full instruction list
+  - Auto-collapse when timer is paused to avoid obscuring controls
+- **Constraints:**
+  - Max 4 bullets to avoid wall-of-text
+  - No teaching paragraphs—cues only
+  - Timer remains the primary focus
+  - Max height ~100pt when expanded
+
+**Instruction Variation:**
+
+To keep guidance fresh, instructions rotate across sessions:
+- **Core instructions** (1-2 bullets): Always shown, never change
+- **Bonus tip** (1 bullet): Rotates from a pool of 3-5 tips
+- **Focus cue** (1 line): Rotates from a pool of 2-3 cues
+
+Example:
+
+```
+Chromatic Warm-Up
+
+⟩ Super slow, perfect tone
+
+[When expanded:]
+• 1–2–3–4 pattern, one finger per fret
+• Use strict alternate picking
+• Check every note rings clearly
+```
+
+**Session Prompt:**
+
+On the first block only, a brief motivational prompt appears at the top:
+- "Short bursts beat long grinds. Keep moving."
+- Dismissible with X button
+- Auto-hides after first block
+
 ---
 
 # 5. Block Feedback Screen
