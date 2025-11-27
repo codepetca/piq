@@ -282,10 +282,23 @@ in `PracticeEngine` or `MetronomeService` before introducing new timers.
 
 ### Extend Spaced Repetition Behavior
 
-1. Modify `SpacedRepetitionEngine` only.  
-2. Use `PracticeBlockFeedback` or item‑level data as the input.  
-3. Do not move SRE logic into Views or `PracticeEngine`.  
+1. Modify `SpacedRepetitionEngine` only.
+2. Use `PracticeBlockFeedback` or item‑level data as the input.
+3. Do not move SRE logic into Views or `PracticeEngine`.
 4. Add tests to validate new scheduling behavior.
+
+### Add a New Swift File
+
+When creating a new Swift file in the `ios/Modules/` directory:
+
+1. Create the `.swift` file in the appropriate module folder.
+2. Add the file to `Package.swift` in the appropriate target's `sources:` array.
+3. **CRITICAL: Add the file to `ios/Piq.xcodeproj/project.pbxproj`** (required for Xcode builds).
+   - Can be edited directly by AI assistants following existing UUID patterns
+   - Or added manually in Xcode: right-click module folder → Add Files to "Piq"
+4. Build in Xcode (Cmd+B) to confirm no "Cannot find 'X' in scope" errors.
+
+**Note:** Swift Package Manager builds (`swift build`) will work without step 3, but Xcode builds will fail with scope errors.
 
 ---
 
