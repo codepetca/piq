@@ -6,13 +6,13 @@ monolithic changes, and respect design and platform rules.
 
 All agents must follow:
 - UX + flow rules in `design.md`
-- Architecture + platform rules in `claude.md`
+- Architecture + platform rules in `architecture.md`
 
 ---
 
 ## Platform Discipline
 
-All agents must respect the platform constraints in `claude.md`:
+All agents must respect the platform constraints in `architecture.md`:
 
 - SwiftUI‑only UI (`NavigationStack`, `TabView`, `.sheet`).  
 - Observation (`@Observable`, `.environment(...)`) for shared state.  
@@ -20,7 +20,7 @@ All agents must respect the platform constraints in `claude.md`:
 - No UIKit, storyboards, or Combine unless explicitly documented as an exception.
 
 If proposed code uses outdated patterns (e.g. `NavigationView`, `ObservableObject` for new types),
-it should be refactored to follow the platform section in `claude.md`.
+it should be refactored to follow the platform section in `architecture.md`.
 
 ---
 
@@ -29,7 +29,7 @@ it should be refactored to follow the platform section in `claude.md`.
 **Focus:** System design, module boundaries, avoiding monoliths.
 
 Responsibilities:
-- Owns and enforces the Module Map defined in `claude.md`.  
+- Owns and enforces the Module Map defined in `architecture.md`.  
 - Decides where new features belong (PracticeDomain, SessionUI, etc.).  
 - Ensures:
   - No god objects or giant view models.
@@ -54,7 +54,7 @@ Works mainly in:
 - `ReferenceModule`
 
 Responsibilities:
-- Build and refine SwiftUI screens using the component set from `claude.md`:
+- Build and refine SwiftUI screens using the component set from `architecture.md`:
   - `PracticeTimerView`
   - `MetronomeBar`
   - `FeedbackBar`
@@ -167,7 +167,7 @@ Responsibilities:
   - `PracticeStorage` saving/loading logic.
 - 
 - Coordinate with the Logic Agent to follow the "TDD Development Flow for the MVP"
-  defined in `claude.md`:
+  defined in `architecture.md`:
   - Start from models → PracticeEngine → SpacedRepetitionEngine → Storage.
   - Keep engines small, deterministic, and easy to test.
 Propose lightweight UI tests where valuable:
@@ -185,6 +185,6 @@ Must not:
 When starting a new task:
 
 1. Read `design.md` to understand flows, components, and visual rules.  
-2. Read `claude.md` for architecture, modules, and platform constraints.  
+2. Read `architecture.md` for architecture, modules, and platform constraints.  
 3. Skim existing Swift code in the affected module(s).  
 4. Then implement or refactor with minimal, focused changes.

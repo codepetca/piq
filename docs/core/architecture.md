@@ -1,4 +1,4 @@
-# claude.md — Implementation Guide for piq
+# architecture.md — Implementation Guide for piq
 
 This file tells AI assistants how to implement and extend **piq**, a minimal guitar practice companion app.
 It defines architecture, tech stack, modules, and patterns so changes stay consistent and non‑monolithic.
@@ -42,7 +42,7 @@ High‑level structure (suggested):
 ```text
 /docs
   /core
-    claude.md
+    architecture.md
     design.md
     agents.md
     tests.md
@@ -417,7 +417,7 @@ piq's documentation is organized into three layers:
 
 **1. `/docs/core/` — Stable reference docs**
 - `design.md` — UI/UX and flows
-- `claude.md` — architecture, modules, platform rules
+- `architecture.md` — architecture, modules, platform rules
 - `agents.md` — multi-agent roles and responsibilities
 - `tests.md` — testing philosophy and priorities
 
@@ -431,7 +431,7 @@ piq's documentation is organized into three layers:
 ### Required Reading Order for Any AI Agent Before Modifying Code
 
 1. `/docs/core/design.md`
-2. `/docs/core/claude.md`
+2. `/docs/core/architecture.md`
 3. `/docs/core/agents.md`
 4. `/docs/core/tests.md`
 5. Any relevant file in `/docs/guidance/` (e.g., `piq-guitar-guidance.md`)

@@ -171,7 +171,7 @@ Tests can live in `piqUITests` as a small suite, e.g. `PiqUITests.swift`.
 
 ## 7. TDD Development Flow (MVP)
 
-MVP sequence: Models → PracticeEngine (TDD) → SpacedRepetitionEngine (TDD) → PracticeStorage (TDD) → minimal UI → components → iterate. For engines/storage: write tests first. For UI: keep views thin, test engines instead. See claude.md Section 9 for detailed workflow.
+MVP sequence: Models → PracticeEngine (TDD) → SpacedRepetitionEngine (TDD) → PracticeStorage (TDD) → minimal UI → components → iterate. For engines/storage: write tests first. For UI: keep views thin, test engines instead. See architecture.md Section 9 for detailed workflow.
 
 ---
 

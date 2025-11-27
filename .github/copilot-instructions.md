@@ -13,7 +13,7 @@ This file contains all architecture rules, module boundaries, design patterns, w
 ## Quick Reference for Inline Suggestions
 
 ### Reading Order
-1. `docs/core/design.md` → `docs/core/claude.md` → `docs/core/agents.md` → `docs/core/tests.md`
+1. `docs/core/design.md` → `docs/core/architecture.md` → `docs/core/agents.md` → `docs/core/tests.md`
 2. Relevant `docs/guidance/` files
 3. Active `docs/issues/issue-*.md` if working on specific task
 

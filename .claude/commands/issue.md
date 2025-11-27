@@ -24,7 +24,7 @@ When the user says "work on issue N" or you invoke `/issue N`:
 
 6. Create branch: `issue/N-<slug>` (if needed)
 7. Implement following all rules from `/docs/ai-instructions.md`:
-   - Architecture rules from `claude.md`
+   - Architecture rules from `architecture.md`
    - UI patterns from `design.md`
    - Module boundaries from `agents.md`
    - TDD approach from `tests.md`

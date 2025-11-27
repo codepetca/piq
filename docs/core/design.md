@@ -516,7 +516,7 @@ All screens must be built from small, composable components:
 - Extract new components when layout becomes complex or reused.  
 - Any new reusable visual pattern should be:
   - Documented here in `design.md`.  
-  - Promoted to a named SwiftUI component in `claude.md`.
+  - Promoted to a named SwiftUI component in `architecture.md`.
 
 Any change that affects user flows or layout should first update this design guide,
 then update the implementation.

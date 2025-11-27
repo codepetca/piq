@@ -12,7 +12,7 @@ This file updates piq’s conceptual model to use a **research-backed guitar-lea
 It describes **what** piq should do at a high level and **how** to shape the codebase, so that a coding agent (e.g. Claude) can implement details while staying aligned with:
 
 - `design.md` — UI / UX / flows  
-- `claude.md` — architecture & modules  
+- `architecture.md` — architecture & modules  
 - `agents.md` — multi-agent roles  
 - `tests.md` — testing philosophy & TDD flow  
 
@@ -392,7 +392,7 @@ The details of the tests (file names, exact specs) belong in the test suite itse
 When an AI assistant (Claude, Copilot, etc.) works on piq and sees this file, it should:
 
 1. **Not** change the fundamental UX flows defined in `design.md`.  
-2. Respect architecture and module boundaries in `claude.md`.  
+2. Respect architecture and module boundaries in `architecture.md`.  
 3. Treat this file as the **conceptual spec** for:
    - Skill Catalog  
    - SRS behavior  
