@@ -20,7 +20,7 @@ final class TempoEngineTests: XCTestCase {
     }
     
     func testSuggestedBPMForNewItemWithCustomCurrentBPM() {
-        var item = PracticeItem(
+        let item = PracticeItem(
             catalogID: "test_technique",
             category: .technique,
             title: "Test Technique",
