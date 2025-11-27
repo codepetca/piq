@@ -57,4 +57,22 @@ enum PracticeItemCategory: String, CaseIterable, Codable {
         case .musicality: return 5
         }
     }
+    
+    /// Default starting BPM for new items in this category.
+    /// Conservative starting points for gradual tempo progression.
+    var defaultBPM: Int {
+        switch self {
+        case .warmup: return 60
+        case .fretboard: return 50
+        case .repertoire: return 100
+        case .songwork: return 100
+        case .soloing: return 80
+        case .technique: return 70
+        case .theory: return 60
+        case .rhythm: return 85
+        case .chords: return 80
+        case .ear_training: return 60
+        case .musicality: return 80
+        }
+    }
 }

@@ -496,4 +496,120 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         XCTAssertLessThanOrEqual(session.blocks.count, 8,
             "Should have at most 8 blocks")
     }
+    
+    // MARK: - Tempo Learning Tests
+    
+    func testApplyTempoLearningUpdatesItemTempo() {
+        let engine = SpacedRepetitionEngine()
+        let item = PracticeItem(
+            catalogID: "test_tempo",
+            category: .warmup,
+            title: "Test Warmup",
+            tempo: TempoState(currentBPM: 60)
+        )
+        engine.addItem(item)
+        
+        // Create a block with tempo data
+        let block = PracticeBlock(
+            kind: .warmup,
+            title: "Test Warmup",
+            practiceItemID: item.id,
+            feedback: .good,
+            startingBPM: 60,
+            endingBPM: 65,
+            tempoAdjustmentCount: 1
+        )
+        
+        engine.applyTempoLearning(for: [block])
+        
+        // Verify item tempo was updated
+        let updatedItem = engine.item(withID: item.id)
+        XCTAssertNotNil(updatedItem)
+        XCTAssertEqual(updatedItem?.tempo.history.count, 1)
+        XCTAssertEqual(updatedItem?.tempo.history.first?.startBPM, 60)
+        XCTAssertEqual(updatedItem?.tempo.history.first?.endBPM, 65)
+        XCTAssertEqual(updatedItem?.tempo.history.first?.adjustmentCount, 1)
+        XCTAssertEqual(updatedItem?.tempo.history.first?.feedback, .good)
+        // Good feedback should increase currentBPM by 5
+        XCTAssertEqual(updatedItem?.tempo.currentBPM, 70)
+    }
+    
+    func testApplyTempoLearningSkipsBlocksWithoutTempoData() {
+        let engine = SpacedRepetitionEngine()
+        let item = PracticeItem(
+            catalogID: "test_tempo_skip",
+            category: .warmup,
+            title: "Test Warmup",
+            tempo: TempoState(currentBPM: 60)
+        )
+        engine.addItem(item)
+        
+        // Create a block without tempo data (like a song block)
+        let block = PracticeBlock(
+            kind: .song,
+            title: "Test Song",
+            practiceItemID: item.id,
+            feedback: .good
+            // No startingBPM or endingBPM
+        )
+        
+        engine.applyTempoLearning(for: [block])
+        
+        // Verify item tempo was NOT updated (no history)
+        let updatedItem = engine.item(withID: item.id)
+        XCTAssertEqual(updatedItem?.tempo.history.count, 0)
+        XCTAssertEqual(updatedItem?.tempo.currentBPM, 60)
+    }
+    
+    func testApplyTempoLearningIgnoresMissingItems() {
+        let engine = SpacedRepetitionEngine()
+        
+        // Create a block with an unknown item ID
+        let block = PracticeBlock(
+            kind: .warmup,
+            title: "Unknown",
+            practiceItemID: UUID(), // Random ID not in engine
+            feedback: .good,
+            startingBPM: 60,
+            endingBPM: 70
+        )
+        
+        // Should not crash
+        engine.applyTempoLearning(for: [block])
+    }
+    
+    func testGenerateTodaySessionSetsStartingBPM() {
+        let engine = SpacedRepetitionEngine()
+        engine.loadSeedCatalog()
+        
+        let session = engine.generateTodaySession()
+        
+        // Check that warmup blocks have startingBPM set
+        for block in session.blocks {
+            if block.kind.defaultMetronomeOn {
+                XCTAssertNotNil(block.startingBPM, "\(block.kind) block should have startingBPM")
+            } else {
+                XCTAssertNil(block.startingBPM, "\(block.kind) block should NOT have startingBPM")
+            }
+        }
+    }
+    
+    func testItemLookup() {
+        let engine = SpacedRepetitionEngine()
+        let item = PracticeItem(
+            catalogID: "test_lookup",
+            category: .warmup,
+            title: "Test Lookup"
+        )
+        engine.addItem(item)
+        
+        // Find by ID
+        let found = engine.item(withID: item.id)
+        XCTAssertNotNil(found)
+        XCTAssertEqual(found?.id, item.id)
+        
+        // Non-existent ID returns nil
+        let notFound = engine.item(withID: UUID())
+        XCTAssertNil(notFound)
+    }
 }

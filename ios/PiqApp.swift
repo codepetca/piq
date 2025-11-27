@@ -55,8 +55,11 @@ struct PiqApp: App {
 
             // Apply feedback from blocks to SRE
             spacedRepetitionEngine.applyFeedback(for: session.blocks)
+            
+            // Apply tempo learning from completed blocks
+            spacedRepetitionEngine.applyTempoLearning(for: session.blocks)
 
-            // Persist updated SRE items
+            // Persist updated SRE items (includes both SRS and tempo state)
             storage.saveItems(spacedRepetitionEngine.items)
         }
     }

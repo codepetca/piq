@@ -36,6 +36,7 @@ let package = Package(
                 "PracticeDomain/PracticeSession.swift",
                 "PracticeDomain/PracticeStorage.swift",
                 "PracticeDomain/SpacedRepetitionEngine.swift",
+                "PracticeDomain/TempoEngine.swift",
                 "TodayModule/TodayViewModel.swift"
             ]
         ),

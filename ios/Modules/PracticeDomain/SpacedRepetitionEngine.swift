@@ -47,6 +47,35 @@ final class SpacedRepetitionEngine {
             recordFeedback(forItemID: itemID, feedback: feedback, now: now)
         }
     }
+    
+    /// Apply tempo learning from completed blocks to their associated PracticeItems.
+    /// Only updates items where blocks have tempo data (startingBPM, endingBPM, feedback).
+    func applyTempoLearning(for blocks: [PracticeBlock]) {
+        for block in blocks {
+            guard let itemID = block.practiceItemID,
+                  let startBPM = block.startingBPM,
+                  let endBPM = block.endingBPM,
+                  let feedback = block.feedback,
+                  let index = items.firstIndex(where: { $0.id == itemID }) else {
+                continue
+            }
+            
+            var item = items[index]
+            item.tempo = TempoEngine.updateTempoState(
+                item.tempo,
+                startBPM: startBPM,
+                endBPM: endBPM,
+                adjustmentCount: block.tempoAdjustmentCount,
+                feedback: feedback
+            )
+            items[index] = item
+        }
+    }
+    
+    /// Find an item by its ID.
+    func item(withID id: UUID) -> PracticeItem? {
+        items.first { $0.id == id }
+    }
 
     func recordFeedback(forItemID id: UUID, feedback: PracticeBlockFeedback, now: Date = Date()) {
         guard let index = items.firstIndex(where: { $0.id == id }) else { return }
@@ -124,7 +153,7 @@ final class SpacedRepetitionEngine {
         sessionItems.append(contentsOf: middleItems)
         if let fun = funItem { sessionItems.append(fun) }
 
-        // 7. Convert to blocks with instructions
+        // 7. Convert to blocks with instructions and tempo suggestions
         var blocks: [PracticeBlock] = []
         for item in sessionItems {
             let (instructions, focusCue, updatedSRS) = item.selectInstructionsForDisplay()
@@ -135,6 +164,11 @@ final class SpacedRepetitionEngine {
                 updatedItem.srs = updatedSRS
                 items[index] = updatedItem
             }
+            
+            // Calculate suggested starting BPM for blocks that use metronome
+            let suggestedBPM: Int? = item.blockKind.defaultMetronomeOn
+                ? TempoEngine.suggestedBPM(for: item)
+                : nil
 
             let block = PracticeBlock(
                 kind: item.blockKind,
@@ -145,7 +179,8 @@ final class SpacedRepetitionEngine {
                 practiceItemID: item.id,
                 referenceID: item.referenceID,
                 instructions: instructions,
-                focusCue: focusCue
+                focusCue: focusCue,
+                startingBPM: suggestedBPM
             )
             blocks.append(block)
         }

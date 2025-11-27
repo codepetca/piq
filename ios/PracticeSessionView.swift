@@ -33,17 +33,17 @@ struct PracticeSessionView: View {
             metronome.setBPM(settings.defaultBPM)
             // Set haptics enabled from settings
             haptics.isEnabled = settings.hapticFeedbackEnabled
-            // Start metronome for first block if needed
+            // Set block-specific tempo and start metronome for first block if needed
             handleMetronomeForBlock(at: engine.currentBlockIndex)
         }
         .onChange(of: engine.currentBlockIndex) { _, newIndex in
-            // Auto-start/stop metronome based on block kind
+            // Auto-start/stop metronome and set tempo based on block
             handleMetronomeForBlock(at: newIndex)
         }
     }
 
     // MARK: - Metronome Control
-
+    
     private func handleMetronomeForBlock(at index: Int?) {
         guard let index = index,
               let session = engine.session,
@@ -53,7 +53,13 @@ struct PracticeSessionView: View {
         }
 
         let block = session.blocks[index]
+        // Tempo learning is only tracked for blocks whose metronome is on by default.
         if block.kind.defaultMetronomeOn {
+            // Use block's suggested BPM if available, otherwise use settings default
+            let bpmToUse = block.startingBPM ?? settings.defaultBPM
+            metronome.setBPM(bpmToUse)
+            // Record the starting BPM for tempo learning
+            engine.recordStartingBPM(forBlockAt: index, bpm: bpmToUse)
             metronome.start()
         } else {
             metronome.stop()
@@ -126,8 +132,14 @@ struct PracticeSessionView: View {
                         metronome.start()
                     }
                 },
-                onIncreaseBPM: { metronome.increaseBPM() },
-                onDecreaseBPM: { metronome.decreaseBPM() }
+                onIncreaseBPM: {
+                    metronome.increaseBPM()
+                    engine.recordTempoAdjustment()
+                },
+                onDecreaseBPM: {
+                    metronome.decreaseBPM()
+                    engine.recordTempoAdjustment()
+                }
             )
             .padding(.horizontal)
 
@@ -187,22 +199,38 @@ struct PracticeSessionView: View {
             FeedbackBar(
                 onEasy: {
                     haptics.feedbackEasy()
+                    recordEndingBPMIfNeeded(forBlockAt: lastIndex)
                     engine.recordFeedback(forBlockAt: lastIndex, feedback: .easy)
                     engine.startNextBlock()
                 },
                 onGood: {
                     haptics.feedbackGood()
+                    recordEndingBPMIfNeeded(forBlockAt: lastIndex)
                     engine.recordFeedback(forBlockAt: lastIndex, feedback: .good)
                     engine.startNextBlock()
                 },
                 onHard: {
                     haptics.feedbackHard()
+                    recordEndingBPMIfNeeded(forBlockAt: lastIndex)
                     engine.recordFeedback(forBlockAt: lastIndex, feedback: .hard)
                     engine.startNextBlock()
                 }
             )
 
             Spacer()
+        }
+    }
+    
+    /// Record the ending BPM for tempo learning (only for blocks with metronome).
+    private func recordEndingBPMIfNeeded(forBlockAt index: Int) {
+        guard let session = engine.session,
+              index < session.blocks.count else { return }
+        
+        let block = session.blocks[index]
+        // Only track tempo for blocks that default to metronome-on; optional metronome
+        // usage in Song/Solo blocks is intentionally excluded from tempo learning.
+        if block.kind.defaultMetronomeOn {
+            engine.recordEndingBPM(forBlockAt: index, bpm: metronome.bpm)
         }
     }
 

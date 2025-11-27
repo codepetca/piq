@@ -676,4 +676,74 @@ final class PracticeEngineTests: XCTestCase {
         XCTAssertNil(callbackSession?.blocks[2].feedback)
         XCTAssertNil(callbackSession?.blocks[3].feedback)
     }
+    
+    // MARK: - Tempo Recording Tests
+    
+    func testRecordStartingBPM() {
+        let engine = PracticeEngine()
+        engine.startSession()
+        
+        engine.recordStartingBPM(forBlockAt: 0, bpm: 80)
+        
+        XCTAssertEqual(engine.session?.blocks[0].startingBPM, 80)
+    }
+    
+    func testRecordEndingBPM() {
+        let engine = PracticeEngine()
+        engine.startSession()
+        
+        engine.recordEndingBPM(forBlockAt: 0, bpm: 90)
+        
+        XCTAssertEqual(engine.session?.blocks[0].endingBPM, 90)
+    }
+    
+    func testRecordTempoAdjustment() {
+        let engine = PracticeEngine()
+        engine.startSession()
+        
+        // Record multiple adjustments
+        engine.recordTempoAdjustment()
+        engine.recordTempoAdjustment()
+        engine.recordTempoAdjustment()
+        
+        XCTAssertEqual(engine.session?.blocks[0].tempoAdjustmentCount, 3)
+    }
+    
+    func testRecordTempoAdjustmentDoesNothingWhenNotInBlock() {
+        let engine = PracticeEngine()
+        
+        // Should not crash when called in idle state
+        engine.recordTempoAdjustment()
+        
+        XCTAssertNil(engine.session)
+    }
+    
+    func testTempoRecordingAcrossBlocks() {
+        let engine = PracticeEngine()
+        engine.startSession()
+        
+        // Record tempo for first block
+        engine.recordStartingBPM(forBlockAt: 0, bpm: 60)
+        engine.recordTempoAdjustment()
+        engine.recordEndingBPM(forBlockAt: 0, bpm: 65)
+        
+        engine.finishCurrentBlock()
+        engine.recordFeedback(forBlockAt: 0, feedback: .good)
+        engine.startNextBlock()
+        
+        // Record tempo for second block
+        engine.recordStartingBPM(forBlockAt: 1, bpm: 70)
+        engine.recordTempoAdjustment()
+        engine.recordTempoAdjustment()
+        engine.recordEndingBPM(forBlockAt: 1, bpm: 80)
+        
+        // Verify both blocks have correct tempo data
+        XCTAssertEqual(engine.session?.blocks[0].startingBPM, 60)
+        XCTAssertEqual(engine.session?.blocks[0].endingBPM, 65)
+        XCTAssertEqual(engine.session?.blocks[0].tempoAdjustmentCount, 1)
+        
+        XCTAssertEqual(engine.session?.blocks[1].startingBPM, 70)
+        XCTAssertEqual(engine.session?.blocks[1].endingBPM, 80)
+        XCTAssertEqual(engine.session?.blocks[1].tempoAdjustmentCount, 2)
+    }
 }

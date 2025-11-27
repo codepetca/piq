@@ -203,6 +203,49 @@ final class PracticeEngine {
         session.blocks[index].feedback = feedback
         self.session = session
     }
+    
+    // MARK: - Tempo Tracking
+    
+    /// Record the starting BPM for a block.
+    /// - Parameters:
+    ///   - index: Block index
+    ///   - bpm: Starting BPM value
+    func recordStartingBPM(forBlockAt index: Int, bpm: Int) {
+        guard var session = session,
+              index < session.blocks.count else {
+            return
+        }
+        
+        session.blocks[index].startingBPM = bpm
+        self.session = session
+    }
+    
+    /// Record the ending BPM for a block.
+    /// - Parameters:
+    ///   - index: Block index
+    ///   - bpm: Ending BPM value
+    func recordEndingBPM(forBlockAt index: Int, bpm: Int) {
+        guard var session = session,
+              index < session.blocks.count else {
+            return
+        }
+        
+        session.blocks[index].endingBPM = bpm
+        self.session = session
+    }
+    
+    /// Record a tempo adjustment made by the user.
+    /// Call this when user taps +/- BPM buttons.
+    func recordTempoAdjustment() {
+        guard case .inBlock(let index, _) = state,
+              var session = session,
+              index < session.blocks.count else {
+            return
+        }
+        
+        session.blocks[index].tempoAdjustmentCount += 1
+        self.session = session
+    }
 
     // MARK: - Timer Management
 

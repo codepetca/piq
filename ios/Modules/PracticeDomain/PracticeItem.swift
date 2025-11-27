@@ -1,5 +1,41 @@
 import Foundation
 
+// MARK: - Tempo Tracking
+
+/// Records a single tempo practice session for learning purposes.
+struct TempoSession: Codable, Equatable {
+    let date: Date
+    let startBPM: Int                // BPM at block start
+    let endBPM: Int                  // BPM at block end
+    let adjustmentCount: Int         // Number of user adjustments
+    let feedback: PracticeBlockFeedback
+}
+
+/// Tracks tempo learning state for a practice item.
+struct TempoState: Codable, Equatable {
+    var currentBPM: Int              // Current working tempo
+    var targetBPM: Int?              // Optional goal tempo (nil = unlimited)
+    var history: [TempoSession]      // Last 10 sessions
+    var lastPracticedBPM: Int?       // Previous session's BPM
+    var progressionRate: Double      // Learning speed multiplier (0.5-2.0)
+    
+    init(
+        currentBPM: Int = 60,
+        targetBPM: Int? = nil,
+        history: [TempoSession] = [],
+        lastPracticedBPM: Int? = nil,
+        progressionRate: Double = 1.0
+    ) {
+        self.currentBPM = currentBPM
+        self.targetBPM = targetBPM
+        self.history = history
+        self.lastPracticedBPM = lastPracticedBPM
+        self.progressionRate = progressionRate
+    }
+}
+
+// MARK: - Spaced Repetition State
+
 struct SRSState: Codable, Equatable {
     var stability: Double
     var lastPlayed: Date?
@@ -27,6 +63,7 @@ struct PracticeItem: Identifiable, Codable, Equatable {
     let referenceID: String?
     var targetMinutes: Int
     var srs: SRSState
+    var tempo: TempoState
 
     // Practice instructions
     let coreInstructions: [String]
@@ -43,6 +80,7 @@ struct PracticeItem: Identifiable, Codable, Equatable {
         referenceID: String? = nil,
         targetMinutes: Int? = nil,
         srs: SRSState = SRSState(),
+        tempo: TempoState? = nil,
         coreInstructions: [String] = [],
         bonusTips: [String] = [],
         focusCues: [String] = []
@@ -56,9 +94,37 @@ struct PracticeItem: Identifiable, Codable, Equatable {
         self.referenceID = referenceID
         self.targetMinutes = targetMinutes ?? category.defaultMinutes
         self.srs = srs
+        self.tempo = tempo ?? TempoState(currentBPM: category.defaultBPM)
         self.coreInstructions = coreInstructions
         self.bonusTips = bonusTips
         self.focusCues = focusCues
+    }
+    
+    // MARK: - Codable (backward compatible decoding)
+    
+    enum CodingKeys: String, CodingKey {
+        case id, catalogID, category, title, detail, key, referenceID
+        case targetMinutes, srs, tempo
+        case coreInstructions, bonusTips, focusCues
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        id = try container.decode(UUID.self, forKey: .id)
+        catalogID = try container.decode(String.self, forKey: .catalogID)
+        category = try container.decode(PracticeItemCategory.self, forKey: .category)
+        title = try container.decode(String.self, forKey: .title)
+        detail = try container.decodeIfPresent(String.self, forKey: .detail) ?? ""
+        key = try container.decodeIfPresent(String.self, forKey: .key)
+        referenceID = try container.decodeIfPresent(String.self, forKey: .referenceID)
+        targetMinutes = try container.decodeIfPresent(Int.self, forKey: .targetMinutes) ?? category.defaultMinutes
+        srs = try container.decodeIfPresent(SRSState.self, forKey: .srs) ?? SRSState()
+        // For v1 items without tempo, use default based on category
+        tempo = try container.decodeIfPresent(TempoState.self, forKey: .tempo) ?? TempoState(currentBPM: category.defaultBPM)
+        coreInstructions = try container.decodeIfPresent([String].self, forKey: .coreInstructions) ?? []
+        bonusTips = try container.decodeIfPresent([String].self, forKey: .bonusTips) ?? []
+        focusCues = try container.decodeIfPresent([String].self, forKey: .focusCues) ?? []
     }
 
     var blockKind: PracticeBlockKind { category.blockKind }
