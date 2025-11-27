@@ -11,6 +11,9 @@ struct PracticeSessionView: View {
     @State private var showingReference = false
     @State private var showSessionPrompt = true
 
+    /// Auto-advance delay for block preview (in seconds)
+    private let previewAutoAdvanceDelay: TimeInterval = 4.0
+
     var body: some View {
         VStack {
             switch engine.state {
@@ -64,8 +67,8 @@ struct PracticeSessionView: View {
                 }
             )
             .onAppear {
-                // Auto-advance after 4 seconds
-                DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
+                // Auto-advance after delay
+                DispatchQueue.main.asyncAfter(deadline: .now() + previewAutoAdvanceDelay) {
                     // Only advance if still in preview (user didn't tap)
                     if case .previewBlock(index) = engine.state {
                         engine.startCurrentBlock()

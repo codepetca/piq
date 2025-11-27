@@ -110,7 +110,6 @@ final class PracticeEngine {
         }
 
         state = .previewBlock(index: index)
-        isPaused = false
     }
 
     /// Transition from preview to active practice for current block.
@@ -123,6 +122,7 @@ final class PracticeEngine {
 
         let block = session.blocks[index]
         let seconds = block.targetMinutes * 60
+        isPaused = false
         state = .inBlock(index: index, remainingSeconds: seconds)
     }
 
