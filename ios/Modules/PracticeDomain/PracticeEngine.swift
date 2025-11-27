@@ -4,6 +4,7 @@ import Observation
 /// Engine state machine for managing practice sessions.
 enum PracticeEngineState: Equatable {
     case idle
+    case previewBlock(index: Int, secondsRemaining: Int)
     case inBlock(index: Int, remainingSeconds: Int)
     case betweenBlocks(lastIndex: Int, nextIndex: Int?)
     case finished
@@ -35,6 +36,8 @@ final class PracticeEngine {
     /// Current block index, or nil if not in a block.
     var currentBlockIndex: Int? {
         switch state {
+        case .previewBlock(let index, _):
+            return index
         case .inBlock(let index, _):
             return index
         case .betweenBlocks(_, let nextIndex):
@@ -98,9 +101,8 @@ final class PracticeEngine {
             return
         }
 
-        let block = session.blocks[index]
-        let seconds = block.targetMinutes * 60
-        state = .inBlock(index: index, remainingSeconds: seconds)
+        // Start with preview state (4 seconds)
+        state = .previewBlock(index: index, secondsRemaining: 4)
         isPaused = false
     }
 
@@ -111,6 +113,14 @@ final class PracticeEngine {
         guard !isPaused else { return }
 
         switch state {
+        case .previewBlock(let index, let secondsRemaining):
+            if secondsRemaining <= 1 {
+                // Preview countdown complete, transition to actual block
+                transitionToInBlock(at: index)
+            } else {
+                state = .previewBlock(index: index, secondsRemaining: secondsRemaining - 1)
+            }
+            
         case .inBlock(let index, let remainingSeconds):
             if remainingSeconds <= 1 {
                 transitionToBetweenBlocks(fromIndex: index)
@@ -168,18 +178,42 @@ final class PracticeEngine {
         }
     }
 
-    /// Skip the current block without completing it.
-    func skipCurrentBlock() {
-        guard case .inBlock(let index, _) = state,
-              var session = session,
-              index < session.blocks.count else {
+    /// Skip the preview and immediately start the block.
+    /// This is called when user taps during the preview countdown.
+    func skipPreview() {
+        guard case .previewBlock(let index, _) = state else {
             return
         }
-
-        session.blocks[index].actualMinutes = 0
-        self.session = session
-
-        transitionToBetweenBlocks(fromIndex: index)
+        
+        transitionToInBlock(at: index)
+    }
+    
+    /// Skip the current block without completing it.
+    func skipCurrentBlock() {
+        switch state {
+        case .previewBlock(let index, _):
+            // If in preview, skip to next block without starting this one
+            guard var session = session,
+                  index < session.blocks.count else {
+                return
+            }
+            session.blocks[index].actualMinutes = 0
+            self.session = session
+            transitionToBetweenBlocks(fromIndex: index)
+            
+        case .inBlock(let index, _):
+            // If in block, mark as skipped and move to feedback
+            guard var session = session,
+                  index < session.blocks.count else {
+                return
+            }
+            session.blocks[index].actualMinutes = 0
+            self.session = session
+            transitionToBetweenBlocks(fromIndex: index)
+            
+        default:
+            return
+        }
     }
 
     /// Extend the current block by additional seconds.
@@ -266,16 +300,22 @@ final class PracticeEngine {
     // MARK: - Private Helpers
 
     private func handleStateChange(from oldState: PracticeEngineState, to newState: PracticeEngineState) {
-        // Auto-start timer when entering inBlock state
-        if case .inBlock = newState {
-            if case .inBlock = oldState {
-                // Already in a block, timer is running
+        // Auto-start timer when entering previewBlock or inBlock state
+        switch newState {
+        case .previewBlock, .inBlock:
+            if case .previewBlock = oldState {
+                // Already in preview, timer is running
+            } else if case .inBlock = oldState {
+                // Already in block, timer is running
             } else {
                 startTimer()
             }
-        } else {
-            // Stop timer when leaving inBlock state
-            if case .inBlock = oldState {
+            
+        default:
+            // Stop timer when leaving previewBlock or inBlock state
+            if case .previewBlock = oldState {
+                stopTimer()
+            } else if case .inBlock = oldState {
                 stopTimer()
             }
         }
@@ -289,6 +329,17 @@ final class PracticeEngine {
         }
     }
 
+    private func transitionToInBlock(at index: Int) {
+        guard let session = session,
+              index < session.blocks.count else {
+            return
+        }
+        
+        let block = session.blocks[index]
+        let seconds = block.targetMinutes * 60
+        state = .inBlock(index: index, remainingSeconds: seconds)
+    }
+    
     private func transitionToBetweenBlocks(fromIndex index: Int) {
         guard let session = session else { return }
 
