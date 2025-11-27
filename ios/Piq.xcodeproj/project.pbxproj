@@ -39,6 +39,7 @@
 		A1000030001 /* PracticeReferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000030000 /* PracticeReferenceView.swift */; };
 		A1000031001 /* HistoryTrendCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000031000 /* HistoryTrendCalculator.swift */; };
 		A1000032001 /* BlockInstructionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000032000 /* BlockInstructionView.swift */; };
+		A1000033001 /* TempoEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000033000 /* TempoEngine.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -75,6 +76,7 @@
 		A1000030000 /* PracticeReferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeReferenceView.swift; sourceTree = "<group>"; };
 		A1000031000 /* HistoryTrendCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryTrendCalculator.swift; sourceTree = "<group>"; };
 		A1000032000 /* BlockInstructionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockInstructionView.swift; sourceTree = "<group>"; };
+		A1000033000 /* TempoEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TempoEngine.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -146,6 +148,7 @@
 				A1000010000 /* PracticeSession.swift */,
 				A1000014000 /* PracticeStorage.swift */,
 				A1000013000 /* SpacedRepetitionEngine.swift */,
+				A1000033000 /* TempoEngine.swift */,
 				A1000031000 /* HistoryTrendCalculator.swift */,
 			);
 			path = PracticeDomain;
@@ -307,6 +310,7 @@
 				A1000029001 /* PracticeReferenceService.swift in Sources */,
 				A1000030001 /* PracticeReferenceView.swift in Sources */,
 				A1000031001 /* HistoryTrendCalculator.swift in Sources */,
+				A1000033001 /* TempoEngine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
