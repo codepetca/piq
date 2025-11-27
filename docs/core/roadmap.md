@@ -154,7 +154,7 @@ Actual implementation happens via:
 
 Every change must respect:
 - design.md (minimal UI)
-- claude.md (module boundaries)
+- architecture.md (module boundaries)
 - agents.md (roles)
 - tests.md (TDD)
 - piq-guitar-guidance.md (learning model)

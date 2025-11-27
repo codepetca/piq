@@ -9,7 +9,7 @@ The docs follow a strict 3-layer structure so that AI assistants can work consis
 # 1. Folder Structure
 /docs
 /core
-claude.md
+architecture.md
 design.md
 agents.md
 tests.md
@@ -30,7 +30,7 @@ issue-template.md
 These define PIQ’s unchanging rules:
 
 - **design.md** — UI/UX flows & visual rules  [oai_citation:5‡design.md](file-service://file-WbHhgc7refSDCwWbeHPJnu)  
-- **claude.md** — architecture, platform constraints, module boundaries  [oai_citation:6‡claude.md](file-service://file-3ExikRZvgDqHQnjTadmgG4)  
+- **architecture.md** — architecture, platform constraints, module boundaries  
 - **agents.md** — multi-agent roles & responsibilities  [oai_citation:7‡agents.md](file-service://file-Hv7q4zuHU6ddxkvCH7TKum)  
 - **tests.md** — TDD philosophy and testing priorities  [oai_citation:8‡tests.md](file-service://file-8eQfYHbiXyHf4c83DaLGGu)  
 
@@ -76,7 +76,7 @@ The provided **`issue-template.md`** ensures consistency.
 Before modifying code, any AI assistant must read these **in order**:
 
 1. `/docs/core/design.md`  
-2. `/docs/core/claude.md`  
+2. `/docs/core/architecture.md`  
 3. `/docs/core/agents.md`  
 4. `/docs/core/tests.md`  
 5. Relevant `/docs/guidance/` files (e.g., `piq-guitar-guidance.md`)  

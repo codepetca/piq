@@ -5,7 +5,7 @@ When I say “work on issue #X”, follow this sequence:
 1. Fetch the GitHub Issue:
    gh issue view X --json number,title,body,labels
 
-2. Read the issue body + core docs (design.md, claude.md, agents.md, tests.md, piq-guitar-guidance.md).
+2. Read the issue body + core docs (design.md, architecture.md, agents.md, tests.md, piq-guitar-guidance.md).
 
 3. Summarize the plan in 5–10 bullets.
 

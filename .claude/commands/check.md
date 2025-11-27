@@ -36,7 +36,7 @@ Run this command to verify that your changes follow piq's architectural rules be
 
 For a thorough review, spawn a reviewer subagent or manually verify against:
 
-1. **`/docs/core/claude.md`** - Architecture, modules, platform constraints
+1. **`/docs/core/architecture.md`** - Architecture, modules, platform constraints
 2. **`/docs/core/design.md`** - UI/UX patterns, visual design system
 3. **`/docs/core/agents.md`** - Module boundaries and responsibilities
 4. **`/docs/core/tests.md`** - Testing priorities and TDD approach
