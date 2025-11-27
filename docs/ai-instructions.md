@@ -110,6 +110,7 @@ See `/docs/workflow/handle-issue.md` for detailed workflow.
 4. Ask ONE clarifying question if needed
 5. Get user confirmation before starting
 6. Implement following architecture rules from architecture.md and agents.md
+   - **If adding new Swift files:** Update both Package.swift AND ios/Piq.xcodeproj/project.pbxproj (see architecture.md section 8)
 7. Write/update tests (TDD for engines, see tests.md)
 8. Run `swift test` to verify
 9. Show `git diff`
