@@ -18,8 +18,13 @@ struct PracticeSessionView: View {
                 Text("No session")
                     .onAppear { dismiss() }
 
+            case .previewBlock(let index):
+                previewBlockView(index: index)
+                    .transition(.opacity.combined(with: .scale))
+
             case .inBlock(_, let remainingSeconds):
                 inBlockView(remainingSeconds: remainingSeconds)
+                    .transition(.opacity.combined(with: .scale))
 
             case .betweenBlocks(let lastIndex, _):
                 betweenBlocksView(lastIndex: lastIndex)
@@ -28,17 +33,45 @@ struct PracticeSessionView: View {
                 finishedView()
             }
         }
+        .animation(.easeInOut(duration: 0.4), value: engine.state)
         .onAppear {
             // Set metronome to default BPM from settings
             metronome.setBPM(settings.defaultBPM)
             // Set haptics enabled from settings
             haptics.isEnabled = settings.hapticFeedbackEnabled
-            // Start metronome for first block if needed
+            // Start metronome for first block if needed (only when in inBlock state)
             handleMetronomeForBlock(at: engine.currentBlockIndex)
         }
         .onChange(of: engine.currentBlockIndex) { _, newIndex in
             // Auto-start/stop metronome based on block kind
+            // This only triggers when transitioning to inBlock (not during preview)
             handleMetronomeForBlock(at: newIndex)
+        }
+    }
+
+    // MARK: - Preview Block View
+
+    @ViewBuilder
+    private func previewBlockView(index: Int) -> some View {
+        if let session = engine.session,
+           index < session.blocks.count {
+            let block = session.blocks[index]
+
+            BlockPreviewView(
+                block: block,
+                onStart: {
+                    engine.startCurrentBlock()
+                }
+            )
+            .onAppear {
+                // Auto-advance after 4 seconds
+                DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
+                    // Only advance if still in preview (user didn't tap)
+                    if case .previewBlock(index) = engine.state {
+                        engine.startCurrentBlock()
+                    }
+                }
+            }
         }
     }
 
@@ -89,15 +122,6 @@ struct PracticeSessionView: View {
             }
 
             Spacer()
-
-            // Block instructions (if available)
-            if let block = engine.currentBlock,
-               !block.instructions.isEmpty || block.focusCue != nil {
-                BlockInstructionView(
-                    instructions: block.instructions,
-                    focusCue: block.focusCue
-                )
-            }
 
             // Timer with progress rings
             if let block = engine.currentBlock {

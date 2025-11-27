@@ -30,7 +30,7 @@ final class TodayViewModel {
         switch engine.state {
         case .idle, .finished:
             return false
-        case .inBlock, .betweenBlocks:
+        case .previewBlock, .inBlock, .betweenBlocks:
             return true
         }
     }
@@ -40,6 +40,14 @@ final class TodayViewModel {
         switch engine.state {
         case .idle, .finished:
             return nil
+        case .previewBlock(let index):
+            guard let session = engine.session,
+                  index < session.blocks.count else {
+                return "Session in progress"
+            }
+            let block = session.blocks[index]
+            let totalBlocks = session.blocks.count
+            return "Block \(index + 1)/\(totalBlocks): \(block.kind.displayName)"
         case .inBlock(let index, _):
             guard let session = engine.session,
                   index < session.blocks.count else {

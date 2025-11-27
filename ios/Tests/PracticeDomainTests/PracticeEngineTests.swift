@@ -30,20 +30,21 @@ final class PracticeEngineTests: XCTestCase {
         XCTAssertEqual(engine.session?.blocks.count, 4)
     }
 
-    func testStartSessionMovesToFirstBlock() {
+    func testStartSessionMovesToPreviewBlock() {
         let engine = PracticeEngine()
         engine.startSession()
 
-        if case .inBlock(let index, _) = engine.state {
+        if case .previewBlock(let index) = engine.state {
             XCTAssertEqual(index, 0)
         } else {
-            XCTFail("Engine should be in first block after starting session")
+            XCTFail("Engine should be in first block preview after starting session")
         }
     }
 
-    func testStartSessionSetsCorrectRemainingSeconds() {
+    func testStartCurrentBlockSetsCorrectRemainingSeconds() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
 
         if case .inBlock(_, let remainingSeconds) = engine.state {
             // First block is warmup category (3 minutes = 180 seconds)
@@ -58,6 +59,7 @@ final class PracticeEngineTests: XCTestCase {
     func testTickDecrementsRemainingSeconds() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
         engine.tick()
 
         if case .inBlock(_, let remainingSeconds) = engine.state {
@@ -82,6 +84,7 @@ final class PracticeEngineTests: XCTestCase {
     func testMultipleTicksDecrementCorrectly() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
 
         for _ in 0..<10 {
             engine.tick()
@@ -98,6 +101,7 @@ final class PracticeEngineTests: XCTestCase {
     func testTickAtZeroTransitionsToBetweenBlocks() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
 
         // Fast forward to 1 second remaining
         if case .inBlock(let index, _) = engine.state {
@@ -119,6 +123,7 @@ final class PracticeEngineTests: XCTestCase {
     func testFinishCurrentBlockTransitionsToBetweenBlocks() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
         engine.finishCurrentBlock()
 
         if case .betweenBlocks(let lastIndex, let nextIndex) = engine.state {
@@ -132,6 +137,7 @@ final class PracticeEngineTests: XCTestCase {
     func testFinishCurrentBlockRecordsActualMinutes() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
 
         // Simulate 1 minute (60 seconds) of practice on warmup block (180 total)
         // Set remaining to 120 seconds -> elapsed = 180 - 120 = 60 seconds = 1 minute
@@ -186,21 +192,24 @@ final class PracticeEngineTests: XCTestCase {
     func testStartNextBlockFromBetweenBlocks() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
         engine.finishCurrentBlock()
-        engine.startNextBlock()
+        engine.startNextBlock()  // This goes to previewBlock for next block
 
-        if case .inBlock(let index, _) = engine.state {
+        if case .previewBlock(let index) = engine.state {
             XCTAssertEqual(index, 1)
         } else {
-            XCTFail("Engine should be in second block")
+            XCTFail("Engine should be in second block preview")
         }
     }
 
-    func testStartNextBlockSetsCorrectRemainingSeconds() {
+    func testStartNextBlockThenStartCurrentBlockSetsCorrectRemainingSeconds() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
         engine.finishCurrentBlock()
         engine.startNextBlock()
+        engine.startCurrentBlock()
 
         if case .inBlock(_, let remainingSeconds) = engine.state {
             // Second block (songwork/solo depending on SRS = 6/5 minutes = 360/300 seconds)
@@ -215,6 +224,7 @@ final class PracticeEngineTests: XCTestCase {
     func testSkipCurrentBlockTransitionsToBetweenBlocks() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
         engine.skipCurrentBlock()
 
         if case .betweenBlocks(let lastIndex, let nextIndex) = engine.state {
@@ -228,9 +238,24 @@ final class PracticeEngineTests: XCTestCase {
     func testSkipCurrentBlockRecordsZeroActualMinutes() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
         engine.skipCurrentBlock()
 
         XCTAssertEqual(engine.session?.blocks[0].actualMinutes, 0)
+    }
+
+    func testSkipDuringPreviewBlockTransitionsToBetweenBlocks() {
+        let engine = PracticeEngine()
+        engine.startSession()
+        // Skip during preview (before startCurrentBlock)
+        engine.skipCurrentBlock()
+
+        if case .betweenBlocks(let lastIndex, let nextIndex) = engine.state {
+            XCTAssertEqual(lastIndex, 0)
+            XCTAssertEqual(nextIndex, 1)
+        } else {
+            XCTFail("Engine should be between blocks after skip during preview")
+        }
     }
 
     func testSkipLastBlockTransitionsToFinished() {
@@ -262,6 +287,7 @@ final class PracticeEngineTests: XCTestCase {
     func testExtendCurrentBlockAddsSeconds() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
         engine.extendCurrentBlock(byExtraSeconds: 60)
 
         if case .inBlock(_, let remainingSeconds) = engine.state {
@@ -275,6 +301,7 @@ final class PracticeEngineTests: XCTestCase {
     func testExtendCurrentBlockByFiveMinutes() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
         engine.extendCurrentBlock(byExtraSeconds: 300) // 5 minutes
 
         if case .inBlock(_, let remainingSeconds) = engine.state {
@@ -301,6 +328,7 @@ final class PracticeEngineTests: XCTestCase {
     func testRecordFeedbackForBlock() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
         engine.finishCurrentBlock()
         engine.recordFeedback(forBlockAt: 0, feedback: .good)
 
@@ -310,6 +338,7 @@ final class PracticeEngineTests: XCTestCase {
     func testRecordFeedbackEasy() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
         engine.finishCurrentBlock()
         engine.recordFeedback(forBlockAt: 0, feedback: .easy)
 
@@ -319,6 +348,7 @@ final class PracticeEngineTests: XCTestCase {
     func testRecordFeedbackHard() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
         engine.finishCurrentBlock()
         engine.recordFeedback(forBlockAt: 0, feedback: .hard)
 
@@ -339,6 +369,7 @@ final class PracticeEngineTests: XCTestCase {
     func testPauseStopsTimer() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
         XCTAssertFalse(engine.isPaused)
 
         engine.pause()
@@ -348,6 +379,7 @@ final class PracticeEngineTests: XCTestCase {
     func testResumeStartsTimer() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
         engine.pause()
         engine.resume()
 
@@ -357,6 +389,7 @@ final class PracticeEngineTests: XCTestCase {
     func testTickDoesNothingWhenPaused() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
         engine.pause()
         engine.tick()
 
@@ -373,11 +406,13 @@ final class PracticeEngineTests: XCTestCase {
     func testCurrentBlockIndexReturnsCorrectValue() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
 
         XCTAssertEqual(engine.currentBlockIndex, 0)
 
         engine.finishCurrentBlock()
         engine.startNextBlock()
+        engine.startCurrentBlock()
 
         XCTAssertEqual(engine.currentBlockIndex, 1)
     }
@@ -387,11 +422,28 @@ final class PracticeEngineTests: XCTestCase {
         XCTAssertNil(engine.currentBlockIndex)
     }
 
+    func testCurrentBlockIndexNilDuringPreview() {
+        let engine = PracticeEngine()
+        engine.startSession()
+        // In preview state, currentBlockIndex should be nil (metronome won't start)
+        XCTAssertNil(engine.currentBlockIndex)
+    }
+
     func testCurrentBlockReturnsCorrectBlock() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
 
         let currentBlock = engine.currentBlock
+        XCTAssertEqual(currentBlock?.kind, .warmup)
+    }
+
+    func testCurrentBlockReturnsBlockDuringPreview() {
+        let engine = PracticeEngine()
+        engine.startSession()
+        // currentBlock should return the block being previewed
+        let currentBlock = engine.currentBlock
+        XCTAssertNotNil(currentBlock)
         XCTAssertEqual(currentBlock?.kind, .warmup)
     }
 
@@ -406,8 +458,17 @@ final class PracticeEngineTests: XCTestCase {
         let engine = PracticeEngine()
         engine.startSession()
 
-        // Complete all 4 blocks
+        // Complete all 4 blocks (preview -> inBlock -> betweenBlocks -> preview -> ...)
         for i in 0..<4 {
+            // Start from preview
+            if case .previewBlock(let index) = engine.state {
+                XCTAssertEqual(index, i)
+            } else {
+                XCTFail("Should be in preview for block \(i)")
+            }
+
+            engine.startCurrentBlock()
+
             if case .inBlock(let index, _) = engine.state {
                 XCTAssertEqual(index, i)
             } else {
@@ -438,6 +499,7 @@ final class PracticeEngineTests: XCTestCase {
         let feedbacks: [PracticeBlockFeedback] = [.easy, .good, .hard, .good]
 
         for i in 0..<4 {
+            engine.startCurrentBlock()
             engine.finishCurrentBlock()
             engine.recordFeedback(forBlockAt: i, feedback: feedbacks[i])
             engine.startNextBlock()  // For last block, this transitions to .finished
@@ -454,6 +516,7 @@ final class PracticeEngineTests: XCTestCase {
     func testSessionProgressZeroAtStart() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
 
         XCTAssertEqual(engine.sessionProgress, 0.0, accuracy: 0.01)
     }
@@ -461,6 +524,7 @@ final class PracticeEngineTests: XCTestCase {
     func testSessionProgressAfterFirstBlock() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
         engine.finishCurrentBlock()
 
         XCTAssertEqual(engine.sessionProgress, 0.25, accuracy: 0.01)
@@ -470,7 +534,8 @@ final class PracticeEngineTests: XCTestCase {
         let engine = PracticeEngine()
         engine.startSession()
 
-        for i in 0..<4 {
+        for _ in 0..<4 {
+            engine.startCurrentBlock()
             engine.finishCurrentBlock()
             engine.startNextBlock()  // For last block, this transitions to .finished
         }
@@ -481,6 +546,7 @@ final class PracticeEngineTests: XCTestCase {
     func testBlockProgressZeroAtStart() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
 
         XCTAssertEqual(engine.blockProgress, 0.0, accuracy: 0.01)
     }
@@ -488,6 +554,7 @@ final class PracticeEngineTests: XCTestCase {
     func testBlockProgressHalfway() {
         let engine = PracticeEngine()
         engine.startSession()
+        engine.startCurrentBlock()
 
         // Simulate halfway through warmup block (180 seconds total)
         // Halfway = 90 seconds remaining
@@ -512,8 +579,9 @@ final class PracticeEngineTests: XCTestCase {
 
         engine.startSession()
 
-        // Complete all 4 blocks (always call startNextBlock after feedback)
+        // Complete all 4 blocks (always call startCurrentBlock then startNextBlock after feedback)
         for i in 0..<4 {
+            engine.startCurrentBlock()
             engine.finishCurrentBlock()
             engine.recordFeedback(forBlockAt: i, feedback: .good)
             engine.startNextBlock()  // For last block, this transitions to .finished
@@ -538,6 +606,7 @@ final class PracticeEngineTests: XCTestCase {
         let feedbacks: [PracticeBlockFeedback] = [.easy, .good, .hard, .good]
 
         for i in 0..<4 {
+            engine.startCurrentBlock()
             engine.finishCurrentBlock()
             engine.recordFeedback(forBlockAt: i, feedback: feedbacks[i])
             engine.startNextBlock()  // For last block, this transitions to .finished
@@ -562,6 +631,7 @@ final class PracticeEngineTests: XCTestCase {
 
         // Complete only 2 blocks
         for i in 0..<2 {
+            engine.startCurrentBlock()
             engine.finishCurrentBlock()
             engine.recordFeedback(forBlockAt: i, feedback: .good)
             engine.startNextBlock()
@@ -583,6 +653,7 @@ final class PracticeEngineTests: XCTestCase {
 
         // Complete all blocks to finish session
         for i in 0..<4 {
+            engine.startCurrentBlock()
             engine.finishCurrentBlock()
             engine.recordFeedback(forBlockAt: i, feedback: .good)
             engine.startNextBlock()  // For last block, this transitions to .finished
@@ -605,6 +676,7 @@ final class PracticeEngineTests: XCTestCase {
         // First session
         engine.startSession()
         for i in 0..<4 {
+            engine.startCurrentBlock()
             engine.finishCurrentBlock()
             engine.recordFeedback(forBlockAt: i, feedback: .good)
             engine.startNextBlock()  // For last block, this transitions to .finished
@@ -615,6 +687,7 @@ final class PracticeEngineTests: XCTestCase {
         // Second session
         engine.startSession()
         for i in 0..<4 {
+            engine.startCurrentBlock()
             engine.finishCurrentBlock()
             engine.recordFeedback(forBlockAt: i, feedback: .good)
             engine.startNextBlock()  // For last block, this transitions to .finished
@@ -633,13 +706,14 @@ final class PracticeEngineTests: XCTestCase {
 
         engine.startSession()
 
-        // Skip first block
+        // Skip first block during preview
         engine.skipCurrentBlock()
         engine.recordFeedback(forBlockAt: 0, feedback: .hard)
         engine.startNextBlock()
 
         // Complete remaining blocks normally
         for i in 1..<4 {
+            engine.startCurrentBlock()
             engine.finishCurrentBlock()
             engine.recordFeedback(forBlockAt: i, feedback: .good)
             engine.startNextBlock()  // For last block, this transitions to .finished
@@ -662,6 +736,7 @@ final class PracticeEngineTests: XCTestCase {
 
         // Complete blocks but only provide feedback for some
         for i in 0..<4 {
+            engine.startCurrentBlock()
             engine.finishCurrentBlock()
             // Only provide feedback for first two blocks
             if i < 2 {

@@ -55,7 +55,7 @@ final class TodayViewModelTests: XCTestCase {
 
     // MARK: - Start Session Tests
 
-    func testStartSessionMovesEngineToInBlockState() {
+    func testStartSessionMovesToPreviewBlockState() {
         let sre = SpacedRepetitionEngine()
         sre.loadSeedCatalog()
         let engine = PracticeEngine()
@@ -65,10 +65,10 @@ final class TodayViewModelTests: XCTestCase {
 
         viewModel.startSession()
 
-        if case .inBlock(let index, _) = engine.state {
-            XCTAssertEqual(index, 0, "Should start at first block")
+        if case .previewBlock(let index) = engine.state {
+            XCTAssertEqual(index, 0, "Should start at first block preview")
         } else {
-            XCTFail("Engine should be in inBlock state after starting session")
+            XCTFail("Engine should be in previewBlock state after starting session")
         }
     }
 
@@ -107,6 +107,7 @@ final class TodayViewModelTests: XCTestCase {
         let viewModel = TodayViewModel(sre: sre, engine: engine)
 
         engine.startSession(from: sre)
+        engine.startCurrentBlock()  // Transition from preview to inBlock
         engine.finishCurrentBlock()
 
         if case .betweenBlocks = engine.state {
@@ -160,6 +161,7 @@ final class TodayViewModelTests: XCTestCase {
         let viewModel = TodayViewModel(sre: sre, engine: engine)
 
         engine.startSession(from: sre)
+        engine.startCurrentBlock()  // Transition from preview to inBlock
         engine.finishCurrentBlock()
 
         let statusText = viewModel.activeSessionStatusText
@@ -214,16 +216,24 @@ final class TodayViewModelTests: XCTestCase {
         XCTAssertLessThanOrEqual(viewModel.todayBlocks.count, 8)
         XCTAssertFalse(viewModel.hasActiveSession)
 
-        // Step 2: Start session
+        // Step 2: Start session (goes to previewBlock first)
         viewModel.startSession()
         XCTAssertTrue(viewModel.hasActiveSession)
         XCTAssertNotNil(viewModel.activeSessionStatusText)
 
-        // Step 3: Engine state is correct
+        // Step 3: Engine state is correct (in previewBlock)
+        if case .previewBlock(let index) = engine.state {
+            XCTAssertEqual(index, 0)
+        } else {
+            XCTFail("Should be in first block preview")
+        }
+
+        // Step 4: Start current block transitions to inBlock
+        engine.startCurrentBlock()
         if case .inBlock(let index, _) = engine.state {
             XCTAssertEqual(index, 0)
         } else {
-            XCTFail("Should be in first block")
+            XCTFail("Should be in first block after startCurrentBlock")
         }
     }
 }

@@ -4,6 +4,7 @@ import Observation
 /// Engine state machine for managing practice sessions.
 enum PracticeEngineState: Equatable {
     case idle
+    case previewBlock(index: Int)
     case inBlock(index: Int, remainingSeconds: Int)
     case betweenBlocks(lastIndex: Int, nextIndex: Int?)
     case finished
@@ -39,6 +40,8 @@ final class PracticeEngine {
             return index
         case .betweenBlocks(_, let nextIndex):
             return nextIndex
+        case .previewBlock:
+            return nil  // Metronome won't start during preview
         default:
             return nil
         }
@@ -46,6 +49,14 @@ final class PracticeEngine {
 
     /// Current block being practiced, or nil if not in a block.
     var currentBlock: PracticeBlock? {
+        // Check preview state first
+        if case .previewBlock(let index) = state,
+           let session = session,
+           index < session.blocks.count {
+            return session.blocks[index]
+        }
+
+        // Then check active block
         guard let index = currentBlockIndex,
               let session = session,
               index < session.blocks.count else {
@@ -91,9 +102,21 @@ final class PracticeEngine {
         startBlock(at: 0)
     }
 
-    /// Start a specific block by index.
+    /// Start a specific block by index (shows preview first).
     func startBlock(at index: Int) {
         guard let session = session,
+              index < session.blocks.count else {
+            return
+        }
+
+        state = .previewBlock(index: index)
+        isPaused = false
+    }
+
+    /// Transition from preview to active practice for current block.
+    func startCurrentBlock() {
+        guard case .previewBlock(let index) = state,
+              let session = session,
               index < session.blocks.count else {
             return
         }
@@ -101,7 +124,6 @@ final class PracticeEngine {
         let block = session.blocks[index]
         let seconds = block.targetMinutes * 60
         state = .inBlock(index: index, remainingSeconds: seconds)
-        isPaused = false
     }
 
     // MARK: - Timer Control
@@ -170,8 +192,18 @@ final class PracticeEngine {
 
     /// Skip the current block without completing it.
     func skipCurrentBlock() {
-        guard case .inBlock(let index, _) = state,
-              var session = session,
+        let index: Int
+
+        switch state {
+        case .inBlock(let idx, _):
+            index = idx
+        case .previewBlock(let idx):
+            index = idx
+        default:
+            return
+        }
+
+        guard var session = session,
               index < session.blocks.count else {
             return
         }
