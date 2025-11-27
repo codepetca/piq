@@ -37,7 +37,8 @@ final class PracticeStorage {
     /// Version history:
     /// - v0: Legacy format (unwrapped arrays, no version field)
     /// - v1: Added SessionsStore/ItemsStore wrappers with schemaVersion field
-    static let schemaVersion = 1
+    /// - v2: Added TempoState to PracticeItem, tempo tracking fields to PracticeBlock
+    static let schemaVersion = 2
 
     // MARK: - Storage Wrappers
 
@@ -279,7 +280,7 @@ final class PracticeStorage {
     /// catalog title or detail changes don't cause loss of stored SRS state.
     ///
     /// On first run, returns default items from the catalog.
-    /// On subsequent runs, updates catalog items with stored SRS state.
+    /// On subsequent runs, updates catalog items with stored SRS and tempo state.
     func loadPracticeItems(now: Date = Date()) -> [PracticeItem] {
         let storedItems = loadItems()
         let catalogItems = PracticeItemCatalog.seedItems(now: now)
@@ -289,7 +290,7 @@ final class PracticeStorage {
             return catalogItems
         }
 
-        // Merge stored SRS state with catalog using stable catalogID
+        // Merge stored SRS and tempo state with catalog using stable catalogID
         let storedByCatalogID = Dictionary(
             storedItems.map { ($0.catalogID, $0) },
             uniquingKeysWith: { first, _ in first }
@@ -299,6 +300,7 @@ final class PracticeStorage {
             if let storedItem = storedByCatalogID[catalogItem.catalogID] {
                 var merged = catalogItem
                 merged.srs = storedItem.srs
+                merged.tempo = storedItem.tempo
                 return merged
             }
             return catalogItem
