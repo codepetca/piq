@@ -422,7 +422,7 @@ piq's documentation is organized into three layers:
 - `tests.md` — testing philosophy and priorities
 
 **2. `/docs/guidance/` — High-level domain or feature guidance**
-- `piq-guitar-guidance.md` — research-backed guitar-learning model, skill catalog, and SRS concepts
+- `guidance.md` — research-backed guitar-learning model, skill catalog, and SRS concepts
 - Future domain or feature guidance files
 
 **3. `/docs/issues/` — Iteration-level tasks**
@@ -434,7 +434,7 @@ piq's documentation is organized into three layers:
 2. `/docs/core/architecture.md`
 3. `/docs/core/agents.md`
 4. `/docs/core/tests.md`
-5. Any relevant file in `/docs/guidance/` (e.g., `piq-guitar-guidance.md`)
+5. Any relevant file in `/docs/guidance/` (e.g., `guidance.md`)
 6. The specific `/docs/issues/issue-xxx-*.md` file referenced in the current prompt
 
 Agents must always read these files *before* inspecting or modifying source code.

@@ -28,11 +28,22 @@ Read these files to understand the project architecture (order matters):
 4. **tests.md** — Testing philosophy, TDD approach, priorities
    `/Users/stew/Repos/vibe/piq/docs/core/tests.md`
 
-5. **piq-guitar-guidance.md** — Guitar learning domain model, SRS concepts
-   `/Users/stew/Repos/vibe/piq/docs/guidance/piq-guitar-guidance.md`
+5. **guidance.md** — Guitar learning domain model, SRS concepts
+   `/Users/stew/Repos/vibe/piq/docs/guidance/guidance.md`
 
 6. **Active issue file** (if working on a specific task)
    `/Users/stew/Repos/vibe/piq/docs/issues/issue-*.md`
+
+## Optional Contextual Reading
+
+**roadmap.md** — Product phases and feature timeline
+   `/Users/stew/Repos/vibe/piq/docs/core/roadmap.md`
+
+Read this when:
+- Planning new features or creating issues
+- User asks about feature priorities or scope
+- Uncertain whether a feature belongs in MVP vs Phase 2+
+- Avoiding scope creep during implementation
 
 ---
 

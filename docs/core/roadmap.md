@@ -1,170 +1,127 @@
-# piq Roadmap (Evergreen, High-Level)
+# piq Product Roadmap
 
-This roadmap provides long-term direction for the **piq** iOS guitar practice app.  
-It aligns with the core documentation in `/docs/core/` and the conceptual model in `/docs/guidance/`.
+This roadmap defines **what** features to build and **when**.
 
-piq is a **practice coach**, not a lesson app.  
-It focuses on:
-- short, interleaved micro-sessions,
-- SRS-driven scheduling,
-- atomic skills,
-- minimal UX,
-- modular architecture.
-
-This roadmap avoids implementation details—those belong in `/docs/issues/`.
+For **why** and **how** to implement features, see `/docs/guidance/guidance.md`.
+For detailed architecture and patterns, see `/docs/core/` files.
 
 ---
 
-# 1. MVP (Core Experience)
+## Development Workflow
 
-## 1.1 Skill Catalog (Atomic Skills)
-- Seed catalog (~30–60 atomic practice items implemented)
-- Categories: warmup, fretboard, technique, theory, rhythm, chords, soloing, repertoire, songwork, ear_training, musicality (11 categories)
-- Reference diagrams (minimal)
-- See Section 1.7 for catalog structure details
+```
+roadmap.md (phases, features)
+    ↓
+GitHub Issues (specific tasks per phase)
+    ↓
+Implementation (following architecture + guidance docs)
+```
 
-## 1.2 Spaced Repetition Engine (SRE) v1
-- Stability-based scheduling (continuous values, starting at 1.0)
-- Easy/Good/Hard feedback → adaptive spacing
+This roadmap evolves slowly—only for major product direction changes.
+Day-to-day tasks and implementation details belong in GitHub Issues and `/docs/issues/`.
+
+---
+
+# Phase 1: MVP (Core Experience)
+
+**Goal:** Minimal viable practice coach that schedules skills and guides daily practice.
+
+## Features
+
+### Skill System
+- Predefined catalog of ~38 atomic practice items
+- 11 categories: warmup, fretboard, technique, theory, rhythm, chords, soloing, repertoire, songwork, ear_training, musicality
+- See `/docs/guidance/guidance.md` for detailed catalog structure
+
+### Spaced Repetition Engine (SRE)
+- Stability-based scheduling
+- Easy/Good/Hard feedback influences future scheduling
 - "Due today" item selection
 - Interleaving across categories
 
-## 1.3 Daily Session Generation
-- SRE → 6-8 PracticeBlocks → PracticeEngine
-- Each block is 2–15 minutes (configurable by category)
-- Session structure: warmup (first) + interleaved middle blocks + fun activity (last)
-- Target session duration: ~35 minutes (acceptable range: 25-45 min)
-- Category diversity enforced via interleaving algorithm
+### Daily Session Generation
+- 6-8 blocks per session
+- Block duration: 2-15 minutes (varies by category)
+- Session structure: warmup first → interleaved middle → fun ending
+- Target: ~30-40 minutes total (acceptable range: 25-45 min)
 
-## 1.4 Storage Integration
-- Persist PracticeItems + SRS state
-- Persist session history
-- Clean domain-storage boundaries
+### Storage & Persistence
+- Save/load PracticeItems with SRS state
+- Save/load session history
+- Separate catalog from user progress data
 
-## 1.5 Stable UI Flow
-- Today → Start → Block sequence → Feedback → Summary
-- Minimal text, clean visuals
-- Reference button (“?”)
+### UI Flow
+- Today screen → Start session → Block-by-block practice → Feedback → Summary
+- Minimal text, calm design
+- Reference diagrams ("?" button) for scales/chords/techniques
 
-MVP complete when user can:
-- open app,
-- start a session,
-- practice interleaved micro-skills across all categories (technique, fretboard, rhythm, repertoire, song, soloing, ear training, musicality),
-- give feedback,
-- get new sessions daily,
-- with persistence.
-
-## 1.7 Practice Block Catalog
-
-The app includes a predefined catalog of 38 practice items across 11 categories:
-
-**Catalog Structure:**
-- **Warmup** (2 items): Chromatic patterns, finger exercises
-- **Fretboard** (2 items): Note naming, octave shapes
-- **Technique** (4 items): Alternate picking, legato, bends, vibrato
-- **Theory** (2 items): Scale degrees, triad inversions
-- **Rhythm** (2 items): Strumming patterns, syncopation
-- **Chords** (6 items): Barre transitions, open switches, individual chord practice
-- **Soloing** (7 items): Am/Em pentatonic positions, blues licks
-- **Repertoire** (3 items): Song riffs and sections (Wonderwall, Nothing Else Matters, Hotel California)
-- **Songwork** (2 items): Full song practice (Blackbird, Stand By Me)
-- **Ear Training** (4 items): Major/minor key feel, hum and match root, straight vs swing, interval feel
-- **Musicality** (4 items): Dynamic control, controlled vibrato, bend accuracy, tone and touch
-
-**Storage & Persistence:**
-- Catalog items have stable `catalogID` strings for merging user SRS state with catalog updates
-- User progress (stability, nextDue) persists separately from catalog definitions
-- New items can be added to catalog without breaking user state
-
-**Extensibility:**
-- All items defined in `PracticeItemCatalog.swift`
-- Each item has optional `referenceID` linking to visual diagram assets
-- Custom items (user-created) planned for Phase 2+
-
-**File:** `/ios/Modules/PracticeDomain/PracticeItemCatalog.swift`
+**MVP Complete When:**
+User can open app, practice 6-8 interleaved micro-skills with timer and feedback, get new sessions daily, and all progress persists.
 
 ---
 
-# 2. Post-MVP (Phase 2+)
+# Phase 2: Enhanced Experience
 
-## 2.1 Enhanced History
+**Goal:** Richer feedback, customization, and history features.
+
+## Features
+
+### Enhanced History
 - Calendar view or session list
-- Trends (stability growth, streaks, categories practiced)
+- Trends: stability growth, categories practiced, streaks
 - Simple statistics (no scores or gamification)
 
-## 2.2 Custom Skill System
-- Users create custom PracticeItems (extension of existing catalog)
+### Custom Skill System
+- Users create custom PracticeItems
+- Integrates with SRE using same scheduling logic
 - Optional reference diagrams or short text
-- Integrates with SRE using same stability/scheduling logic
-- Custom items stored alongside catalog items with distinct catalogIDs
-- Custom items can be created in any category, including ear training and musicality
+- Stored alongside catalog items with distinct catalogIDs
 
-## 2.3 Improved Summary Screen
-- Clear feedback on:
-  - skills practiced,
-  - stability changes,
-  - next due dates,
-  - streaks
+### Improved Summary Screen
+- Show skills practiced, stability changes, next due dates
+- Streak tracking
 - Still minimal, no teaching content
 
-## 2.4 Better Reference Material
-- Slightly richer diagrams
+### Better Reference Material
+- Richer diagrams
 - Optional short hints (one sentence max)
 - No tutorials or lessons
-- References for ear training and musicality remain minimal (tiny cues, not theory lessons)
 
-## 2.5 Settings / Preferences
-- Adjust micro-session duration
-- Toggle metronome
-- Manage skill difficulty preferences
+### Enhanced Settings
+- Adjust block duration preferences
+- Metronome preferences
+- Category preferences
 
 ---
 
-# 3. Future Directions (Exploratory)
+# Phase 3: Future Explorations
 
-These are ideas, not commitments.
+**Status:** Ideas, not commitments. Evaluate after Phase 2 completion.
 
-## 3.1 watchOS Companion
-- Quick practice blocks
-- Morning micro-sessions
+### watchOS Companion
+- Quick practice blocks on wrist
 - Lightweight SRS reminders
 
-## 3.2 Widgets
-- Today’s due skills
+### Widgets
+- Home screen widget showing today's due skills
 - Quick-start session widget
 
-## 3.3 Import/Export
+### Import/Export
 - Backup SRS state
-- Share custom skills
+- Share custom skills between devices/users
 
-## 3.4 Audio & Haptics Enhancements
-- Better timing feedback
-- Optional tone/haptic metronome
-
----
-
-# 4. Workflow Alignment
-
-The roadmap defines direction.  
-Actual implementation happens via:
-
-- `/docs/issues/issue-xxx.md` (tasks)
-- `/docs/guidance/` (conceptual rules)
-- `/docs/core/` (architecture, UI, agents, testing)
-
-Every change must respect:
-- design.md (minimal UI)
-- architecture.md (module boundaries)
-- agents.md (roles)
-- tests.md (TDD)
-- piq-guitar-guidance.md (learning model)
+### Audio & Haptics Enhancements
+- Improved timing feedback
+- Optional haptic metronome patterns
 
 ---
 
-# 5. Evolution
+## Constraints (All Phases)
 
-This roadmap should evolve slowly.  
-Only major conceptual changes should update it.
-
-Day-to-day tasks belong in `/docs/issues/`.
+Every feature must respect:
+- **design.md** — minimal UI, calm aesthetic
+- **architecture.md** — module boundaries, platform constraints
+- **agents.md** — role separation
+- **tests.md** — TDD for engines
+- **guidance.md** — learning model and domain concepts
 
