@@ -13,9 +13,10 @@ architecture.md
 design.md
 agents.md
 tests.md
+roadmap.md
 
 /guidance
-piq-guitar-guidance.md
+guidance.md
 # Future: additional guidance files (e.g., scheduling, watchOS)
 
 /issues
@@ -43,7 +44,7 @@ These files explain **how major concepts work** and guide implementation across 
 
 Current files:
 
-- **piq-guitar-guidance.md** — research-backed guitar learning model, SRS, skill catalog, interleaving rules  [oai_citation:9‡piq-guitar-guidance.md](file-service://file-RTvy2MPPEfKctoRiZYuEKJ)  
+- **guidance.md** — research-backed guitar learning model, SRS, skill catalog, interleaving rules  
 
 Future additions may include:
 - scheduling-guidance.md  
@@ -75,11 +76,11 @@ The provided **`issue-template.md`** ensures consistency.
 
 Before modifying code, any AI assistant must read these **in order**:
 
-1. `/docs/core/design.md`  
-2. `/docs/core/architecture.md`  
-3. `/docs/core/agents.md`  
-4. `/docs/core/tests.md`  
-5. Relevant `/docs/guidance/` files (e.g., `piq-guitar-guidance.md`)  
+1. `/docs/core/design.md`
+2. `/docs/core/architecture.md`
+3. `/docs/core/agents.md`
+4. `/docs/core/tests.md`
+5. Relevant `/docs/guidance/` files (e.g., `guidance.md`)
 6. The specific `/docs/issues/issue-xxx.md` referenced in the user prompt  
 
 Only after these are read should the AI inspect or modify source code.

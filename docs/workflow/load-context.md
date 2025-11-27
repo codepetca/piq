@@ -7,7 +7,7 @@ Re-read these files from disk using file_search (do NOT summarize them unless ne
 - /mnt/data/architecture.md
 - /mnt/data/agents.md
 - /mnt/data/tests.md
-- /mnt/data/piq-guitar-guidance.md
+- /mnt/data/guidance.md
 
 Also load the GitHub workflow file:
 - /mnt/data/handle-issue-lite.md (once added)

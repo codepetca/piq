@@ -1,22 +1,21 @@
-# piq — Research-Backed Guitar Learning Guidance (Skill Catalog + SRS + Flow)
+# piq — Learning Model & Implementation Guidance
 
-This file updates piq’s conceptual model to use a **research-backed guitar-learning architecture**, based on:
+This file defines **why** piq works the way it does and **how** to implement features correctly.
 
-- motor learning science  
-- contextual interference  
-- spaced repetition (facts + skills)  
-- micro-skill practice  
-- interleaving  
-- short guided sessions  
+## Purpose
 
-It describes **what** piq should do at a high level and **how** to shape the codebase, so that a coding agent (e.g. Claude) can implement details while staying aligned with:
+This is the conceptual foundation for piq's guitar learning model, based on:
+- Motor learning science
+- Contextual interference
+- Spaced repetition (procedural + declarative skills)
+- Micro-skill practice
+- Interleaving
+- Short guided sessions
 
-- `design.md` — UI / UX / flows  
-- `architecture.md` — architecture & modules  
-- `agents.md` — multi-agent roles  
-- `tests.md` — testing philosophy & TDD flow  
+For **what** features to build and **when**, see `/docs/core/roadmap.md`.
+For architecture and UI patterns, see `/docs/core/` files.
 
-This file is intentionally **conceptual + structural**. It does *not* prescribe every function signature; it gives Claude the “north star” for guitar learning inside piq.
+This file gives AI assistants the "north star" for implementing guitar learning features in piq.
 
 ---
 
@@ -137,57 +136,77 @@ This keeps `PracticeBlock` as “today’s schedule” and `PracticeItem` as “
 
 ---
 
-## 4. Skill Catalog (Conceptual)
+## 4. Skill Catalog
 
-piq should ship with a **small, opinionated Skill Catalog** that is:
+piq ships with a **small, opinionated Skill Catalog** that is:
+- Focused on beginner+ to intermediate players
+- Biased toward A minor pentatonic, basic open chords, core rock/pop/blues skills
+- Curated and finite, not open-ended
 
-- focused on **beginner+ to intermediate** players
-- biased toward A minor pentatonic, basic open chords, core rock/pop/blues skills
-- easily extended later
+### Catalog Structure (38 Items, 11 Categories)
 
-We don't need to encode the entire catalog in this file. Instead, define:
+**Warmup** (2 items):
+- Chromatic patterns
+- Finger exercises
 
-- There should be **30–60 seed `PracticeItem`s** at first launch.
-- They should cover:
+**Fretboard** (2 items):
+- Note naming
+- Octave shapes
 
-  - Technique:
-    - alternate picking (inside + outside string crossings)
-    - basic legato
-    - basic bends
-    - basic vibrato
+**Technique** (4 items):
+- Alternate picking (inside + outside string crossings)
+- Legato (hammer-ons, pull-offs)
+- Bends (basic control)
+- Vibrato (basic control)
 
-  - Fretboard:
-    - A minor pentatonic positions 1–5 (`scale_am_pentatonic_pos1` … `pos5`)
+**Theory** (2 items):
+- Scale degrees
+- Triad inversions
 
-  - Rhythm:
-    - simple 8th-note strumming pattern
-    - basic 16th-note feel
-    - simple shuffle feel
+**Rhythm** (2 items):
+- Strumming patterns (8th/16th notes)
+- Syncopation
 
-  - Repertoire:
-    - a few short blues/rock licks
-    - a simple riff or turnaround
+**Chords** (6 items):
+- Barre transitions
+- Open chord switches
+- Individual chord practice
 
-  - Song:
-    - 2–3 example song sections (e.g. "Wonderwall verse", "12-bar blues in E")
+**Soloing** (7 items):
+- Am/Em pentatonic positions 1-5
+- Blues licks
 
-  - Ear Training:
-    - major/minor key feel
-    - hum and match root note
-    - straight vs swing feel
-    - interval recognition
+**Repertoire** (3 items):
+- Song riffs and sections (Wonderwall, Nothing Else Matters, Hotel California)
 
-  - Musicality:
-    - dynamic control (quiet → loud)
-    - slow controlled vibrato
-    - bend accuracy
-    - tone and touch variation
+**Songwork** (2 items):
+- Full song practice (Blackbird, Stand By Me)
 
-The concrete items, IDs, and diagrams should be implemented in the codebase and asset catalog, but **this file's role** is to say:
+**Ear Training** (4 items):
+- Major/minor key feel
+- Hum and match root note
+- Straight vs swing feel
+- Interval recognition
+
+**Musicality** (4 items):
+- Dynamic control (quiet → loud)
+- Controlled vibrato
+- Bend accuracy
+- Tone and touch variation
+
+### Storage & Persistence
+
+- Catalog items have stable `catalogID` strings (e.g., `"tech_alt_picking"`)
+- User progress (`stability`, `nextDue`) persists separately from catalog definitions
+- New items can be added to catalog without breaking user state
+- Catalog stored in `/ios/Modules/PracticeDomain/PracticeItemCatalog.swift`
+- Each item has optional `referenceID` linking to visual diagram assets
+
+### Implementation Principle
 
 > piq should always have a curated, finite catalog of atomic skills, not an open-ended, unstructured list.
 
-Claude should treat the catalog as data, not logic.
+Treat the catalog as data, not logic. Custom items (user-created) will be added in Phase 2+.
 
 ---
 
