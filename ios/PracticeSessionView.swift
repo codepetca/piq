@@ -43,7 +43,7 @@ struct PracticeSessionView: View {
     }
 
     // MARK: - Metronome Control
-
+    
     private func handleMetronomeForBlock(at index: Int?) {
         guard let index = index,
               let session = engine.session,
@@ -53,6 +53,7 @@ struct PracticeSessionView: View {
         }
 
         let block = session.blocks[index]
+        // Tempo learning is only tracked for blocks whose metronome is on by default.
         if block.kind.defaultMetronomeOn {
             // Use block's suggested BPM if available, otherwise use settings default
             let bpmToUse = block.startingBPM ?? settings.defaultBPM
@@ -226,6 +227,8 @@ struct PracticeSessionView: View {
               index < session.blocks.count else { return }
         
         let block = session.blocks[index]
+        // Only track tempo for blocks that default to metronome-on; optional metronome
+        // usage in Song/Solo blocks is intentionally excluded from tempo learning.
         if block.kind.defaultMetronomeOn {
             engine.recordEndingBPM(forBlockAt: index, bpm: metronome.bpm)
         }
