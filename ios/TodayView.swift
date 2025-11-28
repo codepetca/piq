@@ -67,11 +67,11 @@ struct TodayView: View {
                         HStack {
                             Spacer()
                             Text("\(totalTargetMinutes) min")
-                                .font(.subheadline.weight(.semibold))
+                                .font(.callout.weight(.semibold))
                                 .foregroundColor(.accentColor)
                         }
                         .padding(.leading, 16)
-                        .padding(.trailing, 24)
+                        .padding(.trailing, 36)
                     }
                     .frame(maxWidth: .infinity, minHeight: 72)
                     .padding(.vertical, 8)
