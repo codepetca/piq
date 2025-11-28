@@ -83,8 +83,8 @@ final class TodayViewModel {
 
     /// Start a new practice session.
     /// This instantiates the session in PracticeEngine using SRE-generated blocks.
-    func startSession() {
-        engine.startSession(from: sre)
+    func startSession(with blocks: [PracticeBlock]) {
+        engine.startSession(with: blocks)
     }
 
     /// Resume the currently active session (no-op if there isn't one).
@@ -92,5 +92,10 @@ final class TodayViewModel {
     @discardableResult
     func resumeSession() -> Bool {
         hasActiveSession
+    }
+
+    /// Replace the displayed blocks (used for manual reordering/removal in UI).
+    func setTodayBlocks(_ blocks: [PracticeBlock]) {
+        todayBlocks = blocks
     }
 }

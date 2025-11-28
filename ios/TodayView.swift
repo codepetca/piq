@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 /// TodayView displays today's practice blocks and allows starting a session.
 ///
@@ -13,27 +14,47 @@ struct TodayView: View {
     @Environment(PracticeEngine.self) private var engine
     @State private var viewModel: TodayViewModel?
     @State private var showingSession = false
+    @State private var blocks: [PracticeBlock] = []
+    @State private var draggingBlock: PracticeBlock?
     var onMenuTap: (() -> Void)? = nil
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 20) {
-                    // Active session indicator (if in progress)
-                    if let vm = viewModel, vm.hasActiveSession {
-                        activeSessionBanner(statusText: vm.activeSessionStatusText)
-                    }
-
-                    // Block list
-                    VStack(spacing: 8) {
-                        ForEach(todayBlocks) { block in
-                            BlockRow(block: block)
-                        }
-                    }
-                    .padding(.horizontal)
+            List {
+                // Active session indicator (if in progress)
+                if let vm = viewModel, vm.hasActiveSession {
+                    activeSessionBanner(statusText: vm.activeSessionStatusText)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(.init(top: 6, leading: 16, bottom: 6, trailing: 16))
                 }
-                .padding(.top)
+
+                ForEach(todayBlocks) { block in
+                    BlockRow(block: block)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(.init(top: 4, leading: 12, bottom: 4, trailing: 12))
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            Button(role: .destructive) {
+                                removeBlock(block)
+                            } label: {
+                                Label("Remove", systemImage: "trash")
+                            }
+                        }
+                        .onDrag {
+                            draggingBlock = block
+                            return NSItemProvider(object: block.id.uuidString as NSString)
+                        }
+                        .onDrop(
+                            of: [.text],
+                            delegate: BlockDropDelegate(
+                                item: block,
+                                items: $blocks,
+                                dragging: $draggingBlock
+                            )
+                        )
+                }
             }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
             .safeAreaInset(edge: .bottom) {
                 // Start or resume session button (fixed at bottom)
                 if let vm = viewModel {
@@ -92,9 +113,13 @@ struct TodayView: View {
             .onAppear {
                 initializeViewModelIfNeeded()
                 viewModel?.refreshBlocks()
+                blocks = viewModel?.todayBlocks ?? []
             }
             .fullScreenCover(isPresented: $showingSession) {
                 PracticeSessionView()
+            }
+            .onChange(of: blocks) { newValue in
+                viewModel?.setTodayBlocks(newValue)
             }
         }
     }
@@ -119,7 +144,7 @@ struct TodayView: View {
     // MARK: - Computed Properties
 
     private var todayBlocks: [PracticeBlock] {
-        viewModel?.todayBlocks ?? []
+        blocks
     }
 
     private var totalTargetMinutes: Int {
@@ -135,12 +160,21 @@ struct TodayView: View {
     }
 
     private func startSession() {
-        viewModel?.startSession()
+        let blocksToUse = todayBlocks.isEmpty ? viewModel?.todayBlocks ?? [] : todayBlocks
+        guard !blocksToUse.isEmpty else { return }
+        viewModel?.startSession(with: blocksToUse)
         showingSession = true
     }
 
     private func resumeSession() {
         showingSession = true
+    }
+
+    private func removeBlock(_ block: PracticeBlock) {
+        guard let index = blocks.firstIndex(where: { $0.id == block.id }) else { return }
+        withAnimation {
+            blocks.remove(at: index)
+        }
     }
 }
 
@@ -167,9 +201,37 @@ struct BlockRow: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
         }
-        .padding()
+        .padding(.vertical, 10)
+        .padding(.horizontal, 12)
         .background(Color(.systemGray6))
         .cornerRadius(12)
+    }
+}
+
+// MARK: - Drop Delegate
+
+private struct BlockDropDelegate: DropDelegate {
+    let item: PracticeBlock
+    @Binding var items: [PracticeBlock]
+    @Binding var dragging: PracticeBlock?
+
+    func dropEntered(info: DropInfo) {
+        guard let dragging,
+              dragging.id != item.id,
+              let fromIndex = items.firstIndex(where: { $0.id == dragging.id }),
+              let toIndex = items.firstIndex(where: { $0.id == item.id }) else { return }
+
+        withAnimation(.easeInOut(duration: 0.15)) {
+            items.move(
+                fromOffsets: IndexSet(integer: fromIndex),
+                toOffset: toIndex > fromIndex ? toIndex + 1 : toIndex
+            )
+        }
+    }
+
+    func performDrop(info: DropInfo) -> Bool {
+        dragging = nil
+        return true
     }
 }
 

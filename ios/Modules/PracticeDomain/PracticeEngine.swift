@@ -95,6 +95,14 @@ final class PracticeEngine {
         startBlock(at: 0)
     }
 
+    /// Start a new practice session with provided blocks.
+    func startSession(with blocks: [PracticeBlock]) {
+        guard !blocks.isEmpty else { return }
+        sessionSaved = false
+        session = PracticeSession(blocks: blocks)
+        startBlock(at: 0)
+    }
+
     /// Start a specific block by index.
     func startBlock(at index: Int) {
         guard let session = session,
