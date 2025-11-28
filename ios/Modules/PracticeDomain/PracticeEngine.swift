@@ -75,7 +75,8 @@ final class PracticeEngine {
 
         let totalSeconds = session.blocks[index].targetMinutes * 60
         let elapsed = totalSeconds - remainingSeconds
-        return Double(elapsed) / Double(totalSeconds)
+        // Clamp to avoid negative/over-1.0 progress when time is adjusted.
+        return min(1.0, max(0.0, Double(elapsed) / Double(totalSeconds)))
     }
 
     // MARK: - Session Management
@@ -223,6 +224,29 @@ final class PracticeEngine {
         }
 
         state = .inBlock(index: index, remainingSeconds: remainingSeconds + seconds)
+    }
+
+    /// Adjust the remaining time for the current block, clamped between 0 and the original target.
+    /// - Parameter deltaSeconds: Positive to add time, negative to remove time.
+    func adjustCurrentBlockRemaining(by deltaSeconds: Int) {
+        guard case .inBlock(let index, let remainingSeconds) = state,
+              let session = session,
+              index < session.blocks.count else {
+            return
+        }
+
+        let targetSeconds = session.blocks[index].targetMinutes * 60
+        // Clamp to the original target without snapping down current overages.
+        let upperLimit = max(remainingSeconds, targetSeconds)
+        let newRemaining = max(0, min(remainingSeconds + deltaSeconds, upperLimit))
+
+        if newRemaining == 0 {
+            // Update state before finishing so elapsed time calculation uses the clamped value.
+            state = .inBlock(index: index, remainingSeconds: 0)
+            finishCurrentBlock()
+        } else {
+            state = .inBlock(index: index, remainingSeconds: newRemaining)
+        }
     }
 
     // MARK: - Feedback

@@ -9,7 +9,6 @@ struct PracticeSessionView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var showingReference = false
-    @State private var showSessionPrompt = true
     @Namespace private var heroNamespace
 
     var body: some View {
@@ -82,35 +81,11 @@ struct PracticeSessionView: View {
     @ViewBuilder
     private func inBlockView(remainingSeconds: Int) -> some View {
         VStack(spacing: 16) {
-            // Session prompt (first block only)
-            if showSessionPrompt && engine.currentBlockIndex == 0,
-               let session = engine.session {
-                HStack {
-                    Text(session.sessionPrompt)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-
-                    Button {
-                        withAnimation {
-                            showSessionPrompt = false
-                        }
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .padding(.horizontal)
-                .padding(.top, 8)
-            }
-
             Spacer()
 
             // Timer with progress rings
             if let block = engine.currentBlock {
                 PracticeTimerView(
-                    blockKind: block.kind.displayName,
                     title: block.title,
                     detail: block.detail,
                     timeText: formatTime(remainingSeconds),
@@ -118,8 +93,8 @@ struct PracticeSessionView: View {
                     sessionProgress: engine.sessionProgress,
                     isPaused: engine.isPaused,
                     onTogglePause: togglePause,
+                    onAdjustTime: adjustRemainingTime(by:),
                     namespace: heroNamespace,
-                    kindHeroID: heroKindID(for: block),
                     titleHeroID: heroTitleID(for: block),
                     detailHeroID: heroDetailID(for: block)
                 )
@@ -133,6 +108,16 @@ struct PracticeSessionView: View {
                 .padding(.horizontal, 24)
                 .padding(.top, 16)
                 .transition(.opacity)
+
+                // Reference button (centered below instructions)
+                if let refID = block.referenceID,
+                   referenceService.reference(for: refID) != nil {
+                    Button(action: { showingReference = true }) {
+                        Image(systemName: "questionmark.circle")
+                            .font(.title2)
+                    }
+                    .padding(.top, 8)
+                }
             }
 
             Spacer()
@@ -148,49 +133,17 @@ struct PracticeSessionView: View {
                         metronome.start()
                     }
                 },
-                onIncreaseBPM: {
-                    metronome.increaseBPM()
-                    engine.recordTempoAdjustment()
-                },
-                onDecreaseBPM: {
-                    metronome.decreaseBPM()
+                onAdjustBPM: { delta in
+                    metronome.setBPM(metronome.bpm + delta)
                     engine.recordTempoAdjustment()
                 }
             )
             .padding(.horizontal)
-
-            // Control buttons
-            HStack(spacing: 32) {
-                Button(action: { engine.skipCurrentBlock() }) {
-                    Image(systemName: "forward.fill")
-                        .font(.title2)
-                }
-
-                Button(action: togglePause) {
-                    Image(systemName: engine.isPaused ? "play.fill" : "pause.fill")
-                        .font(.largeTitle)
-                }
-
-                Button(action: { engine.extendCurrentBlock(byExtraSeconds: 60) }) {
-                    Image(systemName: "plus.circle")
-                        .font(.title2)
-                }
-
-                // Reference button (only if block has a reference)
-                if let block = engine.currentBlock,
-                   let refID = block.referenceID,
-                   referenceService.reference(for: refID) != nil {
-                    Button(action: { showingReference = true }) {
-                        Image(systemName: "questionmark.circle")
-                            .font(.title2)
-                    }
-                }
-            }
-            .padding(.bottom, 40)
-            .sheet(isPresented: $showingReference) {
-                referenceSheet
-            }
         }
+        .sheet(isPresented: $showingReference) {
+            referenceSheet
+        }
+        .padding(.bottom, 40)
     }
 
     @ViewBuilder
@@ -211,7 +164,6 @@ struct PracticeSessionView: View {
     private func previewBlockView(secondsRemaining: Int) -> some View {
         if let block = engine.currentBlock {
             BlockPreviewView(
-                blockKind: block.kind.displayName,
                 title: block.title,
                 detail: block.detail,
                 focusCue: block.focusCue,
@@ -223,8 +175,7 @@ struct PracticeSessionView: View {
                 namespace: heroNamespace,
                 heroID: heroID(for: block),
                 titleHeroID: heroTitleID(for: block),
-                detailHeroID: heroDetailID(for: block),
-                kindHeroID: heroKindID(for: block)
+                detailHeroID: heroDetailID(for: block)
             )
         }
     }
@@ -284,10 +235,6 @@ struct PracticeSessionView: View {
     
     private func heroDetailID(for block: PracticeBlock) -> String {
         "detail-\(block.id.uuidString)"
-    }
-    
-    private func heroKindID(for block: PracticeBlock) -> String {
-        "kind-\(block.id.uuidString)"
     }
 
     // MARK: - Finished View
@@ -357,6 +304,10 @@ struct PracticeSessionView: View {
         let minutes = totalSeconds / 60
         let seconds = totalSeconds % 60
         return String(format: "%02d:%02d", minutes, seconds)
+    }
+
+    private func adjustRemainingTime(by deltaSeconds: Int) {
+        engine.adjustCurrentBlockRemaining(by: deltaSeconds)
     }
 
     private func togglePause() {

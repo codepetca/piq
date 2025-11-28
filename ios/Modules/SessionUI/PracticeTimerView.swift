@@ -3,7 +3,6 @@ import SwiftUI
 /// Presentational component for displaying practice timer with progress rings.
 /// No timing logic belongs here - this is purely presentational.
 struct PracticeTimerView: View {
-    let blockKind: String
     let title: String
     let detail: String
     let timeText: String
@@ -11,19 +10,16 @@ struct PracticeTimerView: View {
     let sessionProgress: Double    // 0.0–1.0
     let isPaused: Bool
     let onTogglePause: () -> Void
+    let onAdjustTime: (Int) -> Void
     let namespace: Namespace.ID?
-    let kindHeroID: String?
     let titleHeroID: String?
     let detailHeroID: String?
+    @State private var lastDragHeight: CGFloat = 0
 
     var body: some View {
         VStack(spacing: 24) {
             // Block info
             VStack(spacing: 8) {
-                Text(blockKind)
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .matchedGeometryEffectIfPossible(id: kindHeroID, in: namespace)
                 Text(title)
                     .font(.title2)
                     .fontWeight(.semibold)
@@ -82,13 +78,27 @@ struct PracticeTimerView: View {
             .onTapGesture {
                 onTogglePause()
             }
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        let deltaHeight = value.translation.height - lastDragHeight
+                        let secondsDelta = Int((-deltaHeight) / 5) // Drag up to add, down to reduce
+
+                        if secondsDelta != 0 {
+                            onAdjustTime(secondsDelta)
+                            lastDragHeight = value.translation.height
+                        }
+                    }
+                    .onEnded { _ in
+                        lastDragHeight = 0
+                    }
+            )
         }
     }
 }
 
 #Preview("In Progress") {
     PracticeTimerView(
-        blockKind: "Warm-Up",
         title: "Am Pentatonic Scale",
         detail: "Position 1",
         timeText: "08:32",
@@ -96,8 +106,8 @@ struct PracticeTimerView: View {
         sessionProgress: 0.125,
         isPaused: false,
         onTogglePause: {},
+        onAdjustTime: { _ in },
         namespace: nil,
-        kindHeroID: nil,
         titleHeroID: nil,
         detailHeroID: nil
     )
@@ -105,7 +115,6 @@ struct PracticeTimerView: View {
 
 #Preview("Paused") {
     PracticeTimerView(
-        blockKind: "Song",
         title: "Wish You Were Here",
         detail: "",
         timeText: "05:15",
@@ -113,8 +122,8 @@ struct PracticeTimerView: View {
         sessionProgress: 0.375,
         isPaused: true,
         onTogglePause: {},
+        onAdjustTime: { _ in },
         namespace: nil,
-        kindHeroID: nil,
         titleHeroID: nil,
         detailHeroID: nil
     )
