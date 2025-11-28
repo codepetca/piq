@@ -37,11 +37,12 @@ struct TodayView: View {
                                 Image(systemName: "trash")
                             }
                         }
-                        .draggable(BlockDragItem(id: block.id))
-                        .dropDestination(for: BlockDragItem.self) { items, _ in
-                            guard
-                                let sourceID = items.first?.id
-                            else { return false }
+                        .draggable(block.id.uuidString)
+                        .dropDestination(for: String.self) { items, _ in
+                            guard let sourceIDString = items.first,
+                                  let sourceID = UUID(uuidString: sourceIDString) else {
+                                return false
+                            }
                             moveBlock(sourceID: sourceID, targetID: block.id)
                             return true
                         }
@@ -177,12 +178,10 @@ struct TodayView: View {
         else { return }
 
         let destination = toIndex > fromIndex ? toIndex + 1 : toIndex
-        withAnimation(.easeInOut(duration: 0.15)) {
-            blocks.move(
-                fromOffsets: IndexSet(integer: fromIndex),
-                toOffset: destination
-            )
-        }
+        blocks.move(
+            fromOffsets: IndexSet(integer: fromIndex),
+            toOffset: destination
+        )
         viewModel?.setTodayBlocks(blocks)
     }
 }
@@ -214,14 +213,6 @@ struct BlockRow: View {
         .padding(.horizontal, 10)
         .background(Color(.systemGray6))
         .cornerRadius(12)
-    }
-}
-
-private struct BlockDragItem: Transferable, Codable {
-    let id: UUID
-
-    static var transferRepresentation: some TransferRepresentation {
-        CodableRepresentation(contentType: .data)
     }
 }
 
