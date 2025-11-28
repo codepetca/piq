@@ -14,7 +14,6 @@ struct TodayView: View {
     @State private var viewModel: TodayViewModel?
     @State private var showingSession = false
     @State private var blocks: [PracticeBlock] = []
-    @State private var draggingBlockID: UUID?
     var onMenuTap: (() -> Void)? = nil
 
     var body: some View {
@@ -38,31 +37,12 @@ struct TodayView: View {
                                 Image(systemName: "trash")
                             }
                         }
-                        .draggable(BlockDragItem(id: block.id))
-                        .dropDestination(for: BlockDragItem.self) { items, _ in
-                            guard
-                                let sourceID = items.first?.id,
-                                let fromIndex = blocks.firstIndex(where: { $0.id == sourceID }),
-                                let toIndex = blocks.firstIndex(where: { $0.id == block.id })
-                            else { return false }
-
-                            withAnimation(.easeInOut(duration: 0.15)) {
-                                blocks.move(
-                                    fromOffsets: IndexSet(integer: fromIndex),
-                                    toOffset: toIndex > fromIndex ? toIndex + 1 : toIndex
-                                )
-                            }
-                            draggingBlockID = nil
-                            return true
-                        }
-                        .onDrag {
-                            draggingBlockID = block.id
-                            return NSItemProvider(object: block.id.uuidString as NSString)
-                        }
                 }
+                .onMove(perform: moveBlocks)
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
+            .environment(\.editMode, .constant(.active))
             .safeAreaInset(edge: .bottom) {
                 // Start or resume session button (fixed at bottom)
                 if let vm = viewModel {
@@ -182,6 +162,11 @@ struct TodayView: View {
         guard let index = blocks.firstIndex(where: { $0.id == block.id }) else { return }
         blocks.remove(at: index)
     }
+
+    private func moveBlocks(from source: IndexSet, to destination: Int) {
+        blocks.move(fromOffsets: source, toOffset: destination)
+        viewModel?.setTodayBlocks(blocks)
+    }
 }
 
 // MARK: - Block Row Component
@@ -205,20 +190,12 @@ struct BlockRow: View {
 
             Text("\(block.targetMinutes) min")
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+        .foregroundColor(.secondary)
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 10)
         .background(Color(.systemGray6))
         .cornerRadius(12)
-    }
-}
-
-private struct BlockDragItem: Transferable, Codable {
-    let id: UUID
-
-    static var transferRepresentation: some TransferRepresentation {
-        CodableRepresentation(contentType: .data)
     }
 }
 
