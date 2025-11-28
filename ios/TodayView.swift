@@ -197,9 +197,14 @@ struct BlockRow: View {
 
             Spacer()
 
-            Label("\(block.targetMinutes)", systemImage: "clock")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+            ZStack {
+                Image(systemName: "clock")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundColor(.secondary)
+                Text("\(block.targetMinutes)")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundColor(.primary)
+            }
         }
         .padding(.vertical, 12)
         .padding(.horizontal, 14)
