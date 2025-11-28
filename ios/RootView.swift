@@ -8,7 +8,6 @@ struct RootView: View {
         ZStack(alignment: .leading) {
             contentView
                 .disabled(isSidebarVisible)
-                .animation(.easeInOut(duration: 0.18), value: isSidebarVisible)
 
             if isSidebarVisible {
                 Color.black.opacity(0.25)
@@ -34,6 +33,7 @@ struct RootView: View {
                 .transition(.move(edge: .leading))
             }
         }
+        .animation(.easeInOut(duration: 0.18), value: isSidebarVisible)
     }
 
     // MARK: - Content
