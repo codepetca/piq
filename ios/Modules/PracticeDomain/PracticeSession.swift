@@ -47,7 +47,7 @@ struct PracticeSession: Identifiable, Codable {
 extension PracticeSession {
     /// Creates a demo session for today using the seed catalog.
     static func makeTodayDemo() -> PracticeSession {
-        var items = PracticeItemCatalog.seedItems()
+        let items = PracticeItemCatalog.seedItems()
         var blocks: [PracticeBlock] = []
 
         for item in items.prefix(4) {

@@ -10,6 +10,7 @@ struct PracticeSessionView: View {
 
     @State private var showingReference = false
     @State private var showSessionPrompt = true
+    @Namespace private var heroNamespace
 
     var body: some View {
         VStack {
@@ -18,8 +19,13 @@ struct PracticeSessionView: View {
                 Text("No session")
                     .onAppear { dismiss() }
 
+            case .previewBlock(_, let secondsRemaining):
+                previewBlockView(secondsRemaining: secondsRemaining)
+                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
+
             case .inBlock(_, let remainingSeconds):
                 inBlockView(remainingSeconds: remainingSeconds)
+                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
 
             case .betweenBlocks(let lastIndex, _):
                 betweenBlocksView(lastIndex: lastIndex)
@@ -28,6 +34,7 @@ struct PracticeSessionView: View {
                 finishedView()
             }
         }
+        .animation(.easeInOut(duration: 0.4), value: engine.state)
         .onAppear {
             // Set metronome to default BPM from settings
             metronome.setBPM(settings.defaultBPM)
@@ -60,7 +67,11 @@ struct PracticeSessionView: View {
             metronome.setBPM(bpmToUse)
             // Record the starting BPM for tempo learning
             engine.recordStartingBPM(forBlockAt: index, bpm: bpmToUse)
-            metronome.start()
+            
+            // Only start metronome if we're in the actual block, not the preview
+            if case .inBlock = engine.state {
+                metronome.start()
+            }
         } else {
             metronome.stop()
         }
@@ -96,15 +107,6 @@ struct PracticeSessionView: View {
 
             Spacer()
 
-            // Block instructions (if available)
-            if let block = engine.currentBlock,
-               !block.instructions.isEmpty || block.focusCue != nil {
-                BlockInstructionView(
-                    instructions: block.instructions,
-                    focusCue: block.focusCue
-                )
-            }
-
             // Timer with progress rings
             if let block = engine.currentBlock {
                 PracticeTimerView(
@@ -115,8 +117,22 @@ struct PracticeSessionView: View {
                     blockProgress: engine.blockProgress,
                     sessionProgress: engine.sessionProgress,
                     isPaused: engine.isPaused,
-                    onTogglePause: togglePause
+                    onTogglePause: togglePause,
+                    namespace: heroNamespace,
+                    kindHeroID: heroKindID(for: block),
+                    titleHeroID: heroTitleID(for: block),
+                    detailHeroID: heroDetailID(for: block)
                 )
+                
+                BlockInstructionsHeroCard(
+                    instructions: block.instructions,
+                    focusCue: block.focusCue,
+                    namespace: heroNamespace,
+                    heroID: heroID(for: block)
+                )
+                .padding(.horizontal, 24)
+                .padding(.top, 16)
+                .transition(.opacity)
             }
 
             Spacer()
@@ -189,6 +205,30 @@ struct PracticeSessionView: View {
         }
     }
 
+    // MARK: - Preview Block View
+
+    @ViewBuilder
+    private func previewBlockView(secondsRemaining: Int) -> some View {
+        if let block = engine.currentBlock {
+            BlockPreviewView(
+                blockKind: block.kind.displayName,
+                title: block.title,
+                detail: block.detail,
+                focusCue: block.focusCue,
+                instructions: block.instructions,
+                secondsRemaining: secondsRemaining,
+                onTapToStart: {
+                    engine.skipPreview()
+                },
+                namespace: heroNamespace,
+                heroID: heroID(for: block),
+                titleHeroID: heroTitleID(for: block),
+                detailHeroID: heroDetailID(for: block),
+                kindHeroID: heroKindID(for: block)
+            )
+        }
+    }
+
     // MARK: - Between Blocks View
 
     @ViewBuilder
@@ -232,6 +272,22 @@ struct PracticeSessionView: View {
         if block.kind.defaultMetronomeOn {
             engine.recordEndingBPM(forBlockAt: index, bpm: metronome.bpm)
         }
+    }
+    
+    private func heroID(for block: PracticeBlock) -> String {
+        "instructions-\(block.id.uuidString)"
+    }
+    
+    private func heroTitleID(for block: PracticeBlock) -> String {
+        "title-\(block.id.uuidString)"
+    }
+    
+    private func heroDetailID(for block: PracticeBlock) -> String {
+        "detail-\(block.id.uuidString)"
+    }
+    
+    private func heroKindID(for block: PracticeBlock) -> String {
+        "kind-\(block.id.uuidString)"
     }
 
     // MARK: - Finished View
