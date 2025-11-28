@@ -207,31 +207,94 @@ struct PracticeSessionView: View {
 
     @ViewBuilder
     private func betweenBlocksView(lastIndex: Int) -> some View {
-        VStack {
-            Spacer()
+        if let block = block(at: lastIndex) {
+            ZStack(alignment: .bottom) {
+                VStack(spacing: 16) {
+                    if let session = engine.session {
+                        blockPillRow(session: session, currentIndex: lastIndex)
+                            .padding(.horizontal, 24)
+                            .padding(.top, 8)
+                    }
 
-            FeedbackBar(
-                onEasy: {
-                    haptics.feedbackEasy()
-                    recordEndingBPMIfNeeded(forBlockAt: lastIndex)
-                    engine.recordFeedback(forBlockAt: lastIndex, feedback: .easy)
-                    engine.startNextBlock()
-                },
-                onGood: {
-                    haptics.feedbackGood()
-                    recordEndingBPMIfNeeded(forBlockAt: lastIndex)
-                    engine.recordFeedback(forBlockAt: lastIndex, feedback: .good)
-                    engine.startNextBlock()
-                },
-                onHard: {
-                    haptics.feedbackHard()
-                    recordEndingBPMIfNeeded(forBlockAt: lastIndex)
-                    engine.recordFeedback(forBlockAt: lastIndex, feedback: .hard)
-                    engine.startNextBlock()
+                    Spacer()
+
+                    PracticeTimerView(
+                        title: block.title,
+                        detail: block.detail,
+                        timeText: formatTime(0),
+                        blockProgress: 1.0,
+                        isPaused: true,
+                        onTogglePause: {},
+                        onAdjustTime: { _ in },
+                        namespace: heroNamespace,
+                        titleHeroID: heroTitleID(for: block),
+                        detailHeroID: heroDetailID(for: block)
+                    )
+                    .allowsHitTesting(false)
+
+                    BlockInstructionsHeroCard(
+                        instructions: block.instructions,
+                        focusCue: block.focusCue,
+                        namespace: heroNamespace,
+                        heroID: heroID(for: block)
+                    )
+                    .padding(.horizontal, 24)
+                    .padding(.top, 16)
+                    .transition(.opacity)
+                    .contentShape(Rectangle())
+                    .allowsHitTesting(false)
+
+                    Spacer()
+
+                    MetronomeBar(
+                        isOn: metronome.isPlaying,
+                        bpm: metronome.bpm,
+                        onToggle: {},
+                        onAdjustBPM: { _ in }
+                    )
+                    .padding(.horizontal)
+                    .allowsHitTesting(false)
+                    .opacity(0.2)
                 }
-            )
+                .padding(.bottom, 40)
+                .opacity(0.18)
+                .overlay(
+                    Color.black.opacity(0.15)
+                        .ignoresSafeArea()
+                )
 
-            Spacer()
+                VStack(spacing: 12) {
+                    FeedbackBar(
+                        title: "How easy was that?",
+                        onEasy: {
+                            haptics.feedbackEasy()
+                            recordEndingBPMIfNeeded(forBlockAt: lastIndex)
+                            engine.recordFeedback(forBlockAt: lastIndex, feedback: .easy)
+                            engine.startNextBlock()
+                        },
+                        onGood: {
+                            haptics.feedbackGood()
+                            recordEndingBPMIfNeeded(forBlockAt: lastIndex)
+                            engine.recordFeedback(forBlockAt: lastIndex, feedback: .good)
+                            engine.startNextBlock()
+                        },
+                        onHard: {
+                            haptics.feedbackHard()
+                            recordEndingBPMIfNeeded(forBlockAt: lastIndex)
+                            engine.recordFeedback(forBlockAt: lastIndex, feedback: .hard)
+                            engine.startNextBlock()
+                        }
+                    )
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
+                .frame(maxWidth: 420)
+                .background(.ultraThinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .shadow(color: Color.black.opacity(0.15), radius: 10, x: 0, y: 6)
+                .padding(.horizontal, 24)
+                .padding(.bottom, 36)
+            }
         }
     }
     
@@ -258,6 +321,12 @@ struct PracticeSessionView: View {
     
     private func heroDetailID(for block: PracticeBlock) -> String {
         "detail-\(block.id.uuidString)"
+    }
+
+    private func block(at index: Int) -> PracticeBlock? {
+        guard let session = engine.session,
+              index < session.blocks.count else { return nil }
+        return session.blocks[index]
     }
 
     @ViewBuilder
