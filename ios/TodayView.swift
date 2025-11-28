@@ -37,12 +37,18 @@ struct TodayView: View {
                                 Image(systemName: "trash")
                             }
                         }
+                        .draggable(BlockDragItem(id: block.id))
+                        .dropDestination(for: BlockDragItem.self) { items, _ in
+                            guard
+                                let sourceID = items.first?.id
+                            else { return false }
+                            moveBlock(sourceID: sourceID, targetID: block.id)
+                            return true
+                        }
                 }
-                .onMove(perform: moveBlocks)
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
-            .environment(\.editMode, .constant(.active))
             .safeAreaInset(edge: .bottom) {
                 // Start or resume session button (fixed at bottom)
                 if let vm = viewModel {
@@ -163,8 +169,20 @@ struct TodayView: View {
         blocks.remove(at: index)
     }
 
-    private func moveBlocks(from source: IndexSet, to destination: Int) {
-        blocks.move(fromOffsets: source, toOffset: destination)
+    private func moveBlock(sourceID: UUID, targetID: UUID) {
+        guard
+            let fromIndex = blocks.firstIndex(where: { $0.id == sourceID }),
+            let toIndex = blocks.firstIndex(where: { $0.id == targetID }),
+            fromIndex != toIndex
+        else { return }
+
+        let destination = toIndex > fromIndex ? toIndex + 1 : toIndex
+        withAnimation(.easeInOut(duration: 0.15)) {
+            blocks.move(
+                fromOffsets: IndexSet(integer: fromIndex),
+                toOffset: destination
+            )
+        }
         viewModel?.setTodayBlocks(blocks)
     }
 }
@@ -196,6 +214,14 @@ struct BlockRow: View {
         .padding(.horizontal, 10)
         .background(Color(.systemGray6))
         .cornerRadius(12)
+    }
+}
+
+private struct BlockDragItem: Transferable, Codable {
+    let id: UUID
+
+    static var transferRepresentation: some TransferRepresentation {
+        CodableRepresentation(contentType: .data)
     }
 }
 
