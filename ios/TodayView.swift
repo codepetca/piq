@@ -118,7 +118,7 @@ struct TodayView: View {
             .fullScreenCover(isPresented: $showingSession) {
                 PracticeSessionView()
             }
-            .onChange(of: blocks) { newValue in
+            .onChange(of: blocks) { _, newValue in
                 viewModel?.setTodayBlocks(newValue)
             }
         }
