@@ -13,18 +13,19 @@ struct TodayView: View {
     @Environment(PracticeEngine.self) private var engine
     @State private var viewModel: TodayViewModel?
     @State private var showingSession = false
+    var onMenuTap: (() -> Void)? = nil
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 24) {
+                VStack(spacing: 20) {
                     // Active session indicator (if in progress)
                     if let vm = viewModel, vm.hasActiveSession {
                         activeSessionBanner(statusText: vm.activeSessionStatusText)
                     }
 
                     // Block list
-                    VStack(spacing: 12) {
+                    VStack(spacing: 8) {
                         ForEach(todayBlocks) { block in
                             BlockRow(block: block)
                         }
@@ -65,12 +66,19 @@ struct TodayView: View {
                     }
                 }
             }
-            .navigationTitle("Today")
-            .onAppear {
-                initializeViewModelIfNeeded()
-                viewModel?.refreshBlocks()
-            }
-            .fullScreenCover(isPresented: $showingSession) {
+                .navigationTitle("Today")
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button(action: { onMenuTap?() }) {
+                            Image(systemName: "line.3.horizontal")
+                        }
+                    }
+                }
+                .onAppear {
+                    initializeViewModelIfNeeded()
+                    viewModel?.refreshBlocks()
+                }
+                .fullScreenCover(isPresented: $showingSession) {
                 PracticeSessionView()
             }
         }

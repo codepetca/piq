@@ -5,6 +5,7 @@ struct SettingsView: View {
     @State private var showClearHistoryAlert = false
     @State private var showResetProgressAlert = false
     @State private var showClearAllAlert = false
+    var onMenuTap: (() -> Void)? = nil
 
     var body: some View {
         @Bindable var vm = viewModel
@@ -69,6 +70,13 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: { onMenuTap?() }) {
+                        Image(systemName: "line.3.horizontal")
+                    }
+                }
+            }
             .alert("Clear History?", isPresented: $showClearHistoryAlert) {
                 Button("Cancel", role: .cancel) { }
                 Button("Clear", role: .destructive) {
