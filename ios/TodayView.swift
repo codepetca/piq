@@ -172,9 +172,7 @@ struct TodayView: View {
 
     private func removeBlock(_ block: PracticeBlock) {
         guard let index = blocks.firstIndex(where: { $0.id == block.id }) else { return }
-        withAnimation {
-            blocks.remove(at: index)
-        }
+        blocks.remove(at: index)
     }
 }
 
