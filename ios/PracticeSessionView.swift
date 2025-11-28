@@ -10,7 +10,6 @@ struct PracticeSessionView: View {
 
     @State private var showingInstructionSheet = false
     @State private var showingInteractionTips = false
-    @State private var lastSessionID: UUID?
     @Namespace private var heroNamespace
 
     var body: some View {
@@ -43,19 +42,19 @@ struct PracticeSessionView: View {
             haptics.isEnabled = settings.hapticFeedbackEnabled
             // Set block-specific tempo and start metronome for first block if needed
             handleMetronomeForBlock(at: engine.currentBlockIndex)
-            // Track current session
-            lastSessionID = engine.session?.id
         }
         .onChange(of: engine.currentBlockIndex) { _, newIndex in
             // Auto-start/stop metronome and set tempo based on block
             handleMetronomeForBlock(at: newIndex)
         }
-        .onChange(of: engine.session?.id) { _, newSessionID in
-            // Close any open modals when a fresh session starts
-            if newSessionID != lastSessionID {
+        .onChange(of: engine.state) { _, newState in
+            // Ensure modals are closed when a new session or block begins
+            switch newState {
+            case .previewBlock, .inBlock:
                 showingInstructionSheet = false
                 showingInteractionTips = false
-                lastSessionID = newSessionID
+            default:
+                break
             }
         }
         .overlay(alignment: .topTrailing) {
