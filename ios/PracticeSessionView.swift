@@ -8,7 +8,8 @@ struct PracticeSessionView: View {
     @Environment(PracticeReferenceService.self) private var referenceService
     @Environment(\.dismiss) private var dismiss
 
-    @State private var showingReference = false
+    @State private var showingInstructionSheet = false
+    @State private var showingInteractionTips = false
     @Namespace private var heroNamespace
 
     var body: some View {
@@ -45,6 +46,20 @@ struct PracticeSessionView: View {
         .onChange(of: engine.currentBlockIndex) { _, newIndex in
             // Auto-start/stop metronome and set tempo based on block
             handleMetronomeForBlock(at: newIndex)
+        }
+        .overlay(alignment: .topTrailing) {
+            Button {
+                showingInteractionTips = true
+            } label: {
+                Image(systemName: "questionmark.circle")
+                    .font(.title2)
+                    .padding(16)
+            }
+        }
+        .sheet(isPresented: $showingInteractionTips) {
+            InteractionTipsSheet {
+                showingInteractionTips = false
+            }
         }
     }
 
@@ -108,15 +123,9 @@ struct PracticeSessionView: View {
                 .padding(.horizontal, 24)
                 .padding(.top, 16)
                 .transition(.opacity)
-
-                // Reference button (centered below instructions)
-                if let refID = block.referenceID,
-                   referenceService.reference(for: refID) != nil {
-                    Button(action: { showingReference = true }) {
-                        Image(systemName: "questionmark.circle")
-                            .font(.title2)
-                    }
-                    .padding(.top, 8)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    showingInstructionSheet = true
                 }
             }
 
@@ -140,20 +149,19 @@ struct PracticeSessionView: View {
             )
             .padding(.horizontal)
         }
-        .sheet(isPresented: $showingReference) {
-            referenceSheet
+        .sheet(isPresented: $showingInstructionSheet) {
+            instructionSheet
         }
         .padding(.bottom, 40)
     }
 
     @ViewBuilder
-    private var referenceSheet: some View {
-        if let block = engine.currentBlock,
-           let refID = block.referenceID,
-           let reference = referenceService.reference(for: refID) {
-            PracticeReferenceView(
-                reference: reference,
-                onDismiss: { showingReference = false }
+    private var instructionSheet: some View {
+        if let block = engine.currentBlock {
+            InstructionDetailSheet(
+                block: block,
+                reference: block.referenceID.flatMap { referenceService.reference(for: $0) },
+                onDismiss: { showingInstructionSheet = false }
             )
         }
     }
@@ -235,6 +243,140 @@ struct PracticeSessionView: View {
     
     private func heroDetailID(for block: PracticeBlock) -> String {
         "detail-\(block.id.uuidString)"
+    }
+
+    // MARK: - Instruction Detail Sheet
+
+    private struct InstructionDetailSheet: View {
+        let block: PracticeBlock
+        let reference: PracticeReference?
+        let onDismiss: () -> Void
+
+        var body: some View {
+            NavigationStack {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        Text(block.title)
+                            .font(.title2)
+                            .fontWeight(.semibold)
+
+                        if !block.detail.isEmpty {
+                            Text(block.detail)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        if let focus = block.focusCue, !focus.isEmpty {
+                            HStack(alignment: .top, spacing: 8) {
+                                Image(systemName: "star.fill")
+                                    .foregroundStyle(.tint)
+                                Text(focus)
+                                    .italic()
+                            }
+                        }
+
+                        if !block.instructions.isEmpty {
+                            VStack(alignment: .leading, spacing: 12) {
+                                ForEach(block.instructions.indices, id: \.self) { idx in
+                                    HStack(alignment: .top, spacing: 8) {
+                                        Image(systemName: "circle.fill")
+                                            .font(.system(size: 5))
+                                            .foregroundStyle(.secondary)
+                                            .padding(.top, 7)
+                                        Text(block.instructions[idx])
+                                            .fixedSize(horizontal: false, vertical: true)
+                                    }
+                                }
+                            }
+                        }
+
+                        if let reference {
+                            Image(reference.assetName)
+                                .resizable()
+                                .scaledToFit()
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
+                                )
+                        }
+                    }
+                    .padding()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            onDismiss()
+                        } label: {
+                            Image(systemName: "xmark")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private struct InteractionTipsSheet: View {
+        let onDismiss: () -> Void
+
+        var body: some View {
+            NavigationStack {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 24) {
+                        TipRow(
+                            title: "Adjust time",
+                            detail: "Swipe up/down/left/right on the timer to change remaining time.",
+                            systemImage: "timer"
+                        )
+                        TipRow(
+                            title: "See instructions",
+                            detail: "Tap the instruction card to open details and diagrams.",
+                            systemImage: "text.badge.plus"
+                        )
+                        TipRow(
+                            title: "Tune metronome",
+                            detail: "Swipe on the triangle to change BPM. Tap to toggle sound.",
+                            systemImage: "metronome.fill"
+                        )
+                    }
+                    .padding()
+                }
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            onDismiss()
+                        } label: {
+                            Image(systemName: "xmark")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private struct TipRow: View {
+        let title: String
+        let detail: String
+        let systemImage: String
+
+        var body: some View {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: systemImage)
+                    .font(.title2)
+                    .frame(width: 32, height: 32)
+                    .foregroundStyle(.tint)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(title)
+                        .font(.headline)
+                    Text(detail)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
     }
 
     // MARK: - Finished View

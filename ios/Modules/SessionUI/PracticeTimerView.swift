@@ -15,6 +15,7 @@ struct PracticeTimerView: View {
     let titleHeroID: String?
     let detailHeroID: String?
     @State private var lastDragHeight: CGFloat = 0
+    @State private var lastDragWidth: CGFloat = 0
 
     var body: some View {
         VStack(spacing: 24) {
@@ -82,15 +83,21 @@ struct PracticeTimerView: View {
                 DragGesture()
                     .onChanged { value in
                         let deltaHeight = value.translation.height - lastDragHeight
-                        let secondsDelta = Int((-deltaHeight) / 5) // Drag up to add, down to reduce
+                        let deltaWidth = value.translation.width - lastDragWidth
+                        let secondsDeltaVertical = Int((-deltaHeight) / 5) // Drag up to add, down to reduce
+                        let secondsDeltaHorizontal = Int((deltaWidth) / 5) // Drag right to add, left to reduce
 
-                        if secondsDelta != 0 {
-                            onAdjustTime(secondsDelta)
+                        let combined = secondsDeltaVertical + secondsDeltaHorizontal
+
+                        if combined != 0 {
+                            onAdjustTime(combined)
                             lastDragHeight = value.translation.height
+                            lastDragWidth = value.translation.width
                         }
                     }
                     .onEnded { _ in
                         lastDragHeight = 0
+                        lastDragWidth = 0
                     }
             )
         }
