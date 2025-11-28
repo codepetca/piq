@@ -47,16 +47,6 @@ struct PracticeSessionView: View {
             // Auto-start/stop metronome and set tempo based on block
             handleMetronomeForBlock(at: newIndex)
         }
-        .onChange(of: engine.state) { _, newState in
-            // Ensure modals are closed when a new session or block begins
-            switch newState {
-            case .previewBlock, .inBlock:
-                showingInstructionSheet = false
-                showingInteractionTips = false
-            default:
-                break
-            }
-        }
         .overlay(alignment: .topTrailing) {
             Button {
                 showingInteractionTips = true
