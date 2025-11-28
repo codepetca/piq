@@ -83,9 +83,7 @@ struct TodayView: View {
 
                         HStack {
                             Spacer()
-                            Text("\(totalTargetMinutes) min")
-                                .font(.callout.weight(.semibold))
-                                .foregroundColor(.accentColor)
+                            AlarmBadgeView(minutes: totalTargetMinutes, size: 48, tint: .primary)
                         }
                         .padding(.leading, 16)
                         .padding(.trailing, 36)
@@ -197,14 +195,7 @@ struct BlockRow: View {
 
             Spacer()
 
-            ZStack {
-                Image(systemName: "clock")
-                    .font(.system(size: 20, weight: .semibold))
-                    .foregroundColor(.secondary)
-                Text("\(block.targetMinutes)")
-                    .font(.caption2.weight(.semibold))
-                    .foregroundColor(.primary)
-            }
+            AlarmBadgeView(minutes: block.targetMinutes, size: 32, tint: .primary)
         }
         .padding(.vertical, 12)
         .padding(.horizontal, 14)
@@ -213,10 +204,70 @@ struct BlockRow: View {
     }
 }
 
+// MARK: - Alarm Badge Preview Helper
+
+struct AlarmBadgeView: View {
+    let minutes: Int
+    var size: CGFloat = 48
+    var tint: Color = .primary
+
+    private var bellWidth: CGFloat { size * 0.24 }
+    private var bellHeight: CGFloat { size * 0.1 }
+    private var bellOffsetY: CGFloat { -size * 0.4 }
+    private var footSize: CGFloat { size * 0.12 }
+    private var footOffsetY: CGFloat { size * 0.42 }
+    private var faceStrokeWidth: CGFloat { max(2, size * 0.05) }
+    private var textSize: CGFloat { size * 0.35 }
+
+    var body: some View {
+        ZStack {
+            // face
+            Circle()
+                .strokeBorder(tint, lineWidth: faceStrokeWidth)
+                .background(Circle().fill(Color(.systemBackground)))
+                .frame(width: size, height: size)
+
+            // feet
+            HStack(spacing: size * 0.4) {
+                Rectangle().frame(width: footSize, height: footSize)
+                Rectangle().frame(width: footSize, height: footSize)
+            }
+            .foregroundStyle(tint)
+            .offset(y: footOffsetY)
+
+            // minutes
+            Text("\(minutes)")
+                .font(.system(size: textSize, weight: .semibold))
+                .foregroundColor(.primary)
+        }
+    }
+}
+
+// MARK: - Previews
+
+private struct TodayPreviewContainer: View {
+    private let sre: SpacedRepetitionEngine = {
+        let engine = SpacedRepetitionEngine()
+        engine.loadSeedCatalog()
+        return engine
+    }()
+
+    private let practiceEngine = PracticeEngine()
+
+    var body: some View {
+        VStack(spacing: 24) {
+            TodayView()
+                .environment(sre)
+                .environment(practiceEngine)
+
+            AlarmBadgeView(minutes: 10)
+            AlarmBadgeView(minutes: 24)
+                .foregroundStyle(Color.accentColor)
+        }
+        .padding()
+    }
+}
+
 #Preview {
-    let sre = SpacedRepetitionEngine()
-    sre.loadSeedCatalog()
-    return TodayView()
-        .environment(sre)
-        .environment(PracticeEngine())
+    TodayPreviewContainer()
 }
