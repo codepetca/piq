@@ -1,7 +1,7 @@
 import Foundation
 
 /// A single block in a practice session.
-struct PracticeBlock: Identifiable, Codable {
+struct PracticeBlock: Identifiable, Codable, Equatable {
     let id: UUID
     let kind: PracticeBlockKind
     var title: String
