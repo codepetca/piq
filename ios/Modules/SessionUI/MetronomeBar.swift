@@ -32,34 +32,34 @@ struct MetronomeBar: View {
                 .padding(.bottom, 12)
             }
             .frame(width: 96, height: 112)
-            .contentShape(Rectangle())
-            .gesture(
-                DragGesture()
-                    .onChanged { value in
-                        let deltaHeight = value.translation.height - lastDragHeight
-                        let deltaWidth = value.translation.width - lastDragWidth
-                        let deltaBPM = Int((-deltaHeight) / 4) // drag up to increase, down to decrease
-                        let deltaBPMHorizontal = Int((deltaWidth) / 4) // drag right to increase, left to decrease
-
-                        let combinedDelta = deltaBPM + deltaBPMHorizontal
-
-                        if combinedDelta != 0 {
-                            onAdjustBPM(combinedDelta)
-                            lastDragHeight = value.translation.height
-                            lastDragWidth = value.translation.width
-                        }
-                    }
-                    .onEnded { _ in
-                        lastDragHeight = 0
-                        lastDragWidth = 0
-                    }
-            )
             .onTapGesture {
                 onToggle()
             }
 
         }
         .frame(maxWidth: .infinity)
+        .contentShape(Rectangle())
+        .gesture(
+            DragGesture()
+                .onChanged { value in
+                    let deltaHeight = value.translation.height - lastDragHeight
+                    let deltaWidth = value.translation.width - lastDragWidth
+                    let deltaBPM = Int((-deltaHeight) / 4) // drag up to increase, down to decrease
+                    let deltaBPMHorizontal = Int((deltaWidth) / 4) // drag right to increase, left to decrease
+
+                    let combinedDelta = deltaBPM + deltaBPMHorizontal
+
+                    if combinedDelta != 0 {
+                        onAdjustBPM(combinedDelta)
+                        lastDragHeight = value.translation.height
+                        lastDragWidth = value.translation.width
+                    }
+                }
+                .onEnded { _ in
+                    lastDragHeight = 0
+                    lastDragWidth = 0
+                }
+        )
         .opacity(isOn ? 1.0 : 0.8)
     }
 }

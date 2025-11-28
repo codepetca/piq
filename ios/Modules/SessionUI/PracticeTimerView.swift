@@ -64,7 +64,8 @@ struct PracticeTimerView: View {
                 }
             }
             .frame(width: 240, height: 240)
-            .contentShape(Circle())
+            .padding(.horizontal, 32) // expand hit area for swipes
+            .contentShape(Rectangle())
             .onTapGesture {
                 onTogglePause()
             }
