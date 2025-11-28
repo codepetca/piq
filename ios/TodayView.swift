@@ -36,7 +36,7 @@ struct TodayView: View {
                             Button(role: .destructive) {
                                 removeBlock(block)
                             } label: {
-                                Label("Remove", systemImage: "trash")
+                                Image(systemName: "trash")
                             }
                         }
                         .onDrag {
