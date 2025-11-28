@@ -20,6 +20,7 @@ struct HistoryView: View {
                         Image(systemName: "line.3.horizontal")
                             .font(.system(size: 18, weight: .regular))
                     }
+                    .buttonStyle(.plain)
                 }
             }
             .onAppear {
