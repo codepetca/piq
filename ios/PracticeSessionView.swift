@@ -47,16 +47,6 @@ struct PracticeSessionView: View {
             // Auto-start/stop metronome and set tempo based on block
             handleMetronomeForBlock(at: newIndex)
         }
-        .overlay(alignment: .topTrailing) {
-            Button {
-                showingInteractionTips = true
-            } label: {
-                Image(systemName: "questionmark.circle")
-                    .font(.title2)
-                    .padding(.top, 32)
-                    .padding(.trailing, 16)
-            }
-        }
         .sheet(isPresented: $showingInteractionTips) {
             InteractionTipsSheet {
                 showingInteractionTips = false
@@ -96,17 +86,22 @@ struct PracticeSessionView: View {
 
     @ViewBuilder
     private func inBlockView(remainingSeconds: Int) -> some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 24) {
             if let session = engine.session,
                let currentIndex = engine.currentBlockIndex {
-                blockPillRow(session: session, currentIndex: currentIndex)
-                    .padding(.horizontal, 24)
-                    .padding(.top, 8)
+                VStack(spacing: 8) {
+                    HStack {
+                        Spacer()
+                        questionButton
+                    }
+                    blockPillRow(session: session, currentIndex: currentIndex)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
+                .padding(.horizontal, 24)
+                .padding(.top, 8)
             }
 
-            Spacer()
-
-            // Timer with progress rings
+            // Timer with progress rings and title/subtitle
             if let block = engine.currentBlock {
                 PracticeTimerView(
                     title: block.title,
@@ -120,6 +115,7 @@ struct PracticeSessionView: View {
                     titleHeroID: heroTitleID(for: block),
                     detailHeroID: heroDetailID(for: block)
                 )
+                .padding(.top, 8)
                 
                 BlockInstructionsHeroCard(
                     instructions: block.instructions,
@@ -128,7 +124,7 @@ struct PracticeSessionView: View {
                     heroID: heroID(for: block)
                 )
                 .padding(.horizontal, 24)
-                .padding(.top, 16)
+                .padding(.top, 12)
                 .transition(.opacity)
                 .contentShape(Rectangle())
                 .onTapGesture {
@@ -136,7 +132,7 @@ struct PracticeSessionView: View {
                 }
             }
 
-            Spacer()
+            Spacer(minLength: 0)
 
             // Metronome controls
             MetronomeBar(
@@ -156,6 +152,7 @@ struct PracticeSessionView: View {
             )
             .padding(.horizontal)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .sheet(isPresented: $showingInstructionSheet) {
             instructionSheet
         }
@@ -195,9 +192,16 @@ struct PracticeSessionView: View {
             .overlay(alignment: .top) {
                 if let session = engine.session,
                    let currentIndex = engine.currentBlockIndex {
-                    blockPillRow(session: session, currentIndex: currentIndex)
-                        .padding(.horizontal, 24)
-                        .padding(.top, 12)
+                    VStack(spacing: 8) {
+                        HStack {
+                            Spacer()
+                            questionButton
+                        }
+                        blockPillRow(session: session, currentIndex: currentIndex)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.top, 12)
                 }
             }
         }
@@ -323,6 +327,15 @@ struct PracticeSessionView: View {
         "detail-\(block.id.uuidString)"
     }
 
+    private var questionButton: some View {
+        Button {
+            showingInteractionTips = true
+        } label: {
+            Image(systemName: "questionmark.circle")
+                .font(.title2)
+        }
+    }
+
     private func block(at index: Int) -> PracticeBlock? {
         guard let session = engine.session,
               index < session.blocks.count else { return nil }
@@ -331,14 +344,14 @@ struct PracticeSessionView: View {
 
     @ViewBuilder
     private func blockPillRow(session: PracticeSession, currentIndex: Int) -> some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 10) {
             ForEach(Array(session.blocks.enumerated()), id: \.element.id) { index, block in
-                Capsule()
+                Circle()
                     .fill(color(forBlockAt: index, currentIndex: currentIndex))
-                    .frame(height: 10)
+                    .frame(width: 12, height: 12)
                     .overlay(
-                        Capsule()
-                            .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+                        Circle()
+                            .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
                     )
                     .animation(.easeInOut(duration: 0.2), value: currentIndex)
                     .accessibilityLabel("\(block.title)")
@@ -352,7 +365,7 @@ struct PracticeSessionView: View {
         } else if index == currentIndex {
             return Color.accentColor
         } else {
-            return Color.secondary.opacity(0.2)
+            return Color.secondary.opacity(0.15)
         }
     }
 

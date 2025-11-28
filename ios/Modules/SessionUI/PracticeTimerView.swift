@@ -21,20 +21,16 @@ struct PracticeTimerView: View {
             // Block info
             VStack(spacing: 8) {
                 Text(title)
-                    .font(.title2)
-                    .fontWeight(.semibold)
+                    .font(.title)
+                    .fontWeight(.bold)
                     .multilineTextAlignment(.center)
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.8)
                     .frame(maxWidth: .infinity)
                     .matchedGeometryEffectIfPossible(id: titleHeroID, in: namespace)
                 if !detail.isEmpty {
                     Text(detail)
-                        .font(.subheadline)
+                        .font(.title3)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
-                        .lineLimit(2)
-                        .minimumScaleFactor(0.8)
                         .frame(maxWidth: .infinity)
                         .matchedGeometryEffectIfPossible(id: detailHeroID, in: namespace)
                 }
