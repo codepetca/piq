@@ -214,7 +214,7 @@ struct BlockRow: View {
     }
 }
 
-private struct BlockDragItem: Transferable {
+private struct BlockDragItem: Transferable, Codable {
     let id: UUID
 
     static var transferRepresentation: some TransferRepresentation {
