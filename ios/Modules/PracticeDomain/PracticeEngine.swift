@@ -101,8 +101,8 @@ final class PracticeEngine {
             return
         }
 
-        // Start with preview state (4 seconds)
-        state = .previewBlock(index: index, secondsRemaining: 4)
+        // Start with preview state (10 seconds)
+        state = .previewBlock(index: index, secondsRemaining: 10)
         isPaused = false
     }
 

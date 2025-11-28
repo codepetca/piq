@@ -10,6 +10,7 @@ struct PracticeSessionView: View {
 
     @State private var showingReference = false
     @State private var showSessionPrompt = true
+    @Namespace private var heroNamespace
 
     var body: some View {
         VStack {
@@ -116,8 +117,22 @@ struct PracticeSessionView: View {
                     blockProgress: engine.blockProgress,
                     sessionProgress: engine.sessionProgress,
                     isPaused: engine.isPaused,
-                    onTogglePause: togglePause
+                    onTogglePause: togglePause,
+                    namespace: heroNamespace,
+                    kindHeroID: heroKindID(for: block),
+                    titleHeroID: heroTitleID(for: block),
+                    detailHeroID: heroDetailID(for: block)
                 )
+                
+                BlockInstructionsHeroCard(
+                    instructions: block.instructions,
+                    focusCue: block.focusCue,
+                    namespace: heroNamespace,
+                    heroID: heroID(for: block)
+                )
+                .padding(.horizontal, 24)
+                .padding(.top, 16)
+                .transition(.opacity)
             }
 
             Spacer()
@@ -204,7 +219,12 @@ struct PracticeSessionView: View {
                 secondsRemaining: secondsRemaining,
                 onTapToStart: {
                     engine.skipPreview()
-                }
+                },
+                namespace: heroNamespace,
+                heroID: heroID(for: block),
+                titleHeroID: heroTitleID(for: block),
+                detailHeroID: heroDetailID(for: block),
+                kindHeroID: heroKindID(for: block)
             )
         }
     }
@@ -252,6 +272,22 @@ struct PracticeSessionView: View {
         if block.kind.defaultMetronomeOn {
             engine.recordEndingBPM(forBlockAt: index, bpm: metronome.bpm)
         }
+    }
+    
+    private func heroID(for block: PracticeBlock) -> String {
+        "instructions-\(block.id.uuidString)"
+    }
+    
+    private func heroTitleID(for block: PracticeBlock) -> String {
+        "title-\(block.id.uuidString)"
+    }
+    
+    private func heroDetailID(for block: PracticeBlock) -> String {
+        "detail-\(block.id.uuidString)"
+    }
+    
+    private func heroKindID(for block: PracticeBlock) -> String {
+        "kind-\(block.id.uuidString)"
     }
 
     // MARK: - Finished View

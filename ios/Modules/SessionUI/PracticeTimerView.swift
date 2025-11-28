@@ -11,6 +11,10 @@ struct PracticeTimerView: View {
     let sessionProgress: Double    // 0.0–1.0
     let isPaused: Bool
     let onTogglePause: () -> Void
+    let namespace: Namespace.ID?
+    let kindHeroID: String?
+    let titleHeroID: String?
+    let detailHeroID: String?
 
     var body: some View {
         VStack(spacing: 24) {
@@ -19,13 +23,24 @@ struct PracticeTimerView: View {
                 Text(blockKind)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
+                    .matchedGeometryEffectIfPossible(id: kindHeroID, in: namespace)
                 Text(title)
                     .font(.title2)
                     .fontWeight(.semibold)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.8)
+                    .frame(maxWidth: .infinity)
+                    .matchedGeometryEffectIfPossible(id: titleHeroID, in: namespace)
                 if !detail.isEmpty {
                     Text(detail)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.8)
+                        .frame(maxWidth: .infinity)
+                        .matchedGeometryEffectIfPossible(id: detailHeroID, in: namespace)
                 }
             }
 
@@ -80,7 +95,11 @@ struct PracticeTimerView: View {
         blockProgress: 0.35,
         sessionProgress: 0.125,
         isPaused: false,
-        onTogglePause: {}
+        onTogglePause: {},
+        namespace: nil,
+        kindHeroID: nil,
+        titleHeroID: nil,
+        detailHeroID: nil
     )
 }
 
@@ -93,6 +112,10 @@ struct PracticeTimerView: View {
         blockProgress: 0.5,
         sessionProgress: 0.375,
         isPaused: true,
-        onTogglePause: {}
+        onTogglePause: {},
+        namespace: nil,
+        kindHeroID: nil,
+        titleHeroID: nil,
+        detailHeroID: nil
     )
 }

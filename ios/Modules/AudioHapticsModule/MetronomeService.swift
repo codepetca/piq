@@ -49,7 +49,7 @@ final class MetronomeService {
             return
         }
 
-        guard let engine = audioEngine, let player = playerNode else {
+        guard let engine = audioEngine, let _ = playerNode else {
             setupAudio()
             guard audioEngine != nil, playerNode != nil else { return }
             start()
