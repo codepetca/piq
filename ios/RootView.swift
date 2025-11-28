@@ -69,8 +69,8 @@ private struct SidebarMenu: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("piq")
                 .font(.title2.weight(.semibold))
-                .padding(.horizontal, 12)
-                .padding(.top, 20)
+                .padding(.horizontal, 16)
+                .padding(.top, 36)
 
             ForEach(SidebarItem.allCases) { item in
                 Button {
