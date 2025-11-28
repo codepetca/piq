@@ -7,7 +7,6 @@ struct PracticeTimerView: View {
     let detail: String
     let timeText: String
     let blockProgress: Double      // 0.0–1.0
-    let sessionProgress: Double    // 0.0–1.0
     let isPaused: Bool
     let onTogglePause: () -> Void
     let onAdjustTime: (Int) -> Void
@@ -50,16 +49,6 @@ struct PracticeTimerView: View {
                     .trim(from: 0, to: blockProgress)
                     .stroke(Color.accentColor, style: StrokeStyle(lineWidth: 12, lineCap: .round))
                     .rotationEffect(.degrees(-90))
-
-                // Inner ring - session progress (overall session progress)
-                Circle()
-                    .stroke(Color.secondary.opacity(0.2), lineWidth: 8)
-                    .padding(20)
-                Circle()
-                    .trim(from: 0, to: sessionProgress)
-                    .stroke(Color.accentColor.opacity(0.5), style: StrokeStyle(lineWidth: 8, lineCap: .round))
-                    .rotationEffect(.degrees(-90))
-                    .padding(20)
 
                 // Timer text
                 VStack(spacing: 4) {
@@ -110,7 +99,6 @@ struct PracticeTimerView: View {
         detail: "Position 1",
         timeText: "08:32",
         blockProgress: 0.35,
-        sessionProgress: 0.125,
         isPaused: false,
         onTogglePause: {},
         onAdjustTime: { _ in },
@@ -126,7 +114,6 @@ struct PracticeTimerView: View {
         detail: "",
         timeText: "05:15",
         blockProgress: 0.5,
-        sessionProgress: 0.375,
         isPaused: true,
         onTogglePause: {},
         onAdjustTime: { _ in },

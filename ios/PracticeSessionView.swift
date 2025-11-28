@@ -96,6 +96,13 @@ struct PracticeSessionView: View {
     @ViewBuilder
     private func inBlockView(remainingSeconds: Int) -> some View {
         VStack(spacing: 16) {
+            if let session = engine.session,
+               let currentIndex = engine.currentBlockIndex {
+                blockPillRow(session: session, currentIndex: currentIndex)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 8)
+            }
+
             Spacer()
 
             // Timer with progress rings
@@ -105,7 +112,6 @@ struct PracticeSessionView: View {
                     detail: block.detail,
                     timeText: formatTime(remainingSeconds),
                     blockProgress: engine.blockProgress,
-                    sessionProgress: engine.sessionProgress,
                     isPaused: engine.isPaused,
                     onTogglePause: togglePause,
                     onAdjustTime: adjustRemainingTime(by:),
@@ -243,6 +249,33 @@ struct PracticeSessionView: View {
     
     private func heroDetailID(for block: PracticeBlock) -> String {
         "detail-\(block.id.uuidString)"
+    }
+
+    @ViewBuilder
+    private func blockPillRow(session: PracticeSession, currentIndex: Int) -> some View {
+        HStack(spacing: 8) {
+            ForEach(Array(session.blocks.enumerated()), id: \.element.id) { index, block in
+                Capsule()
+                    .fill(color(forBlockAt: index, currentIndex: currentIndex))
+                    .frame(height: 10)
+                    .overlay(
+                        Capsule()
+                            .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+                    )
+                    .animation(.easeInOut(duration: 0.2), value: currentIndex)
+                    .accessibilityLabel("\(block.title)")
+            }
+        }
+    }
+
+    private func color(forBlockAt index: Int, currentIndex: Int) -> Color {
+        if index < currentIndex {
+            return Color.accentColor.opacity(0.4)
+        } else if index == currentIndex {
+            return Color.accentColor
+        } else {
+            return Color.secondary.opacity(0.2)
+        }
     }
 
     // MARK: - Instruction Detail Sheet
