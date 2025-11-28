@@ -43,24 +43,26 @@ struct TodayView: View {
                                 Text("Resume")
                                     .font(.headline)
                                     .foregroundColor(.white)
-                                    .frame(width: 64, height: 64)
+                                    .frame(width: 76, height: 76)
                                     .background(
                                         Circle()
                                             .fill(Color.accentColor)
                                     )
-                                    .shadow(color: Color.black.opacity(0.12), radius: 6, x: 0, y: 3)
+                                    .shadow(color: Color.black.opacity(0.12), radius: 8, x: 0, y: 4)
+                                    .offset(y: -4)
                             }
                         } else {
                             Button(action: startSession) {
                                 Image(systemName: "play.fill")
-                                    .font(.system(size: 28, weight: .semibold))
+                                    .font(.system(size: 30, weight: .semibold))
                                     .foregroundColor(.white)
-                                    .frame(width: 64, height: 64)
+                                    .frame(width: 76, height: 76)
                                     .background(
                                         Circle()
                                             .fill(Color.accentColor)
                                     )
-                                    .shadow(color: Color.black.opacity(0.16), radius: 6, x: 0, y: 3)
+                                    .shadow(color: Color.black.opacity(0.16), radius: 8, x: 0, y: 4)
+                                    .offset(y: -4)
                             }
                         }
 
@@ -73,8 +75,9 @@ struct TodayView: View {
                         .padding(.leading, 16)
                         .padding(.trailing, 36)
                     }
-                    .frame(maxWidth: .infinity, minHeight: 72)
-                    .padding(.vertical, 8)
+                    .frame(maxWidth: .infinity, minHeight: 80)
+                    .padding(.vertical, 6)
+                    .padding(.bottom, 4)
                     .background(.regularMaterial)
                 }
             }
