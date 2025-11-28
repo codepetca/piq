@@ -74,6 +74,7 @@ struct SettingsView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: { onMenuTap?() }) {
                         Image(systemName: "line.3.horizontal")
+                            .font(.system(size: 18, weight: .regular))
                     }
                 }
             }
