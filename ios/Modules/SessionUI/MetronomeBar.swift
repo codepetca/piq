@@ -18,20 +18,20 @@ struct MetronomeBar: View {
                 RoundedTriangle(cornerRadius: 16)
                     .stroke(isOn ? Color.accentColor : Color.secondary.opacity(0.3), lineWidth: 1.5)
 
-                VStack(spacing: 2) {
+                VStack(spacing: 4) {
                     Text("\(bpm)")
-                        .font(.system(.body, design: .monospaced))
+                        .font(.system(.title3, design: .monospaced))
                         .foregroundStyle(isOn ? .primary : .secondary)
                         .padding(.bottom, 6)
                     Text("bpm")
-                        .font(.footnote)
+                        .font(.callout)
                         .foregroundStyle(.secondary)
                         .padding(.bottom, 2)
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.bottom, 12)
             }
-            .frame(width: 96, height: 112)
+            .frame(width: 112, height: 124)
             .onTapGesture {
                 onToggle()
             }

@@ -50,22 +50,16 @@ struct BlockPreviewView: View {
             
             Spacer()
             
-            // Countdown inside circle
-            let previewProgress = min(max(Double(secondsRemaining) / 10.0, 0), 1)
-            ZStack {
-                Circle()
-                    .stroke(Color.secondary.opacity(0.2), lineWidth: 12)
-                Circle()
-                    .trim(from: 0, to: previewProgress)
-                    .stroke(Color.accentColor, style: StrokeStyle(lineWidth: 12, lineCap: .round))
-                    .rotationEffect(.degrees(-90))
-
+            // Simple countdown
+            VStack(spacing: 8) {
+                Text("Starting in")
+                    .font(.headline)
+                    .foregroundStyle(.secondary)
                 Text("\(secondsRemaining)")
                     .font(.system(size: 64, weight: .bold, design: .rounded))
                     .foregroundStyle(.tint)
                     .contentTransition(.numericText())
             }
-            .frame(width: 200, height: 200)
             .padding(.top, 8)
             
             Spacer()
