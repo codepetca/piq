@@ -70,7 +70,8 @@ struct TodayView: View {
                                 .font(.subheadline.weight(.semibold))
                                 .foregroundColor(.accentColor)
                         }
-                        .padding(.horizontal, 16)
+                        .padding(.leading, 16)
+                        .padding(.trailing, 24)
                     }
                     .frame(maxWidth: .infinity, minHeight: 72)
                     .padding(.vertical, 8)
