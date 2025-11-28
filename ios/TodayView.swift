@@ -37,44 +37,43 @@ struct TodayView: View {
             .safeAreaInset(edge: .bottom) {
                 // Start or resume session button (fixed at bottom)
                 if let vm = viewModel {
-                    VStack(spacing: 8) {
-                        HStack {
-                            Spacer()
-                            Text("Total \(totalTargetMinutes) min")
-                                .font(.footnote)
-                                .foregroundColor(.secondary)
-                        }
-                        .padding(.horizontal)
-
+                    ZStack {
                         if vm.hasActiveSession {
                             Button(action: resumeSession) {
                                 Text("Resume")
                                     .font(.headline)
                                     .foregroundColor(.white)
-                                    .frame(width: 72, height: 72)
+                                    .frame(width: 64, height: 64)
                                     .background(
                                         Circle()
                                             .fill(Color.accentColor)
                                     )
-                                    .shadow(color: Color.black.opacity(0.15), radius: 8, x: 0, y: 4)
+                                    .shadow(color: Color.black.opacity(0.12), radius: 6, x: 0, y: 3)
                             }
-                            .frame(maxWidth: .infinity)
                         } else {
                             Button(action: startSession) {
                                 Image(systemName: "play.fill")
                                     .font(.system(size: 28, weight: .semibold))
                                     .foregroundColor(.white)
-                                    .frame(width: 72, height: 72)
+                                    .frame(width: 64, height: 64)
                                     .background(
                                         Circle()
                                             .fill(Color.accentColor)
                                     )
-                                    .shadow(color: Color.black.opacity(0.2), radius: 8, x: 0, y: 4)
+                                    .shadow(color: Color.black.opacity(0.16), radius: 6, x: 0, y: 3)
                             }
-                            .frame(maxWidth: .infinity)
                         }
+
+                        HStack {
+                            Spacer()
+                            Text("\(totalTargetMinutes) min")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundColor(.accentColor)
+                        }
+                        .padding(.horizontal, 16)
                     }
-                    .padding(.vertical, 12)
+                    .frame(maxWidth: .infinity, minHeight: 72)
+                    .padding(.vertical, 8)
                     .background(.regularMaterial)
                 }
             }
