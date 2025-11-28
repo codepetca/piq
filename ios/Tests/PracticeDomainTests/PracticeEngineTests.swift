@@ -296,6 +296,55 @@ final class PracticeEngineTests: XCTestCase {
         }
     }
 
+    // MARK: - Adjust Remaining Time Tests
+
+    func testAdjustRemainingTimeDoesNotExceedTargetMinutes() {
+        let engine = PracticeEngine()
+        engine.startSession()
+
+        // Add 18 minutes; should clamp to the original target (3 minutes = 180 seconds)
+        engine.adjustCurrentBlockRemaining(by: 1080)
+
+        if case .inBlock(_, let remainingSeconds) = engine.state {
+            XCTAssertEqual(remainingSeconds, 180)
+        } else {
+            XCTFail("Engine should be in block state")
+        }
+    }
+
+    func testAdjustRemainingTimeDoesNotExceedOriginalTargetForLongBlocks() {
+        let block = PracticeBlock(kind: .warmup, title: "Long Block", targetMinutes: 20, instructions: [])
+        let session = PracticeSession(blocks: [block])
+        let engine = PracticeEngine()
+        engine.session = session
+        // Simulate being 15 minutes away from completion (5 minutes remaining).
+        engine.state = .inBlock(index: 0, remainingSeconds: 300)
+
+        // Attempt to add 10 minutes; should clamp to the original 20 minutes (1200 seconds)
+        engine.adjustCurrentBlockRemaining(by: 600)
+
+        if case .inBlock(_, let remainingSeconds) = engine.state {
+            XCTAssertEqual(remainingSeconds, 1200)
+        } else {
+            XCTFail("Engine should be in block state")
+        }
+    }
+
+    func testAdjustRemainingTimeFinishesBlockAtZero() {
+        let engine = PracticeEngine()
+        engine.startSession()
+
+        // Drop remaining time to zero or below
+        engine.adjustCurrentBlockRemaining(by: -10_000)
+
+        if case .betweenBlocks(let lastIndex, let nextIndex) = engine.state {
+            XCTAssertEqual(lastIndex, 0)
+            XCTAssertEqual(nextIndex, 1)
+        } else {
+            XCTFail("Engine should advance when time hits zero")
+        }
+    }
+
     // MARK: - Record Feedback Tests
 
     func testRecordFeedbackForBlock() {

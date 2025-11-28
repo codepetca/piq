@@ -3,27 +3,23 @@ import SwiftUI
 /// Presentational component for displaying practice timer with progress rings.
 /// No timing logic belongs here - this is purely presentational.
 struct PracticeTimerView: View {
-    let blockKind: String
     let title: String
     let detail: String
     let timeText: String
     let blockProgress: Double      // 0.0–1.0
-    let sessionProgress: Double    // 0.0–1.0
     let isPaused: Bool
     let onTogglePause: () -> Void
+    let onAdjustTime: (Int) -> Void
     let namespace: Namespace.ID?
-    let kindHeroID: String?
     let titleHeroID: String?
     let detailHeroID: String?
+    @State private var lastDragHeight: CGFloat = 0
+    @State private var lastDragWidth: CGFloat = 0
 
     var body: some View {
         VStack(spacing: 24) {
             // Block info
             VStack(spacing: 8) {
-                Text(blockKind)
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .matchedGeometryEffectIfPossible(id: kindHeroID, in: namespace)
                 Text(title)
                     .font(.title2)
                     .fontWeight(.semibold)
@@ -54,16 +50,6 @@ struct PracticeTimerView: View {
                     .stroke(Color.accentColor, style: StrokeStyle(lineWidth: 12, lineCap: .round))
                     .rotationEffect(.degrees(-90))
 
-                // Inner ring - session progress (overall session progress)
-                Circle()
-                    .stroke(Color.secondary.opacity(0.2), lineWidth: 8)
-                    .padding(20)
-                Circle()
-                    .trim(from: 0, to: sessionProgress)
-                    .stroke(Color.accentColor.opacity(0.5), style: StrokeStyle(lineWidth: 8, lineCap: .round))
-                    .rotationEffect(.degrees(-90))
-                    .padding(20)
-
                 // Timer text
                 VStack(spacing: 4) {
                     Text(timeText)
@@ -78,26 +64,46 @@ struct PracticeTimerView: View {
                 }
             }
             .frame(width: 240, height: 240)
-            .contentShape(Circle())
+            .padding(.horizontal, 32) // expand hit area for swipes
+            .contentShape(Rectangle())
             .onTapGesture {
                 onTogglePause()
             }
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        let deltaHeight = value.translation.height - lastDragHeight
+                        let deltaWidth = value.translation.width - lastDragWidth
+                        let secondsDeltaVertical = Int((-deltaHeight) / 5) // Drag up to add, down to reduce
+                        let secondsDeltaHorizontal = Int((deltaWidth) / 5) // Drag right to add, left to reduce
+
+                        let combined = secondsDeltaVertical + secondsDeltaHorizontal
+
+                        if combined != 0 {
+                            onAdjustTime(combined)
+                            lastDragHeight = value.translation.height
+                            lastDragWidth = value.translation.width
+                        }
+                    }
+                    .onEnded { _ in
+                        lastDragHeight = 0
+                        lastDragWidth = 0
+                    }
+            )
         }
     }
 }
 
 #Preview("In Progress") {
     PracticeTimerView(
-        blockKind: "Warm-Up",
         title: "Am Pentatonic Scale",
         detail: "Position 1",
         timeText: "08:32",
         blockProgress: 0.35,
-        sessionProgress: 0.125,
         isPaused: false,
         onTogglePause: {},
+        onAdjustTime: { _ in },
         namespace: nil,
-        kindHeroID: nil,
         titleHeroID: nil,
         detailHeroID: nil
     )
@@ -105,16 +111,14 @@ struct PracticeTimerView: View {
 
 #Preview("Paused") {
     PracticeTimerView(
-        blockKind: "Song",
         title: "Wish You Were Here",
         detail: "",
         timeText: "05:15",
         blockProgress: 0.5,
-        sessionProgress: 0.375,
         isPaused: true,
         onTogglePause: {},
+        onAdjustTime: { _ in },
         namespace: nil,
-        kindHeroID: nil,
         titleHeroID: nil,
         detailHeroID: nil
     )

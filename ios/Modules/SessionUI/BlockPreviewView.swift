@@ -3,7 +3,6 @@ import SwiftUI
 /// Displays a preview/transition screen before each practice block.
 /// Shows block information with a countdown and tap-to-start functionality.
 struct BlockPreviewView: View {
-    let blockKind: String
     let title: String
     let detail: String?
     let focusCue: String?
@@ -14,19 +13,10 @@ struct BlockPreviewView: View {
     let heroID: String?
     let titleHeroID: String?
     let detailHeroID: String?
-    let kindHeroID: String?
     
     var body: some View {
         VStack(spacing: 32) {
             Spacer()
-            
-            // Block kind label
-            Text(blockKind.uppercased())
-                .font(.footnote)
-                .fontWeight(.semibold)
-                .foregroundStyle(.secondary)
-                .tracking(1.5)
-                .matchedGeometryEffectIfPossible(id: kindHeroID, in: namespace)
             
             // Block title
             VStack(spacing: 8) {
@@ -60,11 +50,23 @@ struct BlockPreviewView: View {
             
             Spacer()
             
-            // Countdown only
-            Text("\(secondsRemaining)")
-                .font(.system(size: 64, weight: .bold, design: .rounded))
-                .foregroundStyle(.tint)
-                .contentTransition(.numericText())
+            // Countdown inside circle
+            let previewProgress = min(max(Double(secondsRemaining) / 10.0, 0), 1)
+            ZStack {
+                Circle()
+                    .stroke(Color.secondary.opacity(0.2), lineWidth: 12)
+                Circle()
+                    .trim(from: 0, to: previewProgress)
+                    .stroke(Color.accentColor, style: StrokeStyle(lineWidth: 12, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+
+                Text("\(secondsRemaining)")
+                    .font(.system(size: 64, weight: .bold, design: .rounded))
+                    .foregroundStyle(.tint)
+                    .contentTransition(.numericText())
+            }
+            .frame(width: 200, height: 200)
+            .padding(.top, 8)
             
             Spacer()
         }
@@ -78,7 +80,6 @@ struct BlockPreviewView: View {
 
 #Preview("With Instructions") {
     BlockPreviewView(
-        blockKind: "Warm-Up",
         title: "Chromatic Warm-Up",
         detail: nil,
         focusCue: "Super slow, perfect tone",
@@ -92,14 +93,12 @@ struct BlockPreviewView: View {
         namespace: nil,
         heroID: "preview-1",
         titleHeroID: "title-1",
-        detailHeroID: "detail-1",
-        kindHeroID: "kind-1"
+        detailHeroID: "detail-1"
     )
 }
 
 #Preview("Without Instructions") {
     BlockPreviewView(
-        blockKind: "Solo",
         title: "Am Pentatonic Improv",
         detail: "Position 1",
         focusCue: "Play what you feel",
@@ -109,14 +108,12 @@ struct BlockPreviewView: View {
         namespace: nil,
         heroID: "preview-2",
         titleHeroID: "title-2",
-        detailHeroID: "detail-2",
-        kindHeroID: "kind-2"
+        detailHeroID: "detail-2"
     )
 }
 
 #Preview("Minimal") {
     BlockPreviewView(
-        blockKind: "Song",
         title: "Wonderwall",
         detail: "Verse",
         focusCue: nil,
@@ -126,8 +123,7 @@ struct BlockPreviewView: View {
         namespace: nil,
         heroID: "preview-3",
         titleHeroID: "title-3",
-        detailHeroID: "detail-3",
-        kindHeroID: "kind-3"
+        detailHeroID: "detail-3"
     )
 }
 
@@ -176,14 +172,6 @@ struct BlockInstructionsHeroCard: View {
                 }
                 .padding(16)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color(uiColor: .secondarySystemBackground))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .stroke(Color.secondary.opacity(0.2))
-                )
                 .matchedGeometryEffectIfPossible(id: heroID, in: namespace)
             }
         }

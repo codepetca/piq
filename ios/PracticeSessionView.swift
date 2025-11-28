@@ -8,8 +8,8 @@ struct PracticeSessionView: View {
     @Environment(PracticeReferenceService.self) private var referenceService
     @Environment(\.dismiss) private var dismiss
 
-    @State private var showingReference = false
-    @State private var showSessionPrompt = true
+    @State private var showingInstructionSheet = false
+    @State private var showingInteractionTips = false
     @Namespace private var heroNamespace
 
     var body: some View {
@@ -47,6 +47,21 @@ struct PracticeSessionView: View {
             // Auto-start/stop metronome and set tempo based on block
             handleMetronomeForBlock(at: newIndex)
         }
+        .overlay(alignment: .topTrailing) {
+            Button {
+                showingInteractionTips = true
+            } label: {
+                Image(systemName: "questionmark.circle")
+                    .font(.title2)
+                    .padding(.top, 32)
+                    .padding(.trailing, 16)
+            }
+        }
+        .sheet(isPresented: $showingInteractionTips) {
+            InteractionTipsSheet {
+                showingInteractionTips = false
+            }
+        }
     }
 
     // MARK: - Metronome Control
@@ -82,27 +97,11 @@ struct PracticeSessionView: View {
     @ViewBuilder
     private func inBlockView(remainingSeconds: Int) -> some View {
         VStack(spacing: 16) {
-            // Session prompt (first block only)
-            if showSessionPrompt && engine.currentBlockIndex == 0,
-               let session = engine.session {
-                HStack {
-                    Text(session.sessionPrompt)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-
-                    Button {
-                        withAnimation {
-                            showSessionPrompt = false
-                        }
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .padding(.horizontal)
-                .padding(.top, 8)
+            if let session = engine.session,
+               let currentIndex = engine.currentBlockIndex {
+                blockPillRow(session: session, currentIndex: currentIndex)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 8)
             }
 
             Spacer()
@@ -110,16 +109,14 @@ struct PracticeSessionView: View {
             // Timer with progress rings
             if let block = engine.currentBlock {
                 PracticeTimerView(
-                    blockKind: block.kind.displayName,
                     title: block.title,
                     detail: block.detail,
                     timeText: formatTime(remainingSeconds),
                     blockProgress: engine.blockProgress,
-                    sessionProgress: engine.sessionProgress,
                     isPaused: engine.isPaused,
                     onTogglePause: togglePause,
+                    onAdjustTime: adjustRemainingTime(by:),
                     namespace: heroNamespace,
-                    kindHeroID: heroKindID(for: block),
                     titleHeroID: heroTitleID(for: block),
                     detailHeroID: heroDetailID(for: block)
                 )
@@ -133,6 +130,10 @@ struct PracticeSessionView: View {
                 .padding(.horizontal, 24)
                 .padding(.top, 16)
                 .transition(.opacity)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    showingInstructionSheet = true
+                }
             }
 
             Spacer()
@@ -148,59 +149,26 @@ struct PracticeSessionView: View {
                         metronome.start()
                     }
                 },
-                onIncreaseBPM: {
-                    metronome.increaseBPM()
-                    engine.recordTempoAdjustment()
-                },
-                onDecreaseBPM: {
-                    metronome.decreaseBPM()
+                onAdjustBPM: { delta in
+                    metronome.setBPM(metronome.bpm + delta)
                     engine.recordTempoAdjustment()
                 }
             )
             .padding(.horizontal)
-
-            // Control buttons
-            HStack(spacing: 32) {
-                Button(action: { engine.skipCurrentBlock() }) {
-                    Image(systemName: "forward.fill")
-                        .font(.title2)
-                }
-
-                Button(action: togglePause) {
-                    Image(systemName: engine.isPaused ? "play.fill" : "pause.fill")
-                        .font(.largeTitle)
-                }
-
-                Button(action: { engine.extendCurrentBlock(byExtraSeconds: 60) }) {
-                    Image(systemName: "plus.circle")
-                        .font(.title2)
-                }
-
-                // Reference button (only if block has a reference)
-                if let block = engine.currentBlock,
-                   let refID = block.referenceID,
-                   referenceService.reference(for: refID) != nil {
-                    Button(action: { showingReference = true }) {
-                        Image(systemName: "questionmark.circle")
-                            .font(.title2)
-                    }
-                }
-            }
-            .padding(.bottom, 40)
-            .sheet(isPresented: $showingReference) {
-                referenceSheet
-            }
         }
+        .sheet(isPresented: $showingInstructionSheet) {
+            instructionSheet
+        }
+        .padding(.bottom, 40)
     }
 
     @ViewBuilder
-    private var referenceSheet: some View {
-        if let block = engine.currentBlock,
-           let refID = block.referenceID,
-           let reference = referenceService.reference(for: refID) {
-            PracticeReferenceView(
-                reference: reference,
-                onDismiss: { showingReference = false }
+    private var instructionSheet: some View {
+        if let block = engine.currentBlock {
+            InstructionDetailSheet(
+                block: block,
+                reference: block.referenceID.flatMap { referenceService.reference(for: $0) },
+                onDismiss: { showingInstructionSheet = false }
             )
         }
     }
@@ -211,7 +179,6 @@ struct PracticeSessionView: View {
     private func previewBlockView(secondsRemaining: Int) -> some View {
         if let block = engine.currentBlock {
             BlockPreviewView(
-                blockKind: block.kind.displayName,
                 title: block.title,
                 detail: block.detail,
                 focusCue: block.focusCue,
@@ -223,9 +190,16 @@ struct PracticeSessionView: View {
                 namespace: heroNamespace,
                 heroID: heroID(for: block),
                 titleHeroID: heroTitleID(for: block),
-                detailHeroID: heroDetailID(for: block),
-                kindHeroID: heroKindID(for: block)
+                detailHeroID: heroDetailID(for: block)
             )
+            .overlay(alignment: .top) {
+                if let session = engine.session,
+                   let currentIndex = engine.currentBlockIndex {
+                    blockPillRow(session: session, currentIndex: currentIndex)
+                        .padding(.horizontal, 24)
+                        .padding(.top, 12)
+                }
+            }
         }
     }
 
@@ -285,9 +259,166 @@ struct PracticeSessionView: View {
     private func heroDetailID(for block: PracticeBlock) -> String {
         "detail-\(block.id.uuidString)"
     }
-    
-    private func heroKindID(for block: PracticeBlock) -> String {
-        "kind-\(block.id.uuidString)"
+
+    @ViewBuilder
+    private func blockPillRow(session: PracticeSession, currentIndex: Int) -> some View {
+        HStack(spacing: 8) {
+            ForEach(Array(session.blocks.enumerated()), id: \.element.id) { index, block in
+                Capsule()
+                    .fill(color(forBlockAt: index, currentIndex: currentIndex))
+                    .frame(height: 10)
+                    .overlay(
+                        Capsule()
+                            .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+                    )
+                    .animation(.easeInOut(duration: 0.2), value: currentIndex)
+                    .accessibilityLabel("\(block.title)")
+            }
+        }
+    }
+
+    private func color(forBlockAt index: Int, currentIndex: Int) -> Color {
+        if index < currentIndex {
+            return Color.accentColor.opacity(0.4)
+        } else if index == currentIndex {
+            return Color.accentColor
+        } else {
+            return Color.secondary.opacity(0.2)
+        }
+    }
+
+    // MARK: - Instruction Detail Sheet
+
+    private struct InstructionDetailSheet: View {
+        let block: PracticeBlock
+        let reference: PracticeReference?
+        let onDismiss: () -> Void
+
+        var body: some View {
+            NavigationStack {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        Text(block.title)
+                            .font(.title2)
+                            .fontWeight(.semibold)
+
+                        if !block.detail.isEmpty {
+                            Text(block.detail)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        if let focus = block.focusCue, !focus.isEmpty {
+                            HStack(alignment: .top, spacing: 8) {
+                                Image(systemName: "star.fill")
+                                    .foregroundStyle(.tint)
+                                Text(focus)
+                                    .italic()
+                            }
+                        }
+
+                        if !block.instructions.isEmpty {
+                            VStack(alignment: .leading, spacing: 12) {
+                                ForEach(block.instructions.indices, id: \.self) { idx in
+                                    HStack(alignment: .top, spacing: 8) {
+                                        Image(systemName: "circle.fill")
+                                            .font(.system(size: 5))
+                                            .foregroundStyle(.secondary)
+                                            .padding(.top, 7)
+                                        Text(block.instructions[idx])
+                                            .fixedSize(horizontal: false, vertical: true)
+                                    }
+                                }
+                            }
+                        }
+
+                        if let reference {
+                            Image(reference.assetName)
+                                .resizable()
+                                .scaledToFit()
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
+                                )
+                        }
+                    }
+                    .padding()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            onDismiss()
+                        } label: {
+                            Image(systemName: "xmark")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private struct InteractionTipsSheet: View {
+        let onDismiss: () -> Void
+
+        var body: some View {
+            NavigationStack {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 24) {
+                        TipRow(
+                            title: "Adjust time",
+                            detail: "Swipe up/down/left/right on the timer to change remaining time.",
+                            systemImage: "timer"
+                        )
+                        TipRow(
+                            title: "See instructions",
+                            detail: "Tap the instruction card to open details and diagrams.",
+                            systemImage: "text.badge.plus"
+                        )
+                        TipRow(
+                            title: "Tune metronome",
+                            detail: "Swipe on the triangle to change BPM. Tap to toggle sound.",
+                            systemImage: "metronome.fill"
+                        )
+                    }
+                    .padding()
+                }
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            onDismiss()
+                        } label: {
+                            Image(systemName: "xmark")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private struct TipRow: View {
+        let title: String
+        let detail: String
+        let systemImage: String
+
+        var body: some View {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: systemImage)
+                    .font(.title2)
+                    .frame(width: 32, height: 32)
+                    .foregroundStyle(.tint)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(title)
+                        .font(.headline)
+                    Text(detail)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
     }
 
     // MARK: - Finished View
@@ -357,6 +488,10 @@ struct PracticeSessionView: View {
         let minutes = totalSeconds / 60
         let seconds = totalSeconds % 60
         return String(format: "%02d:%02d", minutes, seconds)
+    }
+
+    private func adjustRemainingTime(by deltaSeconds: Int) {
+        engine.adjustCurrentBlockRemaining(by: deltaSeconds)
     }
 
     private func togglePause() {

@@ -124,10 +124,7 @@ struct BlockRow: View {
 
     var body: some View {
         HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(block.kind.displayName)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+            VStack(alignment: .leading, spacing: 6) {
                 Text(block.title)
                     .font(.headline)
                 if !block.detail.isEmpty {
