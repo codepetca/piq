@@ -37,48 +37,60 @@ struct TodayView: View {
             .safeAreaInset(edge: .bottom) {
                 // Start or resume session button (fixed at bottom)
                 if let vm = viewModel {
-                    if vm.hasActiveSession {
-                        Button(action: resumeSession) {
-                            Text("Resume Session")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.accentColor)
-                                .cornerRadius(12)
+                    VStack(spacing: 8) {
+                        HStack {
+                            Spacer()
+                            Text("Total \(totalTargetMinutes) min")
+                                .font(.footnote)
+                                .foregroundColor(.secondary)
                         }
                         .padding(.horizontal)
-                        .padding(.vertical, 12)
-                        .background(.regularMaterial)
-                    } else {
-                        Button(action: startSession) {
-                            Text("Start Session")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.accentColor)
-                                .cornerRadius(12)
+
+                        if vm.hasActiveSession {
+                            Button(action: resumeSession) {
+                                Text("Resume")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                    .frame(width: 72, height: 72)
+                                    .background(
+                                        Circle()
+                                            .fill(Color.accentColor)
+                                    )
+                                    .shadow(color: Color.black.opacity(0.15), radius: 8, x: 0, y: 4)
+                            }
+                            .frame(maxWidth: .infinity)
+                        } else {
+                            Button(action: startSession) {
+                                Image(systemName: "play.fill")
+                                    .font(.system(size: 28, weight: .semibold))
+                                    .foregroundColor(.white)
+                                    .frame(width: 72, height: 72)
+                                    .background(
+                                        Circle()
+                                            .fill(Color.accentColor)
+                                    )
+                                    .shadow(color: Color.black.opacity(0.2), radius: 8, x: 0, y: 4)
+                            }
+                            .frame(maxWidth: .infinity)
                         }
-                        .padding(.horizontal)
-                        .padding(.vertical, 12)
-                        .background(.regularMaterial)
+                    }
+                    .padding(.vertical, 12)
+                    .background(.regularMaterial)
+                }
+            }
+            .navigationTitle("Today")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: { onMenuTap?() }) {
+                        Image(systemName: "line.3.horizontal")
                     }
                 }
             }
-                .navigationTitle("Today")
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button(action: { onMenuTap?() }) {
-                            Image(systemName: "line.3.horizontal")
-                        }
-                    }
-                }
-                .onAppear {
-                    initializeViewModelIfNeeded()
-                    viewModel?.refreshBlocks()
-                }
-                .fullScreenCover(isPresented: $showingSession) {
+            .onAppear {
+                initializeViewModelIfNeeded()
+                viewModel?.refreshBlocks()
+            }
+            .fullScreenCover(isPresented: $showingSession) {
                 PracticeSessionView()
             }
         }
@@ -105,6 +117,10 @@ struct TodayView: View {
 
     private var todayBlocks: [PracticeBlock] {
         viewModel?.todayBlocks ?? []
+    }
+
+    private var totalTargetMinutes: Int {
+        todayBlocks.reduce(0) { $0 + $1.targetMinutes }
     }
 
     // MARK: - Actions
