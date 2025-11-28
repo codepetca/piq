@@ -1,5 +1,4 @@
 import SwiftUI
-import UniformTypeIdentifiers
 
 /// TodayView displays today's practice blocks and allows starting a session.
 ///
@@ -15,7 +14,7 @@ struct TodayView: View {
     @State private var viewModel: TodayViewModel?
     @State private var showingSession = false
     @State private var blocks: [PracticeBlock] = []
-    @State private var draggingBlock: PracticeBlock?
+    @State private var editMode: EditMode = .inactive
     var onMenuTap: (() -> Void)? = nil
 
     var body: some View {
@@ -39,22 +38,17 @@ struct TodayView: View {
                                 Image(systemName: "trash")
                             }
                         }
-                        .onDrag {
-                            draggingBlock = block
-                            return NSItemProvider(object: block.id.uuidString as NSString)
-                        }
-                        .onDrop(
-                            of: [.text],
-                            delegate: BlockDropDelegate(
-                                item: block,
-                                items: $blocks,
-                                dragging: $draggingBlock
-                            )
-                        )
+                        .onLongPressGesture(minimumDuration: 0.15, pressing: { isPressing in
+                            withAnimation(.easeInOut(duration: 0.12)) {
+                                editMode = isPressing ? .active : .inactive
+                            }
+                        }, perform: {})
                 }
+                .onMove(perform: moveBlocks)
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
+            .environment(\.editMode, $editMode)
             .safeAreaInset(edge: .bottom) {
                 // Start or resume session button (fixed at bottom)
                 if let vm = viewModel {
@@ -175,21 +169,12 @@ struct TodayView: View {
         blocks.remove(at: index)
     }
 
-    private func moveBlock(sourceID: UUID, targetID: UUID) {
-        guard
-            let fromIndex = blocks.firstIndex(where: { $0.id == sourceID }),
-            let toIndex = blocks.firstIndex(where: { $0.id == targetID }),
-            fromIndex != toIndex
-        else { return }
-
-        let destination = toIndex > fromIndex ? toIndex + 1 : toIndex
-        withAnimation(.easeInOut(duration: 0.15)) {
-            blocks.move(
-                fromOffsets: IndexSet(integer: fromIndex),
-                toOffset: destination
-            )
-        }
+    private func moveBlocks(from source: IndexSet, to destination: Int) {
+        blocks.move(fromOffsets: source, toOffset: destination)
         viewModel?.setTodayBlocks(blocks)
+        withAnimation(.easeInOut(duration: 0.15)) {
+            editMode = .inactive
+        }
     }
 }
 
@@ -220,33 +205,6 @@ struct BlockRow: View {
         .padding(.horizontal, 10)
         .background(Color(.systemGray6))
         .cornerRadius(12)
-    }
-}
-
-// MARK: - Drop Delegate
-
-private struct BlockDropDelegate: DropDelegate {
-    let item: PracticeBlock
-    @Binding var items: [PracticeBlock]
-    @Binding var dragging: PracticeBlock?
-
-    func dropEntered(info: DropInfo) {
-        guard let dragging,
-              dragging.id != item.id,
-              let fromIndex = items.firstIndex(where: { $0.id == dragging.id }),
-              let toIndex = items.firstIndex(where: { $0.id == item.id }) else { return }
-
-        withAnimation(.easeInOut(duration: 0.15)) {
-            items.move(
-                fromOffsets: IndexSet(integer: fromIndex),
-                toOffset: toIndex > fromIndex ? toIndex + 1 : toIndex
-            )
-        }
-    }
-
-    func performDrop(info: DropInfo) -> Bool {
-        dragging = nil
-        return true
     }
 }
 
