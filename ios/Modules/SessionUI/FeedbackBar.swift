@@ -15,7 +15,7 @@ struct FeedbackBar: View {
                     .multilineTextAlignment(.center)
             }
 
-            HStack(spacing: 20) {
+            HStack(spacing: 28) {
                 FeedbackButton(label: "Easy", color: Color.green.opacity(0.85), textColor: .white, action: onEasy)
                 FeedbackButton(label: "Good", color: Color.orange.opacity(0.85), textColor: .white, action: onGood)
                 FeedbackButton(label: "Hard", color: Color.red.opacity(0.85), textColor: .white, action: onHard)
