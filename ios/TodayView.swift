@@ -63,7 +63,6 @@ struct TodayView: View {
                                         Circle()
                                             .fill(Color.accentColor)
                                     )
-                                    .shadow(color: Color.black.opacity(0.12), radius: 8, x: 0, y: 4)
                                     .offset(y: -4)
                             }
                         } else {
@@ -76,7 +75,6 @@ struct TodayView: View {
                                         Circle()
                                             .fill(Color.accentColor)
                                     )
-                                    .shadow(color: Color.black.opacity(0.16), radius: 8, x: 0, y: 4)
                                     .offset(y: -4)
                             }
                         }
