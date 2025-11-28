@@ -191,6 +191,14 @@ struct PracticeSessionView: View {
                 titleHeroID: heroTitleID(for: block),
                 detailHeroID: heroDetailID(for: block)
             )
+            .overlay(alignment: .top) {
+                if let session = engine.session,
+                   let currentIndex = engine.currentBlockIndex {
+                    blockPillRow(session: session, currentIndex: currentIndex)
+                        .padding(.horizontal, 24)
+                        .padding(.top, 12)
+                }
+            }
         }
     }
 
