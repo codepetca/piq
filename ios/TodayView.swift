@@ -197,7 +197,7 @@ struct BlockRow: View {
 
             Spacer()
 
-            Text("\(block.targetMinutes) min")
+            Label("\(block.targetMinutes)", systemImage: "clock")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
         }
