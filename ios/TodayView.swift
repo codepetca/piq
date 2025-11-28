@@ -199,10 +199,10 @@ struct BlockRow: View {
 
             Text("\(block.targetMinutes) min")
                 .font(.subheadline)
-        .foregroundColor(.secondary)
+                .foregroundColor(.secondary)
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 10)
+        .padding(.vertical, 12)
+        .padding(.horizontal, 14)
         .background(Color(.systemGray6))
         .cornerRadius(12)
     }
