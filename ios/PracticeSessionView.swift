@@ -53,7 +53,8 @@ struct PracticeSessionView: View {
             } label: {
                 Image(systemName: "questionmark.circle")
                     .font(.title2)
-                    .padding(16)
+                    .padding(.top, 32)
+                    .padding(.trailing, 16)
             }
         }
         .sheet(isPresented: $showingInteractionTips) {
