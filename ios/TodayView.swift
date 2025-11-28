@@ -1,5 +1,4 @@
 import SwiftUI
-import UniformTypeIdentifiers
 
 /// TodayView displays today's practice blocks and allows starting a session.
 ///
@@ -15,7 +14,7 @@ struct TodayView: View {
     @State private var viewModel: TodayViewModel?
     @State private var showingSession = false
     @State private var blocks: [PracticeBlock] = []
-    @State private var draggingBlock: PracticeBlock?
+    @State private var draggingBlockID: UUID?
     var onMenuTap: (() -> Void)? = nil
 
     var body: some View {
@@ -31,7 +30,7 @@ struct TodayView: View {
                 ForEach(todayBlocks) { block in
                     BlockRow(block: block)
                         .listRowSeparator(.hidden)
-                        .listRowInsets(.init(top: 4, leading: 12, bottom: 4, trailing: 12))
+                        .listRowInsets(.init(top: 2, leading: 10, bottom: 2, trailing: 10))
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                             Button(role: .destructive) {
                                 removeBlock(block)
@@ -39,18 +38,27 @@ struct TodayView: View {
                                 Image(systemName: "trash")
                             }
                         }
+                        .draggable(BlockDragItem(id: block.id))
+                        .dropDestination(for: BlockDragItem.self) { items, _ in
+                            guard
+                                let sourceID = items.first?.id,
+                                let fromIndex = blocks.firstIndex(where: { $0.id == sourceID }),
+                                let toIndex = blocks.firstIndex(where: { $0.id == block.id })
+                            else { return false }
+
+                            withAnimation(.easeInOut(duration: 0.15)) {
+                                blocks.move(
+                                    fromOffsets: IndexSet(integer: fromIndex),
+                                    toOffset: toIndex > fromIndex ? toIndex + 1 : toIndex
+                                )
+                            }
+                            draggingBlockID = nil
+                            return true
+                        }
                         .onDrag {
-                            draggingBlock = block
+                            draggingBlockID = block.id
                             return NSItemProvider(object: block.id.uuidString as NSString)
                         }
-                        .onDrop(
-                            of: [.text],
-                            delegate: BlockDropDelegate(
-                                item: block,
-                                items: $blocks,
-                                dragging: $draggingBlock
-                            )
-                        )
                 }
             }
             .listStyle(.plain)
@@ -199,37 +207,18 @@ struct BlockRow: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
         }
-        .padding(.vertical, 10)
-        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .padding(.horizontal, 10)
         .background(Color(.systemGray6))
         .cornerRadius(12)
     }
 }
 
-// MARK: - Drop Delegate
+private struct BlockDragItem: Transferable {
+    let id: UUID
 
-private struct BlockDropDelegate: DropDelegate {
-    let item: PracticeBlock
-    @Binding var items: [PracticeBlock]
-    @Binding var dragging: PracticeBlock?
-
-    func dropEntered(info: DropInfo) {
-        guard let dragging,
-              dragging.id != item.id,
-              let fromIndex = items.firstIndex(where: { $0.id == dragging.id }),
-              let toIndex = items.firstIndex(where: { $0.id == item.id }) else { return }
-
-        withAnimation(.easeInOut(duration: 0.15)) {
-            items.move(
-                fromOffsets: IndexSet(integer: fromIndex),
-                toOffset: toIndex > fromIndex ? toIndex + 1 : toIndex
-            )
-        }
-    }
-
-    func performDrop(info: DropInfo) -> Bool {
-        dragging = nil
-        return true
+    static var transferRepresentation: some TransferRepresentation {
+        CodableRepresentation(contentType: .data)
     }
 }
 
