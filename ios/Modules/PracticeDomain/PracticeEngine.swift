@@ -110,8 +110,8 @@ final class PracticeEngine {
             return
         }
 
-        // Jump straight into the block (no preview countdown)
-        transitionToInBlock(at: index)
+        // Start with preview state (10 seconds)
+        state = .previewBlock(index: index, secondsRemaining: 10)
         isPaused = false
     }
 
