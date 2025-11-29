@@ -22,7 +22,8 @@ let package = Package(
                 "SessionUI",
                 "AudioHapticsModule",
                 "HistoryModule",
-                "SettingsModule"
+                "SettingsModule",
+                "OnboardingModule/OnboardingView.swift"
             ],
             sources: [
                 "PracticeDomain/HistoryTrendCalculator.swift",
@@ -37,7 +38,9 @@ let package = Package(
                 "PracticeDomain/PracticeStorage.swift",
                 "PracticeDomain/SpacedRepetitionEngine.swift",
                 "PracticeDomain/TempoEngine.swift",
-                "TodayModule/TodayViewModel.swift"
+                "PracticeDomain/UserPreferences.swift",
+                "TodayModule/TodayViewModel.swift",
+                "OnboardingModule/OnboardingViewModel.swift"
             ]
         ),
         .target(
@@ -60,6 +63,11 @@ let package = Package(
             name: "ReferenceModuleTests",
             dependencies: ["ReferenceModule"],
             path: "ios/Tests/ReferenceModuleTests"
+        ),
+        .testTarget(
+            name: "OnboardingModuleTests",
+            dependencies: ["piq"],
+            path: "ios/Tests/OnboardingModuleTests"
         )
     ]
 )

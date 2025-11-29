@@ -91,6 +91,11 @@ final class SettingsViewModel {
         historyViewModel?.loadSessions()
     }
 
+    /// Reset onboarding state to show the onboarding flow again.
+    func resetOnboarding() {
+        storage.resetOnboarding()
+    }
+
     /// Total practice sessions count
     var totalSessions: Int {
         storage.loadSessions().count
