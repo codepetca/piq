@@ -182,13 +182,13 @@ final class PracticeStorage {
 
     /// Internal method to load and migrate sessions data.
     private func loadSessionsWithMigration(from data: Data) throws -> [PracticeSession] {
-        // Try to decode as current version (v1)
+        // Try to decode as current version (v2)
         if let store = try? decoder.decode(SessionsStore.self, from: data) {
             // Check if this is a known version
             if store.schemaVersion > Self.schemaVersion {
                 throw LoadError.unknownSchemaVersion(store.schemaVersion)
             }
-            // Currently only v1 exists, return as-is
+            // Current version is v2; v1 remains compatible with new fields defaulted
             // Future: Add migration logic here for older versions
             return store.sessions
         }
@@ -250,13 +250,13 @@ final class PracticeStorage {
 
     /// Internal method to load and migrate items data.
     private func loadItemsWithMigration(from data: Data) throws -> [PracticeItem] {
-        // Try to decode as current version (v1)
+        // Try to decode as current version (v2)
         if let store = try? decoder.decode(ItemsStore.self, from: data) {
             // Check if this is a known version
             if store.schemaVersion > Self.schemaVersion {
                 throw LoadError.unknownSchemaVersion(store.schemaVersion)
             }
-            // Currently only v1 exists, return as-is
+            // Current version is v2; v1 remains compatible with new tempo defaults
             // Future: Add migration logic here for older versions
             return store.items
         }

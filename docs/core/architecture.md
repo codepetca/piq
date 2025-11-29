@@ -194,7 +194,7 @@ Modal sheet with up to 3 song options. Accepts song options array (id, title), s
 
 ### SessionSummaryView
 
-Displays completed session summary with block feedback and total minutes. Accepts session object, close callback.
+Displays completed session summary with block title, feedback, actual minutes, total time, and optional stability stars (1-3) from SRS. Accepts session object, optional SpacedRepetitionEngine reference, done callback. Shows stability stars when item data is available; no placeholder noise when missing.
 
 ---
 
