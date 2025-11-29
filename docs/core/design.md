@@ -399,9 +399,25 @@ UI rules:
 
 ## Today Screen Composition
 
-- Title bar: left hamburger, centered “Today” title.
+- Title bar: left hamburger, centered "Today" title.
 - Content uses `BlockListView` cards with tighter vertical spacing (light gaps, no large paddings between cards) while keeping cards readable.
 - Primary CTA remains start/resume session; avoid extra labels or subtitles.
+
+### Today Screen Editing
+
+While the SRE generates today's 6–8 microblocks, users can manually adjust:
+
+- **Reorder blocks**: Long-press any block to enter edit mode, then drag to reorder
+- **Delete blocks**: Swipe left on any block to reveal delete action
+- **Constraints**: No hard constraints; users have full flexibility to adapt the session
+
+This flexibility allows users to:
+- Adapt to time constraints (delete blocks when short on time)
+- Adjust sequence based on context (reorder if specific warm-up needed first)
+- Skip blocks already practiced elsewhere
+
+Deleted/skipped blocks don't receive feedback and won't affect SRE learning for that item.
+Reordered blocks preserve the SRE's skill selection while adapting the sequence.
 
 ## Practice Screen Composition
 
