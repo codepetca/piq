@@ -45,6 +45,9 @@ struct PracticeSession: Identifiable, Codable {
 // MARK: - Factory Methods
 
 extension PracticeSession {
+    /// Number of middle blocks in a demo session (excluding warmup and fun ending).
+    private static let middleBlockCount = 4
+    
     /// Creates a demo session for today using the seed catalog.
     /// Generates 6-8 microblocks (~25–45 min) with warmup first, interleaved middle, fun ending.
     static func makeTodayDemo() -> PracticeSession {
@@ -62,14 +65,14 @@ extension PracticeSession {
         var middleItems: [PracticeItem] = []
         var lastCategory: PracticeItemCategory?
         for item in middlePool {
-            if middleItems.count >= 4 { break } // 4 middle blocks
+            if middleItems.count >= middleBlockCount { break }
             if item.category != lastCategory {
                 middleItems.append(item)
                 lastCategory = item.category
             }
         }
         // Fill remaining slots if needed
-        for item in middlePool where middleItems.count < 4 && !middleItems.contains(where: { $0.id == item.id }) {
+        for item in middlePool where middleItems.count < middleBlockCount && !middleItems.contains(where: { $0.id == item.id }) {
             middleItems.append(item)
         }
 
