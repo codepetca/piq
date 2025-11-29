@@ -159,7 +159,8 @@ final class PracticeStorage {
     /// Load all sessions from storage with automatic migration.
     ///
     /// Handles multiple schema versions:
-    /// - v1 (current): SessionsStore wrapper with schemaVersion
+    /// - v2 (current): SessionsStore wrapper with schemaVersion + tempo fields
+    /// - v1: SessionsStore wrapper without tempo fields
     /// - v0 (legacy): Unwrapped array format
     ///
     /// Returns empty array on any load failure (corrupted data, unknown version, etc.)
@@ -182,13 +183,13 @@ final class PracticeStorage {
 
     /// Internal method to load and migrate sessions data.
     private func loadSessionsWithMigration(from data: Data) throws -> [PracticeSession] {
-        // Try to decode as current version (v1)
+        // Try to decode as current version (v2)
         if let store = try? decoder.decode(SessionsStore.self, from: data) {
             // Check if this is a known version
             if store.schemaVersion > Self.schemaVersion {
                 throw LoadError.unknownSchemaVersion(store.schemaVersion)
             }
-            // Currently only v1 exists, return as-is
+            // Current version is v2; v1 remains compatible with new fields defaulted
             // Future: Add migration logic here for older versions
             return store.sessions
         }
@@ -227,7 +228,8 @@ final class PracticeStorage {
     /// Load all items from storage with automatic migration.
     ///
     /// Handles multiple schema versions:
-    /// - v1 (current): ItemsStore wrapper with schemaVersion
+    /// - v2 (current): ItemsStore wrapper with schemaVersion + tempo state
+    /// - v1: ItemsStore wrapper without tempo state
     /// - v0 (legacy): Unwrapped array format
     ///
     /// Returns empty array on any load failure (corrupted data, unknown version, etc.)
@@ -250,13 +252,13 @@ final class PracticeStorage {
 
     /// Internal method to load and migrate items data.
     private func loadItemsWithMigration(from data: Data) throws -> [PracticeItem] {
-        // Try to decode as current version (v1)
+        // Try to decode as current version (v2)
         if let store = try? decoder.decode(ItemsStore.self, from: data) {
             // Check if this is a known version
             if store.schemaVersion > Self.schemaVersion {
                 throw LoadError.unknownSchemaVersion(store.schemaVersion)
             }
-            // Currently only v1 exists, return as-is
+            // Current version is v2; v1 remains compatible with new tempo defaults
             // Future: Add migration logic here for older versions
             return store.items
         }

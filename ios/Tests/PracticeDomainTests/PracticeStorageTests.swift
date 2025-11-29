@@ -80,6 +80,28 @@ final class PracticeStorageTests: XCTestCase {
         XCTAssertEqual(loaded.first?.id, session.id)
     }
 
+    func testSessionRoundTripPersistsTempoFields() {
+        let block = PracticeBlock(
+            kind: .techniqueOrTheory,
+            title: "Tempo Block",
+            targetMinutes: 2,
+            actualMinutes: 1,
+            instructions: [],
+            startingBPM: 72,
+            endingBPM: 80,
+            tempoAdjustmentCount: 3
+        )
+        let session = PracticeSession(blocks: [block])
+
+        storage.saveSessions([session])
+        let loaded = storage.loadSessions().first!
+
+        let loadedBlock = loaded.blocks.first!
+        XCTAssertEqual(loadedBlock.startingBPM, 72)
+        XCTAssertEqual(loadedBlock.endingBPM, 80)
+        XCTAssertEqual(loadedBlock.tempoAdjustmentCount, 3)
+    }
+
     // MARK: - Items Round Trip Tests
 
     func testItemsRoundTripPreservesSRS() {
@@ -134,6 +156,37 @@ final class PracticeStorageTests: XCTestCase {
         XCTAssertNil(loaded.srs.lastPlayed)
     }
 
+    func testItemsRoundTripPersistsTempoState() {
+        let history = [
+            TempoSession(date: Date(timeIntervalSince1970: 1_000), startBPM: 70, endBPM: 75, adjustmentCount: 1, feedback: .good)
+        ]
+        let tempo = TempoState(
+            currentBPM: 80,
+            targetBPM: 120,
+            history: history,
+            lastPracticedBPM: 75,
+            progressionRate: 1.2
+        )
+        let item = PracticeItem(
+            catalogID: "test_tempo_round_trip",
+            category: .technique,
+            title: "Tempo Item",
+            tempo: tempo
+        )
+
+        storage.saveItems([item])
+        let loaded = storage.loadItems().first!
+
+        XCTAssertEqual(loaded.tempo.currentBPM, 80)
+        XCTAssertEqual(loaded.tempo.targetBPM, 120)
+        XCTAssertEqual(loaded.tempo.lastPracticedBPM, 75)
+        XCTAssertEqual(loaded.tempo.progressionRate, 1.2, accuracy: 0.001)
+        XCTAssertEqual(loaded.tempo.history.count, 1)
+        XCTAssertEqual(loaded.tempo.history.first?.startBPM, 70)
+        XCTAssertEqual(loaded.tempo.history.first?.endBPM, 75)
+        XCTAssertEqual(loaded.tempo.history.first?.feedback, .good)
+    }
+
     // MARK: - Catalog Merge Tests
 
     func testLoadPracticeItemsMergesSRSStateFromStorage() {
@@ -157,6 +210,35 @@ final class PracticeStorageTests: XCTestCase {
         XCTAssertEqual(mergedItem.category, firstCatalogItem.category)
         XCTAssertEqual(mergedItem.srs.stability, 5.0, accuracy: 0.001)
         XCTAssertNotNil(mergedItem.srs.lastPlayed)
+    }
+
+    func testLoadPracticeItemsMergesTempoStateFromStorage() {
+        let now = Date()
+        let catalogItems = PracticeItemCatalog.seedItems(now: now)
+        let firstCatalogItem = catalogItems.first!
+
+        var storedItem = firstCatalogItem
+        storedItem.tempo = TempoState(
+            currentBPM: 95,
+            targetBPM: 120,
+            history: [
+                TempoSession(date: now, startBPM: 90, endBPM: 95, adjustmentCount: 2, feedback: .good)
+            ],
+            lastPracticedBPM: 95,
+            progressionRate: 1.1
+        )
+
+        storage.saveItems([storedItem])
+
+        let mergedItems = storage.loadPracticeItems(now: now)
+        let mergedItem = mergedItems.first { $0.catalogID == firstCatalogItem.catalogID }!
+
+        XCTAssertEqual(mergedItem.tempo.currentBPM, 95)
+        XCTAssertEqual(mergedItem.tempo.lastPracticedBPM, 95)
+        XCTAssertEqual(mergedItem.tempo.history.count, 1)
+        XCTAssertEqual(mergedItem.tempo.history.first?.endBPM, 95)
+        XCTAssertEqual(mergedItem.tempo.progressionRate, 1.1, accuracy: 0.001)
+        XCTAssertEqual(mergedItem.targetMinutes, firstCatalogItem.targetMinutes)
     }
 
     func testLoadPracticeItemsPreservesCatalogItemsWithoutStoredState() {
@@ -296,6 +378,41 @@ final class PracticeStorageTests: XCTestCase {
         XCTAssertEqual(loadedItem.srs.stability, 2.5, accuracy: 0.001)
     }
 
+    func testLoadItemsFromSchemaV1AddsTempoDefaults() {
+        let now = Date()
+        let itemsURL = testDirectory.appendingPathComponent("items.json")
+        let formatter = ISO8601DateFormatter()
+
+        let legacyStore: [String: Any] = [
+            "schemaVersion": 1,
+            "items": [[
+                "id": UUID().uuidString,
+                "catalogID": "legacy_item",
+                "category": "warmup",
+                "title": "Legacy Item",
+                "detail": "",
+                "targetMinutes": 3,
+                "srs": [
+                    "stability": 1.0,
+                    "nextDue": formatter.string(from: now),
+                    "lastBonusTipIndex": -1,
+                    "lastFocusCueIndex": -1
+                ]
+            ]]
+        ]
+
+        let data = try! JSONSerialization.data(withJSONObject: legacyStore)
+        try! data.write(to: itemsURL)
+
+        let loaded = storage.loadItems()
+        XCTAssertEqual(loaded.count, 1)
+
+        let loadedItem = loaded.first!
+        XCTAssertEqual(loadedItem.catalogID, "legacy_item")
+        XCTAssertEqual(loadedItem.tempo.currentBPM, PracticeItemCategory.warmup.defaultBPM)
+        XCTAssertTrue(loadedItem.tempo.history.isEmpty)
+    }
+
     func testLoadSessionsFromFutureVersionReturnsEmpty() {
         // Create a session store with a future schema version
         let futureVersion = PracticeStorage.schemaVersion + 10
@@ -346,6 +463,39 @@ final class PracticeStorageTests: XCTestCase {
         // Should return empty for unknown future version
         let loaded = storage.loadItems()
         XCTAssertTrue(loaded.isEmpty)
+    }
+
+    func testLoadSessionsFromSchemaV1WithoutTempoFields() {
+        let sessionsURL = testDirectory.appendingPathComponent("sessions.json")
+        let formatter = ISO8601DateFormatter()
+
+        let legacyStore: [String: Any] = [
+            "schemaVersion": 1,
+            "sessions": [[
+                "id": UUID().uuidString,
+                "date": formatter.string(from: Date()),
+                "blocks": [[
+                    "id": UUID().uuidString,
+                    "kind": "warmup",
+                    "title": "Legacy Block",
+                    "detail": "",
+                    "targetMinutes": 3,
+                    "actualMinutes": 2
+                ]]
+            ]]
+        ]
+
+        let data = try! JSONSerialization.data(withJSONObject: legacyStore)
+        try! data.write(to: sessionsURL)
+
+        let loaded = storage.loadSessions()
+
+        XCTAssertEqual(loaded.count, 1)
+        let loadedBlock = loaded.first!.blocks.first!
+        XCTAssertNil(loadedBlock.startingBPM)
+        XCTAssertNil(loadedBlock.endingBPM)
+        XCTAssertEqual(loadedBlock.tempoAdjustmentCount, 0)
+        XCTAssertEqual(loadedBlock.actualMinutes, 2)
     }
 
     func testMigrationPreservesAllSessionData() {

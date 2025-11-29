@@ -59,6 +59,19 @@ final class PracticeEngineTests: XCTestCase {
         }
     }
 
+    func testStartSessionWithEmptyBlocksDoesNothing() {
+        let engine = PracticeEngine()
+        engine.startSession(with: [])
+
+        if case .idle = engine.state {
+            // Success
+        } else {
+            XCTFail("Engine should remain idle when starting with empty blocks")
+        }
+
+        XCTAssertNil(engine.session)
+    }
+
     // MARK: - Tick/Advance Tests
 
     func testTickDecrementsRemainingSeconds() {
@@ -223,6 +236,21 @@ final class PracticeEngineTests: XCTestCase {
             XCTAssert(remainingSeconds >= 180, "Second block should have reasonable duration")
         } else {
             XCTFail("Engine should be in block state")
+        }
+    }
+
+    func testStartNextBlockNoOpWhenNotBetweenBlocks() {
+        let engine = PracticeEngine()
+        engine.startSession()
+
+        // Calling startNextBlock from preview should keep the same preview state
+        engine.startNextBlock()
+
+        if case .previewBlock(let index, let secondsRemaining) = engine.state {
+            XCTAssertEqual(index, 0)
+            XCTAssertEqual(secondsRemaining, 10)
+        } else {
+            XCTFail("Engine should remain in preview when startNextBlock is called outside betweenBlocks")
         }
     }
 
@@ -444,6 +472,22 @@ final class PracticeEngineTests: XCTestCase {
         }
     }
 
+    func testPausePreventsPreviewCountdown() {
+        let engine = PracticeEngine()
+        let block = PracticeBlock(kind: .warmup, title: "Custom Warmup", targetMinutes: 1, instructions: [])
+        engine.startSession(with: [block])
+
+        engine.pause()
+        engine.tick()
+
+        if case .previewBlock(let index, let secondsRemaining) = engine.state {
+            XCTAssertEqual(index, 0)
+            XCTAssertEqual(secondsRemaining, 10)
+        } else {
+            XCTFail("Engine should remain in preview when paused")
+        }
+    }
+
     // MARK: - Current Block Info Tests
 
     func testCurrentBlockIndexReturnsCorrectValue() {
@@ -478,6 +522,41 @@ final class PracticeEngineTests: XCTestCase {
     }
 
     // MARK: - Full Session Flow Tests
+
+    func testSingleBlockFlowFromPreviewToFinished() {
+        let engine = PracticeEngine()
+        let block = PracticeBlock(kind: .warmup, title: "One Minute", targetMinutes: 1, instructions: [])
+        engine.startSession(with: [block])
+
+        // Countdown through preview to enter inBlock
+        for _ in 0..<10 { engine.tick() }
+
+        if case .inBlock(let index, let remainingSeconds) = engine.state {
+            XCTAssertEqual(index, 0)
+            XCTAssertEqual(remainingSeconds, 60)
+        } else {
+            XCTFail("Engine should enter inBlock after preview ticks")
+        }
+
+        // Finish via tick transition to betweenBlocks then finished
+        engine.state = .inBlock(index: 0, remainingSeconds: 1)
+        engine.tick()
+
+        if case .betweenBlocks(let lastIndex, let nextIndex) = engine.state {
+            XCTAssertEqual(lastIndex, 0)
+            XCTAssertNil(nextIndex)
+        } else {
+            XCTFail("Engine should move to betweenBlocks after final tick")
+        }
+
+        engine.startNextBlock()
+
+        if case .finished = engine.state {
+            // Success
+        } else {
+            XCTFail("Engine should finish after final block completes")
+        }
+    }
 
     func testCompleteSessionFlow() {
         let engine = PracticeEngine()
