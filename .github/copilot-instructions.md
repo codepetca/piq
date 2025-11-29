@@ -4,7 +4,7 @@
 
 For comprehensive guidance, read the universal AI instructions file:
 
-**`/Users/stew/Repos/vibe/piq/docs/ai-instructions.md`**
+**`docs/ai-instructions.md`**
 
 This file contains all architecture rules, module boundaries, design patterns, workflows, and testing priorities.
 
@@ -70,4 +70,4 @@ Prioritize engine + storage tests (see `tests.md`). Avoid heavy UI tests; keep V
 
 ---
 
-**For detailed rules, always reference `/docs/ai-instructions.md` and the `/docs/core/` files it points to.**
+**For detailed rules, always reference `docs/ai-instructions.md` and the `docs/core/` files it points to.**

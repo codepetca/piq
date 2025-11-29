@@ -2,7 +2,7 @@
 
 Read the universal AI instructions file to initialize your understanding of the piq project:
 
-**`/Users/stew/Repos/vibe/piq/docs/ai-instructions.md`**
+**`docs/ai-instructions.md`**
 
 This file will guide you through:
 1. Required reading order for all documentation

@@ -17,25 +17,25 @@ You are working on **piq**, a minimal, distraction-free iOS guitar practice app 
 Read these files to understand the project architecture (order matters):
 
 1. **design.md** — UI/UX flows, visual design system, component patterns
-   `/Users/stew/Repos/vibe/piq/docs/core/design.md`
+   `docs/core/design.md`
 
 2. **architecture.md** — Architecture, modules, platform constraints, patterns
-   `/Users/stew/Repos/vibe/piq/docs/core/architecture.md`
+   `docs/core/architecture.md`
 
 3. **agents.md** — Multi-agent collaboration patterns, responsibilities
-   `/Users/stew/Repos/vibe/piq/docs/core/agents.md`
+   `docs/core/agents.md`
 
 4. **tests.md** — Testing philosophy, TDD approach, priorities
-   `/Users/stew/Repos/vibe/piq/docs/core/tests.md`
+   `docs/core/tests.md`
 
 5. **roadmap.md** — Product phases, priorities, and source-of-truth scope
-   `/Users/stew/Repos/vibe/piq/docs/core/roadmap.md`
+   `docs/core/roadmap.md`
 
 6. **guidance.md** — Guitar learning domain model, SRS concepts
-   `/Users/stew/Repos/vibe/piq/docs/guidance/guidance.md`
+   `docs/guidance/guidance.md`
 
 7. **Active issue file** (if working on a specific task)
-   `/Users/stew/Repos/vibe/piq/docs/issues/issue-*.md`
+   `docs/issues/issue-*.md`
 
 ---
 
@@ -93,7 +93,7 @@ Read these files to understand the project architecture (order matters):
 
 ### Working on a GitHub Issue
 
-See `/docs/workflow/handle-issue.md` for detailed workflow.
+See `docs/workflow/handle-issue.md` for detailed workflow.
 
 **Basic steps:**
 1. Fetch issue: `gh issue view N --json number,title,body,labels`

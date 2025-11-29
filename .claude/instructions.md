@@ -4,7 +4,7 @@
 
 Read the universal AI instructions file for comprehensive guidance:
 
-**`/Users/stew/Repos/vibe/piq/docs/ai-instructions.md`**
+**`docs/ai-instructions.md`**
 
 This file contains all architecture rules, workflows, and constraints that apply to ALL AI platforms (Claude, Copilot, ChatGPT, Codex, Gemini).
 
@@ -28,7 +28,7 @@ Claude Code will automatically spawn specialized subagents when appropriate:
 - **Reviewer Subagent**: Before commits, architectural compliance checks, test coverage verification
 - **Tester Subagent**: Test development, failure investigation, coverage gap identification
 
-See `/docs/ai-instructions.md` for detailed subagent patterns and when to spawn them.
+See `docs/ai-instructions.md` for detailed subagent patterns and when to spawn them.
 
 ---
 
@@ -50,4 +50,4 @@ Today → Start session → Block (timer) → Feedback → Next → Summary
 
 ---
 
-**For complete details, always reference `/docs/ai-instructions.md` and the core documentation files it points to.**
+**For complete details, always reference `docs/ai-instructions.md` and the core documentation files it points to.**
