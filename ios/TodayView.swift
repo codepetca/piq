@@ -234,13 +234,13 @@ struct AlarmBadgeView: View {
     var size: CGFloat = 48
     var tint: Color = .primary
 
-    private var bellWidth: CGFloat { size * 0.24 }
-    private var bellHeight: CGFloat { size * 0.1 }
-    private var bellOffsetY: CGFloat { -size * 0.4 }
-    private var footSize: CGFloat { size * 0.12 }
-    private var footOffsetY: CGFloat { size * 0.42 }
     private var faceStrokeWidth: CGFloat { max(2, size * 0.05) }
     private var textSize: CGFloat { size * 0.35 }
+    private var topCapSize: CGSize { CGSize(width: size * 0.24, height: size * 0.06) }
+    private var topStemSize: CGSize { CGSize(width: size * 0.12, height: size * 0.08) }
+    private var topOffsetY: CGFloat { -size * 0.56 }
+    private var sideNubSize: CGFloat { size * 0.12 }
+    private var sideNubOffset: CGSize { CGSize(width: size * 0.42, height: -size * 0.36) }
 
     var body: some View {
         ZStack {
@@ -250,13 +250,21 @@ struct AlarmBadgeView: View {
                 .background(Circle().fill(Color(.systemBackground)))
                 .frame(width: size, height: size)
 
-            // feet
-            HStack(spacing: size * 0.4) {
-                Rectangle().frame(width: footSize, height: footSize)
-                Rectangle().frame(width: footSize, height: footSize)
+            // top stem and cap to mimic a stopwatch
+            VStack(spacing: size * 0.02) {
+                RoundedRectangle(cornerRadius: size * 0.02)
+                    .frame(width: topCapSize.width, height: topCapSize.height)
+                RoundedRectangle(cornerRadius: size * 0.02)
+                    .frame(width: topStemSize.width, height: topStemSize.height)
             }
             .foregroundStyle(tint)
-            .offset(y: footOffsetY)
+            .offset(y: topOffsetY)
+
+            // side nub (start/stop button) at ~1 o'clock, outside the circle
+            Circle()
+                .fill(tint)
+                .frame(width: sideNubSize, height: sideNubSize)
+                .offset(x: sideNubOffset.width, y: sideNubOffset.height)
 
             // minutes
             Text("\(minutes)")
