@@ -46,11 +46,73 @@ struct PracticeSession: Identifiable, Codable {
 
 extension PracticeSession {
     /// Creates a demo session for today using the seed catalog.
+    /// Generates 6-8 microblocks (~30–40 min) with warmup first, interleaved middle, fun ending.
     static func makeTodayDemo() -> PracticeSession {
         let items = PracticeItemCatalog.seedItems()
+        let targetTotalMinutes = 35
+        let minTotalMinutes = 30
+        let maxTotalMinutes = 40
+        let minBlocks = 6
+        let maxBlocks = 8
         var blocks: [PracticeBlock] = []
 
-        for item in items.prefix(4) {
+        // Select warmup first (single warmup block)
+        let warmupItem = items.first { $0.blockKind == .warmup }
+
+        // Select fun ending (songwork or repertoire)
+        let funItem = items.first { $0.category == .songwork }
+            ?? items.first { $0.category == .repertoire }
+
+        // Select middle items (interleaved categories, excluding warmup-kind and fun ending)
+        let excludedIDs = Set([warmupItem?.id, funItem?.id].compactMap { $0 })
+        var middlePool = items.filter {
+            !excludedIDs.contains($0.id) && $0.blockKind != .warmup
+        }
+
+        var middleItems: [PracticeItem] = []
+        var lastCategory: PracticeItemCategory?
+        var currentTotal = (warmupItem?.targetMinutes ?? 0) + (funItem?.targetMinutes ?? 0)
+        let minMiddleCount = max(minBlocks - 2, 0)
+        let maxMiddleCount = maxBlocks - 2
+
+        while !middlePool.isEmpty && middleItems.count < maxMiddleCount {
+            // Pick an item that interleaves categories when possible
+            let nextIndex = middlePool.firstIndex { $0.category != lastCategory } ?? middlePool.startIndex
+            let candidate = middlePool.remove(at: nextIndex)
+
+            let projectedTotal = currentTotal + candidate.targetMinutes
+            // If adding this would exceed max total and we already satisfy min middle count, stop
+            if projectedTotal > maxTotalMinutes && middleItems.count >= minMiddleCount {
+                break
+            }
+
+            middleItems.append(candidate)
+            lastCategory = candidate.category
+            currentTotal = projectedTotal
+
+            // Stop early if we hit budget and minimum count
+            if currentTotal >= targetTotalMinutes && middleItems.count >= minMiddleCount {
+                break
+            }
+        }
+
+        // If we're still under minimum time, add more items (even if same category) until we reach bounds or max count
+        while currentTotal < minTotalMinutes,
+              middleItems.count < maxMiddleCount,
+              let candidate = middlePool.first {
+            middlePool.removeFirst()
+            let projectedTotal = currentTotal + candidate.targetMinutes
+            if projectedTotal > maxTotalMinutes { break }
+            middleItems.append(candidate)
+            currentTotal = projectedTotal
+        }
+
+        var sessionItems: [PracticeItem] = []
+        if let warmup = warmupItem { sessionItems.append(warmup) }
+        sessionItems.append(contentsOf: middleItems)
+        if let fun = funItem { sessionItems.append(fun) }
+
+        for item in sessionItems {
             let (instructions, focusCue, _) = item.selectInstructionsForDisplay()
 
             let block = PracticeBlock(

@@ -85,7 +85,7 @@ Today → Start session → Preview (10s) → Block screen → Feedback → Next
 ```
 
 Session structure:
-- 6–8 microblocks per session (≈25–45 min total).  
+- 6–8 microblocks per session (≈30–40 min total).  
 - Warm‑Up first, interleaved middle, “fun ending” block last.  
 - Each microblock 2–10 minutes depending on category.  
 - Feedback after every block: Easy / Good / Hard.
@@ -313,7 +313,7 @@ No tutorials, no long explanations.
 
 # 9. Practice Blocks
 
-Session mix: 6–8 microblocks per day (≈25–45 min), always starting with Warm‑Up and ending with a “fun” block. Middle blocks interleave categories to avoid repeats.
+Session mix: 6–8 microblocks per day (≈30–40 min), always starting with Warm‑Up and ending with a “fun” block. Middle blocks interleave categories to avoid repeats.
 
 The core block types:
 

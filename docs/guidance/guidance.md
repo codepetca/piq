@@ -50,7 +50,7 @@ All domain and implementation details should support this.
 ### 2.1 Micro-Sessions
 
 - Each **PracticeBlock** is a *micro-session*: ~2–5 minutes, not 20+.  
-- A daily session is 6–8 micro-sessions (≈25–45 minutes total): warmup first, interleaved middle, “fun ending” last.  
+- A daily session is 6–8 micro-sessions (≈30–40 minutes total): warmup first, interleaved middle, “fun ending” last.  
 - Micro-sessions focus on *one* atomic skill at a time.
 
 ### 2.2 Interleaving
