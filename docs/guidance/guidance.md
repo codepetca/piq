@@ -271,7 +271,7 @@ The SRE should:
 2. Sort by:
    - earliest `nextDue`  
    - then lowest `stability` (hardest / newest first)  
-3. Pick a small set for today (e.g., 4–8 items).  
+3. Pick a small set for today (6–8 items).  
 4. Map them into blocks using categories (see below).
 
 If there are fewer items than desired, it may:
@@ -298,21 +298,23 @@ High-level mapping:
 - `ear_training`  → typically `warmup` block (short listening/key/contour drills).
 - `musicality`    → usually `solo` block (tone, dynamics, expression).
 
-The exact mapping function can live in the domain (e.g., a helper that, given a set of items, yields 4 `PracticeBlock`s of different kinds).
+The exact mapping function can live in the domain (e.g., a helper that, given a set of items, yields 6–8 `PracticeBlock`s of different kinds).
 
 ### 6.2 Interleaving Rule
 
 When generating today’s blocks, try to:
 
 - avoid two blocks in a row with the same category.  
-- ensure at least 2 different categories per session, ideally 3–4.
+- ensure at least 3–4 different categories per session.
 
-Example (for 4 blocks):
+Example (for 6 blocks):
 
 1. Warm-Up (fretboard or rhythm)  
 2. Technique  
-3. Song  
-4. Solo
+3. Solo  
+4. Song  
+5. Technique  
+6. Song (fun ending)
 
 If limited items make perfect interleaving impossible, keep the rule **best-effort**, not strict.
 
@@ -343,7 +345,7 @@ Under the hood:
 
 1. At app launch or when Today screen appears:
    - The app asks the SRE for **today’s items**.
-   - The app maps items into 4 `PracticeBlock`s (interleaved categories).
+   - The app maps items into 6–8 `PracticeBlock`s (warmup first, interleaved middle, fun ending last).
    - `PracticeEngine` owns the `PracticeSession` built from those blocks.
 
 2. During the session:

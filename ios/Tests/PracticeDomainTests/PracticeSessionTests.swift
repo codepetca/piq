@@ -2,10 +2,28 @@ import XCTest
 @testable import piq
 
 final class PracticeSessionTests: XCTestCase {
-    func testMakeTodayDemoHasBlocksAndMetadata() {
+    func testMakeTodayDemoHas6to8BlocksAndMetadata() {
         let session = PracticeSession.makeTodayDemo()
-        XCTAssertEqual(session.blocks.count, 4)
+        XCTAssertGreaterThanOrEqual(session.blocks.count, 6, "Should have at least 6 blocks")
+        XCTAssertLessThanOrEqual(session.blocks.count, 8, "Should have at most 8 blocks")
         XCTAssertTrue(session.blocks.allSatisfy { $0.practiceItemID != nil })
+    }
+
+    func testMakeTodayDemoStartsWithWarmup() {
+        let session = PracticeSession.makeTodayDemo()
+        XCTAssertEqual(session.blocks.first?.kind, .warmup, "First block should be warmup")
+    }
+
+    func testMakeTodayDemoEndsWithFunActivity() {
+        let session = PracticeSession.makeTodayDemo()
+        XCTAssertEqual(session.blocks.last?.kind, .song, "Last block should be song (fun ending)")
+    }
+
+    func testMakeTodayDemoDurationWithinBounds() {
+        let session = PracticeSession.makeTodayDemo()
+        let total = session.totalTargetMinutes
+        XCTAssertGreaterThanOrEqual(total, 20, "Session should be at least 20 minutes")
+        XCTAssertLessThanOrEqual(total, 45, "Session should not exceed 45 minutes")
     }
 
     func testTotalMinutesComputed() {

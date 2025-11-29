@@ -96,7 +96,7 @@ Test categories:
 
 1. **Initial Scheduling**
    - New items (e.g., new scales/techniques) appear frequently at first.
-   - `generateTodaySession()` returns 4 reasonable blocks.
+   - `generateTodaySession()` returns 6–8 microblocks with warmup first, interleaved middle, and fun ending last.
 
 2. **Feedback Effect**
    - Given an item recently marked **Easy**:

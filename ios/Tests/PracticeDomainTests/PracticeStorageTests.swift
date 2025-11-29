@@ -52,7 +52,9 @@ final class PracticeStorageTests: XCTestCase {
         storage.saveSessions([session])
         let loaded = storage.loadSessions().first!
 
-        XCTAssertEqual(loaded.blocks.count, 4)
+        // makeTodayDemo() generates 6-8 blocks per roadmap requirements
+        XCTAssertGreaterThanOrEqual(loaded.blocks.count, 6)
+        XCTAssertLessThanOrEqual(loaded.blocks.count, 8)
         XCTAssertEqual(loaded.blocks[0].actualMinutes, 8)
         XCTAssertEqual(loaded.blocks[0].feedback, .good)
     }
@@ -266,7 +268,9 @@ final class PracticeStorageTests: XCTestCase {
 
         XCTAssertEqual(loaded.count, 1)
         XCTAssertEqual(loaded.first?.id, session.id)
-        XCTAssertEqual(loaded.first?.blocks.count, 4)
+        // makeTodayDemo() generates 6-8 blocks per roadmap requirements
+        XCTAssertGreaterThanOrEqual(loaded.first?.blocks.count ?? 0, 6)
+        XCTAssertLessThanOrEqual(loaded.first?.blocks.count ?? 0, 8)
     }
 
     func testLoadItemsFromLegacyFormat() {
@@ -365,7 +369,9 @@ final class PracticeStorageTests: XCTestCase {
         let loaded = storage.loadSessions().first!
 
         XCTAssertEqual(loaded.id, session.id)
-        XCTAssertEqual(loaded.blocks.count, 4)
+        // makeTodayDemo() generates 6-8 blocks per roadmap requirements
+        XCTAssertGreaterThanOrEqual(loaded.blocks.count, 6)
+        XCTAssertLessThanOrEqual(loaded.blocks.count, 8)
         XCTAssertEqual(loaded.blocks[0].actualMinutes, 8)
         XCTAssertEqual(loaded.blocks[0].feedback, .good)
         XCTAssertEqual(loaded.blocks[1].actualMinutes, 12)
