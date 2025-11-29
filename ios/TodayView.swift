@@ -13,90 +13,111 @@ struct TodayView: View {
     @Environment(PracticeEngine.self) private var engine
     @State private var viewModel: TodayViewModel?
     @State private var showingSession = false
+    @State private var blocks: [PracticeBlock] = []
+    @State private var editMode: EditMode = .inactive
+    var onMenuTap: (() -> Void)? = nil
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Active session indicator (if in progress)
-                    if let vm = viewModel, vm.hasActiveSession {
-                        activeSessionBanner(statusText: vm.activeSessionStatusText)
-                    }
-
-                    // Block list
-                    VStack(spacing: 12) {
-                        ForEach(todayBlocks) { block in
-                            BlockRow(block: block)
+            List {
+                ForEach(todayBlocks) { block in
+                    BlockRow(block: block)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(.init(top: 2, leading: 10, bottom: 2, trailing: 10))
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            Button(role: .destructive) {
+                                removeBlock(block)
+                            } label: {
+                                Image(systemName: "trash")
+                            }
                         }
-                    }
-                    .padding(.horizontal)
+                        .onLongPressGesture(minimumDuration: 0.15, pressing: { isPressing in
+                            withAnimation(.easeInOut(duration: 0.12)) {
+                                editMode = isPressing ? .active : .inactive
+                            }
+                        }, perform: {})
                 }
-                .padding(.top)
+                .onMove(perform: moveBlocks)
             }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .environment(\.editMode, $editMode)
             .safeAreaInset(edge: .bottom) {
                 // Start or resume session button (fixed at bottom)
                 if let vm = viewModel {
-                    if vm.hasActiveSession {
-                        Button(action: resumeSession) {
-                            Text("Resume Session")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.accentColor)
-                                .cornerRadius(12)
+                    ZStack {
+                        if vm.hasActiveSession {
+                            Button(action: resumeSession) {
+                                Text("Resume")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                    .frame(width: 76, height: 76)
+                                    .background(
+                                        Circle()
+                                            .fill(Color.accentColor)
+                                    )
+                                    .shadow(color: Color.black.opacity(0.12), radius: 8, x: 0, y: 4)
+                                    .offset(y: -4)
+                            }
+                        } else {
+                            Button(action: startSession) {
+                                Image(systemName: "play.fill")
+                                    .font(.system(size: 30, weight: .semibold))
+                                    .foregroundColor(.white)
+                                    .frame(width: 76, height: 76)
+                                    .background(
+                                        Circle()
+                                            .fill(Color.accentColor)
+                                    )
+                                    .shadow(color: Color.black.opacity(0.16), radius: 8, x: 0, y: 4)
+                                    .offset(y: -4)
+                            }
                         }
-                        .padding(.horizontal)
-                        .padding(.vertical, 12)
-                        .background(.regularMaterial)
-                    } else {
-                        Button(action: startSession) {
-                            Text("Start Session")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.accentColor)
-                                .cornerRadius(12)
+
+                        HStack {
+                            Spacer()
+                            AlarmBadgeView(minutes: totalTargetMinutes, size: 48, tint: .primary)
                         }
-                        .padding(.horizontal)
-                        .padding(.vertical, 12)
-                        .background(.regularMaterial)
+                        .padding(.leading, 16)
+                        .padding(.trailing, 36)
                     }
+                    .frame(maxWidth: .infinity, minHeight: 80)
+                    .padding(.vertical, 6)
+                    .padding(.bottom, 4)
+                    .background(.regularMaterial)
                 }
             }
             .navigationTitle("Today")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: { onMenuTap?() }) {
+                        Image(systemName: "line.3.horizontal")
+                            .font(.system(size: 18, weight: .regular))
+                    }
+                }
+            }
             .onAppear {
                 initializeViewModelIfNeeded()
                 viewModel?.refreshBlocks()
+                blocks = viewModel?.todayBlocks ?? []
             }
             .fullScreenCover(isPresented: $showingSession) {
                 PracticeSessionView()
             }
+            .onChange(of: blocks) { _, newValue in
+                viewModel?.setTodayBlocks(newValue)
+            }
         }
-    }
-
-    // MARK: - Subviews
-
-    @ViewBuilder
-    private func activeSessionBanner(statusText: String?) -> some View {
-        HStack {
-            Image(systemName: "play.circle.fill")
-                .foregroundColor(.accentColor)
-            Text(statusText ?? "Session in progress")
-                .font(.subheadline)
-            Spacer()
-        }
-        .padding()
-        .background(Color.accentColor.opacity(0.1))
-        .cornerRadius(8)
-        .padding(.horizontal)
     }
 
     // MARK: - Computed Properties
 
     private var todayBlocks: [PracticeBlock] {
-        viewModel?.todayBlocks ?? []
+        blocks
+    }
+
+    private var totalTargetMinutes: Int {
+        todayBlocks.reduce(0) { $0 + $1.targetMinutes }
     }
 
     // MARK: - Actions
@@ -108,12 +129,27 @@ struct TodayView: View {
     }
 
     private func startSession() {
-        viewModel?.startSession()
+        let blocksToUse = todayBlocks.isEmpty ? viewModel?.todayBlocks ?? [] : todayBlocks
+        guard !blocksToUse.isEmpty else { return }
+        viewModel?.startSession(with: blocksToUse)
         showingSession = true
     }
 
     private func resumeSession() {
         showingSession = true
+    }
+
+    private func removeBlock(_ block: PracticeBlock) {
+        guard let index = blocks.firstIndex(where: { $0.id == block.id }) else { return }
+        blocks.remove(at: index)
+    }
+
+    private func moveBlocks(from source: IndexSet, to destination: Int) {
+        blocks.move(fromOffsets: source, toOffset: destination)
+        viewModel?.setTodayBlocks(blocks)
+        withAnimation(.easeInOut(duration: 0.15)) {
+            editMode = .inactive
+        }
     }
 }
 
@@ -136,20 +172,79 @@ struct BlockRow: View {
 
             Spacer()
 
-            Text("\(block.targetMinutes) min")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+            AlarmBadgeView(minutes: block.targetMinutes, size: 32, tint: .primary)
         }
-        .padding()
+        .padding(.vertical, 12)
+        .padding(.horizontal, 14)
         .background(Color(.systemGray6))
         .cornerRadius(12)
     }
 }
 
+// MARK: - Alarm Badge Preview Helper
+
+struct AlarmBadgeView: View {
+    let minutes: Int
+    var size: CGFloat = 48
+    var tint: Color = .primary
+
+    private var bellWidth: CGFloat { size * 0.24 }
+    private var bellHeight: CGFloat { size * 0.1 }
+    private var bellOffsetY: CGFloat { -size * 0.4 }
+    private var footSize: CGFloat { size * 0.12 }
+    private var footOffsetY: CGFloat { size * 0.42 }
+    private var faceStrokeWidth: CGFloat { max(2, size * 0.05) }
+    private var textSize: CGFloat { size * 0.35 }
+
+    var body: some View {
+        ZStack {
+            // face
+            Circle()
+                .strokeBorder(tint, lineWidth: faceStrokeWidth)
+                .background(Circle().fill(Color(.systemBackground)))
+                .frame(width: size, height: size)
+
+            // feet
+            HStack(spacing: size * 0.4) {
+                Rectangle().frame(width: footSize, height: footSize)
+                Rectangle().frame(width: footSize, height: footSize)
+            }
+            .foregroundStyle(tint)
+            .offset(y: footOffsetY)
+
+            // minutes
+            Text("\(minutes)")
+                .font(.system(size: textSize, weight: .semibold))
+                .foregroundColor(.primary)
+        }
+    }
+}
+
+// MARK: - Previews
+
+private struct TodayPreviewContainer: View {
+    private let sre: SpacedRepetitionEngine = {
+        let engine = SpacedRepetitionEngine()
+        engine.loadSeedCatalog()
+        return engine
+    }()
+
+    private let practiceEngine = PracticeEngine()
+
+    var body: some View {
+        VStack(spacing: 24) {
+            TodayView()
+                .environment(sre)
+                .environment(practiceEngine)
+
+            AlarmBadgeView(minutes: 10)
+            AlarmBadgeView(minutes: 24)
+                .foregroundStyle(Color.accentColor)
+        }
+        .padding()
+    }
+}
+
 #Preview {
-    let sre = SpacedRepetitionEngine()
-    sre.loadSeedCatalog()
-    return TodayView()
-        .environment(sre)
-        .environment(PracticeEngine())
+    TodayPreviewContainer()
 }

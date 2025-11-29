@@ -35,36 +35,6 @@ final class TodayViewModel {
         }
     }
 
-    /// Text describing the current active session state, if any.
-    var activeSessionStatusText: String? {
-        switch engine.state {
-        case .idle, .finished:
-            return nil
-        case .previewBlock(let index, _):
-            guard let session = engine.session,
-                  index < session.blocks.count else {
-                return "Session starting"
-            }
-            let block = session.blocks[index]
-            let totalBlocks = session.blocks.count
-            return "Starting block \(index + 1)/\(totalBlocks): \(block.kind.displayName)"
-        case .inBlock(let index, _):
-            guard let session = engine.session,
-                  index < session.blocks.count else {
-                return "Session in progress"
-            }
-            let block = session.blocks[index]
-            let totalBlocks = session.blocks.count
-            return "Block \(index + 1)/\(totalBlocks): \(block.kind.displayName)"
-        case .betweenBlocks(let lastIndex, _):
-            guard let session = engine.session else {
-                return "Between blocks"
-            }
-            let totalBlocks = session.blocks.count
-            return "After block \(lastIndex + 1)/\(totalBlocks)"
-        }
-    }
-
     // MARK: - Initialization
 
     init(sre: SpacedRepetitionEngine, engine: PracticeEngine) {
@@ -83,8 +53,8 @@ final class TodayViewModel {
 
     /// Start a new practice session.
     /// This instantiates the session in PracticeEngine using SRE-generated blocks.
-    func startSession() {
-        engine.startSession(from: sre)
+    func startSession(with blocks: [PracticeBlock]) {
+        engine.startSession(with: blocks)
     }
 
     /// Resume the currently active session (no-op if there isn't one).
@@ -92,5 +62,10 @@ final class TodayViewModel {
     @discardableResult
     func resumeSession() -> Bool {
         hasActiveSession
+    }
+
+    /// Replace the displayed blocks (used for manual reordering/removal in UI).
+    func setTodayBlocks(_ blocks: [PracticeBlock]) {
+        todayBlocks = blocks
     }
 }

@@ -387,25 +387,23 @@ UI rules:
 
 ---
 
-# 13. Tabs & Navigation
+# 13. Navigation (Sidebar)
 
-Main tab bar (3 tabs):
-
-1. **Today**
-   - Icon: `guitars` or `house`
-   - Label: "Today"
-2. **History**
-   - Icon: `clock.arrow.circlepath`
-   - Label: "History"
-3. **Settings**
-   - Icon: `gear`
-   - Label: "Settings"
-
-Labels are exactly one word. No subtitles.
+- Top-left hamburger in the title bar opens a left sidebar; center title stays visible.
+- Sidebar items (one word): **Today**, **Profile**, **History**, **Settings**.
+- Active item uses the app accent; others use secondary label color.
+- Sidebar slides over the current screen with a dimmed backdrop; dismiss by tapping outside or swiping left.
+- No bottom tab bar on Today or related screens.
 
 ---
 
 # 14. Screen Compositions & Components
+
+## Today Screen Composition
+
+- Title bar: left hamburger, centered “Today” title.
+- Content uses `BlockListView` cards with tighter vertical spacing (light gaps, no large paddings between cards) while keeping cards readable.
+- Primary CTA remains start/resume session; avoid extra labels or subtitles.
 
 ## Practice Screen Composition
 

@@ -17,7 +17,7 @@ full lessons or long written explanations.
 
 ### Core Loop
 
-1. User opens app → sees **Today** tab with 4 blocks (Warm‑Up, Song, Solo, Technique).  
+1. User opens app → sees the **Today** screen with 4 blocks (Warm‑Up, Song, Solo, Technique).  
 2. Taps **Start session** → enters block‑by‑block timed practice.  
 3. After each block → answers **How was that? [Easy] [Good] [Hard]**.  
 4. At the end → sees a simple session summary.  
@@ -28,7 +28,7 @@ full lessons or long written explanations.
 
 ## Platform & Framework Constraints (iOS)
 
-**Target:** iOS 17+ (iPhone-first). **UI:** SwiftUI only (NavigationStack, TabView, .sheet/.fullScreenCover). **State:** Observation (@Observable + .environment). **Async:** Swift Concurrency (async/await, Task{}, @MainActor for UI). **App Entry:** PiqApp (@main) → RootView → TabView (Today, History, Settings). Engines injected via .environment. **Frameworks:** SwiftUI, Observation, Foundation. AVFoundation/AVAudioEngine only in MetronomeService.
+**Target:** iOS 17+ (iPhone-first). **UI:** SwiftUI only (NavigationStack, sidebar menu overlay, .sheet/.fullScreenCover). **State:** Observation (@Observable + .environment). **Async:** Swift Concurrency (async/await, Task{}, @MainActor for UI). **App Entry:** PiqApp (@main) → RootView → NavigationStack with a hamburger-triggered sidebar controlling routes (Today, Profile, History, Settings). Engines injected via .environment. **Frameworks:** SwiftUI, Observation, Foundation. AVFoundation/AVAudioEngine only in MetronomeService.
 
 **Rules:** Small composable views. Engines own logic/timers, Views compose. **Prohibited:** UIKit, Combine, Storyboards, NavigationView, ObservableObject (except bridging old APIs), business logic in Views, timers in Views.
 

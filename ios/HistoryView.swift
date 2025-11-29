@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HistoryView: View {
     @Environment(HistoryViewModel.self) private var viewModel
+    var onMenuTap: (() -> Void)? = nil
 
     var body: some View {
         NavigationStack {
@@ -13,6 +14,14 @@ struct HistoryView: View {
                 }
             }
             .navigationTitle("History")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: { onMenuTap?() }) {
+                        Image(systemName: "line.3.horizontal")
+                            .font(.system(size: 18, weight: .regular))
+                    }
+                }
+            }
             .onAppear {
                 viewModel.loadSessions()
             }
