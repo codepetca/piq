@@ -159,7 +159,8 @@ final class PracticeStorage {
     /// Load all sessions from storage with automatic migration.
     ///
     /// Handles multiple schema versions:
-    /// - v1 (current): SessionsStore wrapper with schemaVersion
+    /// - v2 (current): SessionsStore wrapper with schemaVersion + tempo fields
+    /// - v1: SessionsStore wrapper without tempo fields
     /// - v0 (legacy): Unwrapped array format
     ///
     /// Returns empty array on any load failure (corrupted data, unknown version, etc.)
@@ -227,7 +228,8 @@ final class PracticeStorage {
     /// Load all items from storage with automatic migration.
     ///
     /// Handles multiple schema versions:
-    /// - v1 (current): ItemsStore wrapper with schemaVersion
+    /// - v2 (current): ItemsStore wrapper with schemaVersion + tempo state
+    /// - v1: ItemsStore wrapper without tempo state
     /// - v0 (legacy): Unwrapped array format
     ///
     /// Returns empty array on any load failure (corrupted data, unknown version, etc.)
