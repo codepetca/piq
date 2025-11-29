@@ -1,10 +1,11 @@
 import SwiftUI
 
-/// TodayView displays today's practice blocks and allows starting a session.
+/// TodayView displays today's practice blocks (6-8 microblocks) and allows starting a session.
 ///
-/// Design decisions (per Issue #004 requirements):
+/// Design decisions:
 /// - TodayView stays thin: it binds to TodayViewModel for all business logic.
-/// - Session blocks are refreshed on appear to ensure fresh SRE state.
+/// - Session blocks are refreshed on appear only when no active session exists.
+/// - Reordered/removed blocks are honored when starting a session.
 /// - Active session lifecycle: If a session is in progress, shows a resume option
 ///   instead of allowing a new session to be started (prevents duplicates).
 /// - PracticeEngine remains the owner of session state.
@@ -19,29 +20,33 @@ struct TodayView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(todayBlocks) { block in
-                    BlockRow(block: block)
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(.init(top: 2, leading: 10, bottom: 2, trailing: 10))
-                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                            Button(role: .destructive) {
-                                removeBlock(block)
-                            } label: {
-                                Image(systemName: "trash")
+            if todayBlocks.isEmpty {
+                emptyStateView
+            } else {
+                List {
+                    ForEach(todayBlocks) { block in
+                        BlockRow(block: block)
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(.init(top: 4, leading: 16, bottom: 4, trailing: 16))
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                Button(role: .destructive) {
+                                    removeBlock(block)
+                                } label: {
+                                    Image(systemName: "trash")
+                                }
                             }
-                        }
-                        .onLongPressGesture(minimumDuration: 0.15, pressing: { isPressing in
-                            withAnimation(.easeInOut(duration: 0.12)) {
-                                editMode = isPressing ? .active : .inactive
-                            }
-                        }, perform: {})
+                            .onLongPressGesture(minimumDuration: 0.15, pressing: { isPressing in
+                                withAnimation(.easeInOut(duration: 0.12)) {
+                                    editMode = isPressing ? .active : .inactive
+                                }
+                            }, perform: {})
+                    }
+                    .onMove(perform: moveBlocks)
                 }
-                .onMove(perform: moveBlocks)
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .environment(\.editMode, $editMode)
             }
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
-            .environment(\.editMode, $editMode)
             .safeAreaInset(edge: .bottom) {
                 // Start or resume session button (fixed at bottom)
                 if let vm = viewModel {
@@ -98,7 +103,11 @@ struct TodayView: View {
             }
             .onAppear {
                 initializeViewModelIfNeeded()
-                viewModel?.refreshBlocks()
+                // Only refresh blocks if there's no active session
+                // This prevents overwriting blocks when resuming
+                if !(viewModel?.hasActiveSession ?? false) {
+                    viewModel?.refreshBlocks()
+                }
                 blocks = viewModel?.todayBlocks ?? []
             }
             .fullScreenCover(isPresented: $showingSession) {
@@ -108,6 +117,29 @@ struct TodayView: View {
                 viewModel?.setTodayBlocks(newValue)
             }
         }
+    }
+
+    // MARK: - Empty State
+
+    private var emptyStateView: some View {
+        VStack(spacing: 16) {
+            Spacer()
+
+            Image(systemName: "guitars")
+                .font(.system(size: 64))
+                .foregroundColor(.secondary)
+
+            Text("No practice blocks")
+                .font(.title3)
+                .fontWeight(.medium)
+
+            Text("Pull to refresh or check your settings")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     // MARK: - Computed Properties
