@@ -3,6 +3,9 @@ import SwiftUI
 struct RootView: View {
     @State private var selection: SidebarItem = .today
     @State private var isSidebarVisible = false
+    @State private var showOnboarding = false
+
+    private let storage = PracticeStorage()
 
     var body: some View {
         ZStack(alignment: .leading) {
@@ -34,6 +37,14 @@ struct RootView: View {
             }
         }
         .animation(.easeInOut(duration: 0.18), value: isSidebarVisible)
+        .onAppear {
+            checkOnboardingStatus()
+        }
+        .fullScreenCover(isPresented: $showOnboarding) {
+            OnboardingView(storage: storage) {
+                showOnboarding = false
+            }
+        }
     }
 
     // MARK: - Content
@@ -48,13 +59,21 @@ struct RootView: View {
         case .history:
             HistoryView(onMenuTap: toggleSidebar)
         case .settings:
-            SettingsView(onMenuTap: toggleSidebar)
+            SettingsView(onMenuTap: toggleSidebar, onResetOnboarding: {
+                showOnboarding = true
+            })
         }
     }
 
     private func toggleSidebar() {
         withAnimation(.easeInOut(duration: 0.18)) {
             isSidebarVisible.toggle()
+        }
+    }
+
+    private func checkOnboardingStatus() {
+        if !storage.hasCompletedOnboarding {
+            showOnboarding = true
         }
     }
 }

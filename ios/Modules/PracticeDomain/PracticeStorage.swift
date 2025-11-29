@@ -69,6 +69,7 @@ final class PracticeStorage {
     private let directory: URL
     private let sessionsFileName = "sessions.json"
     private let itemsFileName = "items.json"
+    private let preferencesFileName = "preferences.json"
 
     private var sessionsURL: URL {
         directory.appendingPathComponent(sessionsFileName)
@@ -76,6 +77,10 @@ final class PracticeStorage {
 
     private var itemsURL: URL {
         directory.appendingPathComponent(itemsFileName)
+    }
+
+    private var preferencesURL: URL {
+        directory.appendingPathComponent(preferencesFileName)
     }
 
     private let encoder: JSONEncoder
@@ -319,5 +324,50 @@ final class PracticeStorage {
     func clearAll() {
         try? FileManager.default.removeItem(at: sessionsURL)
         try? FileManager.default.removeItem(at: itemsURL)
+    }
+
+    // MARK: - User Preferences Storage
+
+    /// Save user preferences to storage.
+    func savePreferences(_ preferences: UserPreferences) {
+        do {
+            let data = try encoder.encode(preferences)
+            try data.write(to: preferencesURL, options: .atomic)
+        } catch {
+            print("⚠️ PracticeStorage: Failed to save preferences: \(error)")
+        }
+    }
+
+    /// Load user preferences from storage.
+    /// Returns default preferences if none are saved.
+    func loadPreferences() -> UserPreferences {
+        guard FileManager.default.fileExists(atPath: preferencesURL.path) else {
+            return .default
+        }
+
+        do {
+            let data = try Data(contentsOf: preferencesURL)
+            return try decoder.decode(UserPreferences.self, from: data)
+        } catch {
+            print("⚠️ PracticeStorage: Failed to load preferences: \(error)")
+            return .default
+        }
+    }
+
+    /// Check if user has completed onboarding.
+    var hasCompletedOnboarding: Bool {
+        loadPreferences().hasCompletedOnboarding
+    }
+
+    /// Reset onboarding to fresh state.
+    /// Resets preferences to defaults but preserves session history.
+    func resetOnboarding() {
+        savePreferences(.default)
+    }
+
+    /// Clear all data including preferences.
+    func clearAllIncludingPreferences() {
+        clearAll()
+        try? FileManager.default.removeItem(at: preferencesURL)
     }
 }

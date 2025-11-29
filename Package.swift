@@ -37,7 +37,15 @@ let package = Package(
                 "PracticeDomain/PracticeStorage.swift",
                 "PracticeDomain/SpacedRepetitionEngine.swift",
                 "PracticeDomain/TempoEngine.swift",
-                "TodayModule/TodayViewModel.swift"
+                "PracticeDomain/UserPreferences.swift",
+                "TodayModule/TodayViewModel.swift",
+                "OnboardingModule/OnboardingViewModel.swift",
+                "OnboardingModule/OnboardingView.swift",
+                "OnboardingModule/WelcomeStepView.swift",
+                "OnboardingModule/LevelStepView.swift",
+                "OnboardingModule/StylesStepView.swift",
+                "OnboardingModule/CuesStepView.swift",
+                "OnboardingModule/OnboardingSummaryView.swift"
             ]
         ),
         .target(
@@ -60,6 +68,11 @@ let package = Package(
             name: "ReferenceModuleTests",
             dependencies: ["ReferenceModule"],
             path: "ios/Tests/ReferenceModuleTests"
+        ),
+        .testTarget(
+            name: "OnboardingModuleTests",
+            dependencies: ["piq"],
+            path: "ios/Tests/OnboardingModuleTests"
         )
     ]
 )

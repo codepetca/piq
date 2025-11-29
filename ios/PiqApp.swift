@@ -24,6 +24,7 @@ struct PiqApp: App {
                 .environment(referenceService)
                 .onAppear {
                     loadInitialData()
+                    applyUserPreferences()
                     setupSessionCompletionHandler()
                     // Initialize settings with dependencies
                     settingsViewModel = SettingsViewModel(
@@ -47,6 +48,18 @@ struct PiqApp: App {
         }
     }
 
+    /// Apply user preferences from onboarding to services.
+    private func applyUserPreferences() {
+        let preferences = storage.loadPreferences()
+
+        // Apply haptic preference - directly controls haptic feedback
+        hapticService.isEnabled = preferences.cuePreference.hapticEnabled
+
+        // Note: Metronome preference (metronomeEnabled) is applied at the UI level
+        // when starting practice blocks, not as a global service setting.
+        // The MetronomeService is started/stopped per-block based on user interaction.
+    }
+
     /// Sets up automatic session persistence when a session completes.
     private func setupSessionCompletionHandler() {
         practiceEngine.onSessionFinished = { [self] session in
@@ -55,7 +68,7 @@ struct PiqApp: App {
 
             // Apply feedback from blocks to SRE
             spacedRepetitionEngine.applyFeedback(for: session.blocks)
-            
+
             // Apply tempo learning from completed blocks
             spacedRepetitionEngine.applyTempoLearning(for: session.blocks)
 

@@ -5,7 +5,9 @@ struct SettingsView: View {
     @State private var showClearHistoryAlert = false
     @State private var showResetProgressAlert = false
     @State private var showClearAllAlert = false
+    @State private var showResetOnboardingAlert = false
     var onMenuTap: (() -> Void)? = nil
+    var onResetOnboarding: (() -> Void)? = nil
 
     var body: some View {
         @Bindable var vm = viewModel
@@ -59,6 +61,13 @@ struct SettingsView: View {
                     }
                 }
 
+                // Onboarding section
+                Section("Setup") {
+                    Button("Reset Onboarding") {
+                        showResetOnboardingAlert = true
+                    }
+                }
+
                 // About section
                 Section("About") {
                     HStack {
@@ -101,6 +110,15 @@ struct SettingsView: View {
                 }
             } message: {
                 Text("This will delete all history and reset all progress. This cannot be undone.")
+            }
+            .alert("Reset Onboarding?", isPresented: $showResetOnboardingAlert) {
+                Button("Cancel", role: .cancel) { }
+                Button("Reset", role: .destructive) {
+                    viewModel.resetOnboarding()
+                    onResetOnboarding?()
+                }
+            } message: {
+                Text("This will reset your setup preferences and show the onboarding flow again.")
             }
         }
     }

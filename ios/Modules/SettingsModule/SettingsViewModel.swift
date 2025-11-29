@@ -84,11 +84,18 @@ final class SettingsViewModel {
         }
     }
 
-    /// Clear all data (history + progress)
+    /// Clear all data (history + progress).
+    /// Note: This preserves user preferences/onboarding state.
+    /// Use resetOnboarding separately to reset the onboarding flow.
     func clearAllData() {
         storage.clearAll()
         sre?.loadSeedCatalog()
         historyViewModel?.loadSessions()
+    }
+
+    /// Reset onboarding state to show the onboarding flow again.
+    func resetOnboarding() {
+        storage.resetOnboarding()
     }
 
     /// Total practice sessions count
