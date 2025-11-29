@@ -45,7 +45,7 @@ Priority order:
 Examples of behaviors to test:
 
 - A `PracticeSession` created for "today" has:
-  - 4 blocks in the expected order (Warm-Up, Song, Solo, Technique).
+  - 6–8 microblocks with Warm-Up first, interleaved middle, and a fun ending last.
 - `totalMinutes` is computed correctly from block minutes.
 - `PracticeBlockFeedback` values roundtrip correctly (e.g., save/load, mapping).
 
@@ -149,7 +149,7 @@ UI tests are **smoke tests**, not spec tests.
 ### 6.1 Today → Session Flow
 
 - Start app → Today tab is visible by default.
-- Today tab shows 4 blocks (kinds visible somewhere).
+- Today tab shows generated microblocks (6–8, kinds visible somewhere).
 - Tapping `[Start session]` presents the practice screen.
 
 ### 6.2 Block → Feedback → Next Block
@@ -162,7 +162,7 @@ UI tests are **smoke tests**, not spec tests.
 ### 6.3 End of Session
 
 - After the last block’s feedback:
-  - A Session summary appears with all 4 blocks and feedback summary.
+  - A Session summary appears with all practiced blocks and feedback summary.
   - `[Close]` returns to Today or History as designed.
 
 Tests can live in `piqUITests` as a small suite, e.g. `PiqUITests.swift`.

@@ -34,6 +34,7 @@ These define PIQ’s unchanging rules:
 - **architecture.md** — architecture, platform constraints, module boundaries  
 - **agents.md** — multi-agent roles & responsibilities  [oai_citation:7‡agents.md](file-service://file-Hv7q4zuHU6ddxkvCH7TKum)  
 - **tests.md** — TDD philosophy and testing priorities  [oai_citation:8‡tests.md](file-service://file-8eQfYHbiXyHf4c83DaLGGu)  
+- **roadmap.md** — source-of-truth phases, scope, and priorities  
 
 These should change only when the overall system changes.
 
@@ -80,8 +81,9 @@ Before modifying code, any AI assistant must read these **in order**:
 2. `/docs/core/architecture.md`
 3. `/docs/core/agents.md`
 4. `/docs/core/tests.md`
-5. Relevant `/docs/guidance/` files (e.g., `guidance.md`)
-6. The specific `/docs/issues/issue-xxx.md` referenced in the user prompt  
+5. `/docs/core/roadmap.md`
+6. Relevant `/docs/guidance/` files (e.g., `guidance.md`)
+7. The specific `/docs/issues/issue-xxx.md` referenced in the user prompt  
 
 Only after these are read should the AI inspect or modify source code.
 

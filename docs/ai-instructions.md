@@ -28,22 +28,14 @@ Read these files to understand the project architecture (order matters):
 4. **tests.md** — Testing philosophy, TDD approach, priorities
    `/Users/stew/Repos/vibe/piq/docs/core/tests.md`
 
-5. **guidance.md** — Guitar learning domain model, SRS concepts
-   `/Users/stew/Repos/vibe/piq/docs/guidance/guidance.md`
-
-6. **Active issue file** (if working on a specific task)
-   `/Users/stew/Repos/vibe/piq/docs/issues/issue-*.md`
-
-## Optional Contextual Reading
-
-**roadmap.md** — Product phases and feature timeline
+5. **roadmap.md** — Product phases, priorities, and source-of-truth scope
    `/Users/stew/Repos/vibe/piq/docs/core/roadmap.md`
 
-Read this when:
-- Planning new features or creating issues
-- User asks about feature priorities or scope
-- Uncertain whether a feature belongs in MVP vs Phase 2+
-- Avoiding scope creep during implementation
+6. **guidance.md** — Guitar learning domain model, SRS concepts
+   `/Users/stew/Repos/vibe/piq/docs/guidance/guidance.md`
+
+7. **Active issue file** (if working on a specific task)
+   `/Users/stew/Repos/vibe/piq/docs/issues/issue-*.md`
 
 ---
 
@@ -51,7 +43,7 @@ Read this when:
 
 **Platform:** iOS 17+ only (SwiftUI + Observation + Swift Concurrency)
 
-**App Entry:** PiqApp → RootView → TabView (Today, History, Settings)
+**App Entry:** PiqApp → RootView → NavigationStack + sidebar (Today, Profile, History, Settings)
 
 **Core Modules** (located in `ios/Modules/`):
 - **PracticeDomain**: Models, engines (PracticeEngine, SpacedRepetitionEngine), persistence
@@ -60,21 +52,21 @@ Read this when:
 - **HistoryModule / SettingsModule / ReferenceModule**: Thin ViewModels + views
 
 **Core Loop:**
-1. User opens app → sees **Today** tab with 4 blocks (Warm-Up, Song, Solo, Technique)
-2. Taps **Start session** → enters block-by-block timed practice
+1. User opens app → sees **Today** with 6–8 microblocks (Warm-Up first, interleaved middle, fun ending).
+2. Taps **Start session** → enters a 10s preview then block-by-block timed practice.
 3. After each block → answers **How was that? [Easy] [Good] [Hard]**
 4. At the end → sees simple session summary
-5. Over time, SpacedRepetitionEngine influences which items appear
+5. Over time, SpacedRepetitionEngine influences which items appear and suggests BPM for metronome-on blocks
 
 **State Machine:** `PracticeEngine.state` drives all UI
-- `.idle` → `.inBlock(index, remainingSeconds)` → `.betweenBlocks(lastIndex, nextIndex)` → `.finished`
+- `.idle` → `.previewBlock(index, secondsRemaining)` → `.inBlock(index, remainingSeconds)` → `.betweenBlocks(lastIndex, nextIndex)` → `.finished`
 
 ---
 
 ## Key Constraints (STRICTLY ENFORCED)
 
 ### Platform Rules
-- ✅ SwiftUI only (NavigationStack, TabView, .sheet/.fullScreenCover)
+- ✅ SwiftUI only (NavigationStack, sidebar overlay, .sheet/.fullScreenCover)
 - ✅ Observation for state (no Combine, no @Published, no ObservableObject except bridging old APIs)
 - ✅ Swift Concurrency (async/await, not Combine)
 - ❌ **NO UIKit** (prohibited)

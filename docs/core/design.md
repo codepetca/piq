@@ -81,19 +81,14 @@ Icons should be:
 Every practice session follows this sequence:
 
 ```text
-Today → Start session → Block screen → Feedback → Next block → … → Session summary
+Today → Start session → Preview (10s) → Block screen → Feedback → Next block → … → Session summary
 ```
 
-Blocks:
-- Warm‑Up  
-- Song  
-- Solo  
-- Technique  
-
-User sees:
-- Exactly 4 blocks per session.  
-- Each block ~10 minutes (configurable).  
-- After each block, a short feedback step: Easy / Good / Hard.
+Session structure:
+- 6–8 microblocks per session (≈25–45 min total).  
+- Warm‑Up first, interleaved middle, “fun ending” block last.  
+- Each microblock 2–10 minutes depending on category.  
+- Feedback after every block: Easy / Good / Hard.
 
 ---
 
@@ -309,7 +304,7 @@ On first launch, the user goes through a short, minimal onboarding:
    - Primary button: `[Done]`
 
 5. **First Session Summary**
-   - Shows 4 blocks for today (Warm‑Up, Song, Solo, Technique).  
+   - Planned: shows today’s 6–8 microblocks (Warm‑Up first, interleaved middle, fun ending).  
    - Primary button: `[Start session]`
 
 No tutorials, no long explanations.
@@ -318,7 +313,9 @@ No tutorials, no long explanations.
 
 # 9. Practice Blocks
 
-The 4 block types:
+Session mix: 6–8 microblocks per day (≈25–45 min), always starting with Warm‑Up and ending with a “fun” block. Middle blocks interleave categories to avoid repeats.
+
+The core block types:
 
 - **Warm‑Up**  
   - Scales, patterns, mechanics.  
@@ -384,6 +381,7 @@ UI rules:
 - Use `metronome` SF Symbol only.  
 - Do not show the word "Metronome".  
 - Show numeric BPM and +/- icons only.
+- Record starting/ending BPM and +/- taps for metronome-on blocks to feed tempo learning.
 
 ---
 
@@ -413,17 +411,23 @@ The Practice screen uses these components:
   - Renders concentric rings and central timer content.
 - `MetronomeBar`  
   - Renders the icon‑based metronome row.
+- Preview state  
+  - 10s countdown before each block; tap anywhere to start immediately.
 - Bottom control row  
   - Three buttons: Skip, +2:00, Finish.
+- Instruction card  
+  - Tap to open sheet with full bullets and diagram if available.
 
 Layout:
 
 ```text
 VStack
   HStack: [Block kind label]   [questionmark.circle?]
+  (Preview: 10s countdown, tap to start)
   PracticeTimerView
   MetronomeBar
   HStack: [Skip] [+2:00] [Finish]
+  Instruction card (tappable)
 ```
 
 ## Feedback Screen Composition
@@ -448,9 +452,11 @@ Layout:
 Session complete
 
 Warm‑Up: Good
+Fretboard: Good
 Song: Hard
 Solo: Good
 Technique: Easy
+Fun ending: Good
 
 Total: 38 min
 

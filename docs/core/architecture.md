@@ -9,7 +9,7 @@ It defines architecture, tech stack, modules, and patterns so changes stay consi
 
 **App name:** piq  
 **Platform:** iOS (iPhone‑first), future watchOS companion  
-**Concept:** A calm, minimal app that tells the user what to practice today, in 4 guided blocks, with timers,
+**Concept:** A calm, minimal app that tells the user what to practice today, in 6–8 guided microblocks, with timers,
 simple feedback (Easy/Good/Hard), and light references (diagrams + optional external lessons).
 
 piq is a **practice coach**, not a teaching platform. It schedules and guides practice; it does not contain
@@ -17,8 +17,8 @@ full lessons or long written explanations.
 
 ### Core Loop
 
-1. User opens app → sees the **Today** screen with 4 blocks (Warm‑Up, Song, Solo, Technique).  
-2. Taps **Start session** → enters block‑by‑block timed practice.  
+1. User opens app → sees the **Today** screen with 6–8 microblocks (Warm‑Up first, interleaved middle, fun ending).  
+2. Taps **Start session** → enters a 10s preview then block‑by‑block timed practice.  
 3. After each block → answers **How was that? [Easy] [Good] [Hard]**.  
 4. At the end → sees a simple session summary.  
 5. Over time, a spaced‑repetition engine (SRE) will influence which items appear.
@@ -177,7 +177,7 @@ Displays "How was that?" with three buttons: [Easy] [Good] [Hard]. Accepts three
 
 ### BlockListView
 
-Displays today's 4 blocks on Today screen. Accepts blocks array, start session callback.
+Displays today's 6–8 microblocks on Today screen. Accepts blocks array, start session callback.
 
 ### SongChoiceSheet
 
@@ -199,6 +199,7 @@ Engines own logic; Views and ViewModels compose them.
 - Owns current block index and timing state.  
 - Exposes a simple state machine, e.g.:
   - `.idle`
+  - `.previewBlock(index: Int, secondsRemaining: Int)`
   - `.inBlock(index: Int, remainingSeconds: Int)`
   - `.betweenBlocks(lastIndex: Int, nextIndex: Int?)`
   - `.finished`
@@ -219,7 +220,7 @@ PracticeEngine does **not**:
   - Next due times
   - Difficulty/ease factors
 - Consumes feedback signals (Easy/Good/Hard) on blocks/items.
-- Produces “today’s list” of recommended items for session generation.
+- Produces “today’s list” of recommended items for session generation (6–8 microblocks; warmup first, interleaved middle, fun ending; suggested BPM for metronome-on blocks).
 
 SpacedRepetitionEngine does **not**:
 - Own UI or timers.
@@ -242,9 +243,9 @@ MetronomeService does **not**:
 - Handles persistence for:
   - Completed `PracticeSession`s.
   - Light user preferences (level, styles, cues).  
-  - SRE state (due dates, etc.) if needed.
-- Start simple (UserDefaults / JSON file).  
-  SwiftData / CoreData can be added later.
+  - SRE/tempo state (due dates, BPM history).
+- Merges seed catalog with stored SRS/tempo on load; saves updated sessions/items after each session via `PracticeEngine.onSessionFinished`.
+- Start simple (UserDefaults / JSON file). SwiftData / CoreData can be added later.
 
 ---
 
@@ -322,7 +323,7 @@ Testing should focus on **core logic first**, then light UI tests.
    - Handle empty / first‑run cases gracefully.
 
 4. **Light UI tests / snapshots (optional)**
-   - Basic smoke tests that Today screen renders 4 blocks.  
+   - Basic smoke tests that Today screen renders generated microblocks (6–8).  
    - Practice screen shows timer and buttons.  
    - Feedback screen shows 3 choices.
 
@@ -346,7 +347,7 @@ Use this rough sequence when building out the first version of piq:
    - Define core models: `PracticeBlockKind`, `PracticeBlock`, `PracticeSession`, `PracticeBlockFeedback`.
    - Add simple factory helpers (e.g. `PracticeSession.makeTodayDemo()`).
    - Tests:
-     - Model invariants (e.g. 4 blocks per session, kinds in expected order).
+     - Model invariants (e.g. warmup-first ordering, fun ending last, total microblocks within 6–8).
      - Basic derived properties (e.g. total minutes).
 
 2. **Phase 1 – PracticeEngine (driven by tests)**
@@ -365,7 +366,7 @@ Use this rough sequence when building out the first version of piq:
      - Items marked Easy appear less frequently.
      - Items marked Hard appear more frequently.
    - Implement minimal `SpacedRepetitionEngine` that passes these tests.
-   - Wire a basic `generateTodaySession()` that returns 4 blocks.
+   - Wire a basic `generateTodaySession()` that returns 6–8 microblocks (warmup first, interleaved middle, fun ending).
 
 4. **Phase 3 – Storage**
    - Write tests for `PracticeStorage`:
@@ -377,7 +378,7 @@ Use this rough sequence when building out the first version of piq:
    - Create `RootView`, `TodayView`, and a very simple `PracticeSessionView`.
    - Do NOT write exhaustive UI tests at this stage.
    - Confirm manually in simulator that:
-     - Today shows 4 blocks from engine.
+     - Today shows generated microblocks from engine.
      - Starting a session moves engine to `.inBlock`.
      - Timer updates the view via observation.
 
