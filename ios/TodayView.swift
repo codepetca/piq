@@ -20,102 +20,116 @@ struct TodayView: View {
 
     var body: some View {
         NavigationStack {
-            if todayBlocks.isEmpty {
-                emptyStateView
-            } else {
-                List {
-                    ForEach(todayBlocks) { block in
-                        BlockRow(block: block)
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(.init(top: 4, leading: 16, bottom: 4, trailing: 16))
-                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                Button(role: .destructive) {
-                                    removeBlock(block)
-                                } label: {
-                                    Image(systemName: "trash")
-                                }
-                            }
-                            .onLongPressGesture(minimumDuration: 0.15, pressing: { isPressing in
-                                withAnimation(.easeInOut(duration: 0.12)) {
-                                    editMode = isPressing ? .active : .inactive
-                                }
-                            }, perform: {})
-                    }
-                    .onMove(perform: moveBlocks)
-                }
-                .listStyle(.plain)
-                .scrollContentBackground(.hidden)
-                .environment(\.editMode, $editMode)
+            VStack(spacing: 0) {
+                content
+                bottomActionBar
             }
-            .safeAreaInset(edge: .bottom) {
-                // Start or resume session button (fixed at bottom)
-                if let vm = viewModel {
-                    ZStack {
-                        if vm.hasActiveSession {
-                            Button(action: resumeSession) {
-                                Text("Resume")
-                                    .font(.headline)
-                                    .foregroundColor(.white)
-                                    .frame(width: 76, height: 76)
-                                    .background(
-                                        Circle()
-                                            .fill(Color.accentColor)
-                                    )
-                                    .shadow(color: Color.black.opacity(0.12), radius: 8, x: 0, y: 4)
-                                    .offset(y: -4)
-                            }
-                        } else {
-                            Button(action: startSession) {
-                                Image(systemName: "play.fill")
-                                    .font(.system(size: 30, weight: .semibold))
-                                    .foregroundColor(.white)
-                                    .frame(width: 76, height: 76)
-                                    .background(
-                                        Circle()
-                                            .fill(Color.accentColor)
-                                    )
-                                    .shadow(color: Color.black.opacity(0.16), radius: 8, x: 0, y: 4)
-                                    .offset(y: -4)
-                            }
+                .navigationTitle("Today")
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button(action: { onMenuTap?() }) {
+                            Image(systemName: "line.3.horizontal")
+                                .font(.system(size: 18, weight: .regular))
                         }
+                    }
+                }
+                .onAppear {
+                    initializeViewModelIfNeeded()
+                    // Only refresh blocks if there's no active session
+                    // This prevents overwriting blocks when resuming
+                    if !(viewModel?.hasActiveSession ?? false) {
+                        viewModel?.refreshBlocks()
+                    }
+                    blocks = viewModel?.todayBlocks ?? []
+                }
+                .fullScreenCover(isPresented: $showingSession) {
+                    PracticeSessionView()
+                }
+                .onChange(of: blocks) { _, newValue in
+                    viewModel?.setTodayBlocks(newValue)
+                }
+        }
+    }
 
-                        HStack {
-                            Spacer()
-                            AlarmBadgeView(minutes: totalTargetMinutes, size: 48, tint: .primary)
+    @ViewBuilder
+    private var content: some View {
+        if todayBlocks.isEmpty {
+            emptyStateView
+        } else {
+            blockList
+        }
+    }
+
+    private var blockList: some View {
+        List {
+            ForEach(todayBlocks) { block in
+                BlockRow(block: block)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(.init(top: 4, leading: 16, bottom: 4, trailing: 16))
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button(role: .destructive) {
+                            removeBlock(block)
+                        } label: {
+                            Image(systemName: "trash")
                         }
-                        .padding(.leading, 16)
-                        .padding(.trailing, 36)
                     }
-                    .frame(maxWidth: .infinity, minHeight: 80)
-                    .padding(.vertical, 6)
-                    .padding(.bottom, 4)
-                    .background(.regularMaterial)
-                }
+                    .onLongPressGesture(minimumDuration: 0.15, pressing: { isPressing in
+                        withAnimation(.easeInOut(duration: 0.12)) {
+                            editMode = isPressing ? .active : .inactive
+                        }
+                    }, perform: {})
             }
-            .navigationTitle("Today")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: { onMenuTap?() }) {
-                        Image(systemName: "line.3.horizontal")
-                            .font(.system(size: 18, weight: .regular))
+            .onMove(perform: moveBlocks)
+        }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .environment(\.editMode, $editMode)
+    }
+
+    @ViewBuilder
+    private var bottomActionBar: some View {
+        // Start or resume session button (fixed at bottom)
+        if let vm = viewModel {
+            ZStack {
+                if vm.hasActiveSession {
+                    Button(action: resumeSession) {
+                        Text("Resume")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(width: 76, height: 76)
+                            .background(
+                                Circle()
+                                    .fill(Color.accentColor)
+                            )
+                            .shadow(color: Color.black.opacity(0.12), radius: 8, x: 0, y: 4)
+                            .offset(y: -4)
+                    }
+                } else {
+                    Button(action: startSession) {
+                        Image(systemName: "play.fill")
+                            .font(.system(size: 30, weight: .semibold))
+                            .foregroundColor(.white)
+                            .frame(width: 76, height: 76)
+                            .background(
+                                Circle()
+                                    .fill(Color.accentColor)
+                            )
+                            .shadow(color: Color.black.opacity(0.16), radius: 8, x: 0, y: 4)
+                            .offset(y: -4)
                     }
                 }
-            }
-            .onAppear {
-                initializeViewModelIfNeeded()
-                // Only refresh blocks if there's no active session
-                // This prevents overwriting blocks when resuming
-                if !(viewModel?.hasActiveSession ?? false) {
-                    viewModel?.refreshBlocks()
+
+                HStack {
+                    Spacer()
+                    AlarmBadgeView(minutes: totalTargetMinutes, size: 48, tint: .primary)
                 }
-                blocks = viewModel?.todayBlocks ?? []
+                .padding(.leading, 16)
+                .padding(.trailing, 36)
             }
-            .fullScreenCover(isPresented: $showingSession) {
-                PracticeSessionView()
-            }
-            .onChange(of: blocks) { _, newValue in
-                viewModel?.setTodayBlocks(newValue)
-            }
+            .frame(maxWidth: .infinity, minHeight: 80)
+            .padding(.vertical, 6)
+            .padding(.bottom, 4)
+            .background(.regularMaterial)
         }
     }
 
