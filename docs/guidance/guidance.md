@@ -37,15 +37,32 @@ piq **is**:
 
 The learning model is:
 
-> Short, varied, spaced micro-sessions over time  
-> + feedback-driven scheduling  
+> Short, varied, spaced micro-sessions over time
+> + feedback-driven scheduling
 > + tiny visual references.
 
 All domain and implementation details should support this.
 
+### User Flexibility Within the Coach Model
+
+While piq chooses *what* to practice, users can adjust *how*:
+
+- The SRE generates 6–8 microblocks (warm-up first, interleaved middle, fun ending)
+- Users can **reorder** blocks to adapt to their context today
+- Users can **delete** blocks to shorten the session when time-constrained
+- Completed blocks still provide feedback to the SRE for future scheduling
+- Skipped/deleted blocks are not counted as practiced
+
+This balances algorithmic guidance with real-world pragmatism:
+- Cold hands? Reorder to start with a different warm-up
+- Only 20 minutes? Delete a few blocks
+- Already worked on songs today? Skip the song block
+
+The coach suggests; the user decides.
+
 ---
 
-## 2. Learning Model Overview (What We’re Building Toward)
+## 2. Learning Model Overview (What We're Building Toward)
 
 ### 2.1 Micro-Sessions
 
