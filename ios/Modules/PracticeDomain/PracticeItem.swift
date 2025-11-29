@@ -129,6 +129,18 @@ struct PracticeItem: Identifiable, Codable, Equatable {
 
     var blockKind: PracticeBlockKind { category.blockKind }
 
+    /// Returns the number of stars (1-3) representing current stability level.
+    /// 1 star: stability 1.0-2.5 (New/Learning)
+    /// 2 stars: stability 2.5-5.0 (Comfortable)
+    /// 3 stars: stability 5.0+ (Solid/Mastered)
+    var stabilityStars: Int {
+        switch srs.stability {
+        case ..<2.5: return 1
+        case 2.5..<5.0: return 2
+        default: return 3
+        }
+    }
+
     /// Selects instructions to display, rotating through bonus tips and focus cues.
     /// Returns updated SRS state with new rotation indices.
     func selectInstructionsForDisplay() -> (instructions: [String], focusCue: String?, updatedSRS: SRSState) {

@@ -113,6 +113,41 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         XCTAssertLessThanOrEqual(session.blocks.count, 8, "Should have at most 8 blocks")
     }
 
+    func testGenerateTodaySessionWhenNoItemsReturnsEmptySession() {
+        let engine = SpacedRepetitionEngine()
+
+        let session = engine.generateTodaySession()
+
+        XCTAssertTrue(session.blocks.isEmpty, "Should return an empty session when no items are available")
+    }
+
+    func testGenerateTodaySessionInterleavesMiddleWhenVarietyExists() {
+        let now = Date()
+        let warmup = PracticeItem(catalogID: "test_interleave_warm", category: .warmup, title: "Warmup", srs: SRSState(nextDue: now))
+        let technique = PracticeItem(catalogID: "test_interleave_tech", category: .technique, title: "Technique", srs: SRSState(nextDue: now))
+        let solo = PracticeItem(catalogID: "test_interleave_solo", category: .soloing, title: "Solo", srs: SRSState(nextDue: now))
+        let rhythm = PracticeItem(catalogID: "test_interleave_rhythm", category: .rhythm, title: "Rhythm", srs: SRSState(nextDue: now))
+        let fun = PracticeItem(catalogID: "test_interleave_fun", category: .repertoire, title: "Fun Ending", srs: SRSState(nextDue: now))
+
+        let engine = SpacedRepetitionEngine()
+        [warmup, technique, solo, rhythm, fun].forEach(engine.addItem)
+
+        let session = engine.generateTodaySession(
+            now: now,
+            targetMinutes: 20,
+            minBlocks: 4,
+            maxBlocks: 4
+        )
+
+        let kinds = session.blocks.map(\.kind)
+        XCTAssertEqual(kinds.first, .warmup)
+        XCTAssertEqual(kinds.last, .song)
+
+        let middleKinds = Array(kinds.dropFirst().dropLast())
+        XCTAssertEqual(middleKinds.count, 2)
+        XCTAssertNotEqual(middleKinds[0], middleKinds[1], "Middle blocks should interleave when different categories exist")
+    }
+
     // MARK: - Batch Feedback Tests
 
     func testApplyFeedbackUpdatesMultipleItems() {
@@ -611,5 +646,43 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         // Non-existent ID returns nil
         let notFound = engine.item(withID: UUID())
         XCTAssertNil(notFound)
+    }
+
+    func testApplyFeedbackAndTempoLearningTogether() {
+        let now = Date(timeIntervalSince1970: 12_345)
+        let item = PracticeItem(
+            catalogID: "test_combo",
+            category: .technique,
+            title: "Combo Item",
+            srs: SRSState(stability: 1.5, nextDue: now),
+            tempo: TempoState(currentBPM: 70)
+        )
+
+        let engine = SpacedRepetitionEngine()
+        engine.addItem(item)
+
+        let blocks = [
+            PracticeBlock(
+                kind: .techniqueOrTheory,
+                title: "Block",
+                practiceItemID: item.id,
+                feedback: .good,
+                startingBPM: 70,
+                endingBPM: 75,
+                tempoAdjustmentCount: 2
+            )
+        ]
+
+        engine.applyFeedback(for: blocks, now: now)
+        engine.applyTempoLearning(for: blocks)
+
+        guard let updated = engine.item(withID: item.id) else {
+            return XCTFail("Item should still exist after updates")
+        }
+
+        XCTAssertNotNil(updated.srs.lastPlayed)
+        XCTAssertGreaterThan(updated.srs.stability, item.srs.stability)
+        XCTAssertEqual(updated.tempo.history.first?.adjustmentCount, 2)
+        XCTAssertGreaterThan(updated.tempo.currentBPM, item.tempo.currentBPM)
     }
 }

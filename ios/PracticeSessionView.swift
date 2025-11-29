@@ -2,6 +2,7 @@ import SwiftUI
 
 struct PracticeSessionView: View {
     @Environment(PracticeEngine.self) private var engine
+    @Environment(SpacedRepetitionEngine.self) private var sre
     @Environment(MetronomeService.self) private var metronome
     @Environment(HapticService.self) private var haptics
     @Environment(SettingsViewModel.self) private var settings
@@ -507,60 +508,24 @@ struct PracticeSessionView: View {
 
     @ViewBuilder
     private func finishedView() -> some View {
-        VStack(spacing: 24) {
-            Spacer()
+        if let session = engine.session {
+            SessionSummaryView(
+                session: session,
+                spacedRepetitionEngine: sre,
+                onDone: {
+                    // Haptic feedback for completion
+                    haptics.success()
 
-            Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 64))
-                .foregroundColor(.green)
+                    // Session persistence is handled automatically by PracticeEngine.onSessionFinished
+                    // which saves to history, applies SRE feedback, and persists items.
 
-            Text("Session Complete!")
-                .font(.title)
+                    // Stop metronome and haptics when leaving
+                    metronome.stop()
+                    haptics.isEnabled = false
 
-            // Block list with feedback
-            if let session = engine.session {
-                VStack(spacing: 8) {
-                    ForEach(session.blocks) { block in
-                        HStack {
-                            Text(block.kind.displayName)
-                                .font(.subheadline)
-                            Text(":")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                            Text(block.feedback?.displayName ?? "—")
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                        }
-                    }
+                    dismiss()
                 }
-                .padding(.vertical, 8)
-
-                Text("Total: \(session.totalActualMinutes) min")
-                    .font(.headline)
-                    .foregroundColor(.secondary)
-            }
-
-            Spacer()
-
-            Button("Done") {
-                // Haptic feedback for completion
-                haptics.success()
-
-                // Session persistence is handled automatically by PracticeEngine.onSessionFinished
-                // which saves to history, applies SRE feedback, and persists items.
-
-                // Stop metronome when leaving
-                metronome.stop()
-                dismiss()
-            }
-            .font(.headline)
-            .foregroundColor(.white)
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(Color.accentColor)
-            .cornerRadius(12)
-            .padding(.horizontal)
-            .padding(.bottom)
+            )
         }
     }
 
@@ -599,6 +564,7 @@ struct PracticeSessionView: View {
 
     PracticeSessionView()
         .environment(engine)
+        .environment(sre)
         .environment(metronome)
         .environment(haptics)
         .environment(settings)
