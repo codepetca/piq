@@ -84,7 +84,9 @@ final class SettingsViewModel {
         }
     }
 
-    /// Clear all data (history + progress)
+    /// Clear all data (history + progress).
+    /// Note: This preserves user preferences/onboarding state.
+    /// Use resetOnboarding separately to reset the onboarding flow.
     func clearAllData() {
         storage.clearAll()
         sre?.loadSeedCatalog()

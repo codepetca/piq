@@ -139,11 +139,6 @@ final class OnboardingViewModel {
         onComplete?()
     }
 
-    /// Get the saved preferences (for applying to services).
-    func getSavedPreferences() -> UserPreferences {
-        storage.loadPreferences()
-    }
-
     // MARK: - Preview Session Generation
 
     /// Generate a preview of today's session blocks based on user selections.

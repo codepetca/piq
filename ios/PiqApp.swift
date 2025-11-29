@@ -52,12 +52,12 @@ struct PiqApp: App {
     private func applyUserPreferences() {
         let preferences = storage.loadPreferences()
 
-        // Apply cue preferences to services
+        // Apply haptic preference - directly controls haptic feedback
         hapticService.isEnabled = preferences.cuePreference.hapticEnabled
 
-        // Apply metronome default based on cue preference
-        // Note: MetronomeService doesn't have an isEnabled property,
-        // so we just ensure the BPM is set. The UI will control on/off.
+        // Note: Metronome preference (metronomeEnabled) is applied at the UI level
+        // when starting practice blocks, not as a global service setting.
+        // The MetronomeService is started/stopped per-block based on user interaction.
     }
 
     /// Sets up automatic session persistence when a session completes.
