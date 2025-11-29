@@ -22,8 +22,7 @@ let package = Package(
                 "SessionUI",
                 "AudioHapticsModule",
                 "HistoryModule",
-                "SettingsModule",
-                "OnboardingModule/OnboardingView.swift"
+                "SettingsModule"
             ],
             sources: [
                 "PracticeDomain/HistoryTrendCalculator.swift",
@@ -40,7 +39,13 @@ let package = Package(
                 "PracticeDomain/TempoEngine.swift",
                 "PracticeDomain/UserPreferences.swift",
                 "TodayModule/TodayViewModel.swift",
-                "OnboardingModule/OnboardingViewModel.swift"
+                "OnboardingModule/OnboardingViewModel.swift",
+                "OnboardingModule/OnboardingView.swift",
+                "OnboardingModule/WelcomeStepView.swift",
+                "OnboardingModule/LevelStepView.swift",
+                "OnboardingModule/StylesStepView.swift",
+                "OnboardingModule/CuesStepView.swift",
+                "OnboardingModule/OnboardingSummaryView.swift"
             ]
         ),
         .target(

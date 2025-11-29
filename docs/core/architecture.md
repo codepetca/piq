@@ -94,10 +94,19 @@ All new code and features must fit into one of these modules. Do **not** create 
    - Screens: `SettingsView`.
    - (Future) simple content/library management for songs, diagrams.
 
-6. **AudioHapticsModule**
+6. **OnboardingModule**
+   - ViewModels: `OnboardingViewModel`.
+   - Screens: `OnboardingView` (coordinator), `WelcomeStepView`, `LevelStepView`,
+     `StylesStepView`, `CuesStepView`, `OnboardingSummaryView`.
+   - Handles first-launch preference collection only; thin UI layer over
+     PracticeDomain `UserPreferences`.
+   - Preview session uses `PracticeSession.makeOnboardingPreview()` to demonstrate
+     actual session generation based on selected preferences.
+
+7. **AudioHapticsModule**
    - Services: `MetronomeService`, (optional) `AudioHapticsService`.
 
-7. **WatchModule** (future)
+8. **WatchModule** (future)
    - watchOS SwiftUI views mirroring the timer UI.
    - Connectivity helpers to share state.
 

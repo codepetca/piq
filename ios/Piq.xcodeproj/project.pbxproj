@@ -44,6 +44,11 @@
 		A1000035001 /* UserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000035000 /* UserPreferences.swift */; };
 		A1000036001 /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000036000 /* OnboardingViewModel.swift */; };
 		A1000037001 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000037000 /* OnboardingView.swift */; };
+		A1000038001 /* WelcomeStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000038000 /* WelcomeStepView.swift */; };
+		A1000039001 /* LevelStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000039000 /* LevelStepView.swift */; };
+		A1000040001 /* StylesStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000040000 /* StylesStepView.swift */; };
+		A1000041001 /* CuesStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000041000 /* CuesStepView.swift */; };
+		A1000042001 /* OnboardingSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000042000 /* OnboardingSummaryView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -85,6 +90,11 @@
 		A1000035000 /* UserPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferences.swift; sourceTree = "<group>"; };
 		A1000036000 /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
 		A1000037000 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		A1000038000 /* WelcomeStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeStepView.swift; sourceTree = "<group>"; };
+		A1000039000 /* LevelStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelStepView.swift; sourceTree = "<group>"; };
+		A1000040000 /* StylesStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StylesStepView.swift; sourceTree = "<group>"; };
+		A1000041000 /* CuesStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CuesStepView.swift; sourceTree = "<group>"; };
+		A1000042000 /* OnboardingSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingSummaryView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -226,6 +236,11 @@
 			children = (
 				A1000036000 /* OnboardingViewModel.swift */,
 				A1000037000 /* OnboardingView.swift */,
+				A1000038000 /* WelcomeStepView.swift */,
+				A1000039000 /* LevelStepView.swift */,
+				A1000040000 /* StylesStepView.swift */,
+				A1000041000 /* CuesStepView.swift */,
+				A1000042000 /* OnboardingSummaryView.swift */,
 			);
 			path = OnboardingModule;
 			sourceTree = "<group>";
@@ -335,6 +350,11 @@
 				A1000035001 /* UserPreferences.swift in Sources */,
 				A1000036001 /* OnboardingViewModel.swift in Sources */,
 				A1000037001 /* OnboardingView.swift in Sources */,
+				A1000038001 /* WelcomeStepView.swift in Sources */,
+				A1000039001 /* LevelStepView.swift in Sources */,
+				A1000040001 /* StylesStepView.swift in Sources */,
+				A1000041001 /* CuesStepView.swift in Sources */,
+				A1000042001 /* OnboardingSummaryView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -70,6 +70,43 @@ extension PracticeSession {
         return PracticeSession(blocks: blocks)
     }
 
+    /// Creates a preview session for onboarding based on user preferences.
+    /// Demonstrates the session structure and adapts block count based on level.
+    static func makeOnboardingPreview(for preferences: UserPreferences) -> PracticeSession {
+        let items = PracticeItemCatalog.seedItems()
+
+        // Determine block count based on level
+        let blockCount: Int
+        switch preferences.level {
+        case .beginner: blockCount = 6
+        case .intermediate: blockCount = 7
+        case .advanced: blockCount = 8
+        }
+
+        // Select items, ensuring warmup first and varied middle
+        var blocks: [PracticeBlock] = []
+        let selectedItems = Array(items.prefix(blockCount))
+
+        for item in selectedItems {
+            let (instructions, focusCue, _) = item.selectInstructionsForDisplay()
+
+            let block = PracticeBlock(
+                kind: item.blockKind,
+                title: item.title,
+                detail: item.detail,
+                targetMinutes: item.targetMinutes,
+                key: item.key,
+                practiceItemID: item.id,
+                referenceID: item.referenceID,
+                instructions: instructions,
+                focusCue: focusCue
+            )
+            blocks.append(block)
+        }
+
+        return PracticeSession(blocks: blocks)
+    }
+
     /// Standard block order for a session.
     static let standardBlockOrder: [PracticeBlockKind] = [
         .warmup,

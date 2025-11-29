@@ -359,11 +359,10 @@ final class PracticeStorage {
         loadPreferences().hasCompletedOnboarding
     }
 
-    /// Reset onboarding state (clear preferences and return to first launch experience).
+    /// Reset onboarding to fresh state.
+    /// Resets preferences to defaults but preserves session history.
     func resetOnboarding() {
-        var preferences = loadPreferences()
-        preferences.hasCompletedOnboarding = false
-        savePreferences(preferences)
+        savePreferences(.default)
     }
 
     /// Clear all data including preferences.

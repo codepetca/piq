@@ -54,6 +54,15 @@ enum CuePreference: String, CaseIterable, Codable {
         }
     }
 
+    /// Descriptive text explaining what this cue preference means.
+    var description: String {
+        switch self {
+        case .soundAndVibration: return "Metronome clicks and haptic feedback"
+        case .vibrationOnly: return "Silent metronome with haptics"
+        case .silent: return "Visual cues only"
+        }
+    }
+
     /// Whether metronome sound should be enabled by default.
     var metronomeEnabled: Bool {
         switch self {
