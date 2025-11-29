@@ -19,6 +19,8 @@ let package = Package(
             path: "ios/Modules",
             exclude: [
                 "ReferenceModule/PracticeReferenceView.swift",
+                "ReferenceModule/PracticeReference.swift",
+                "ReferenceModule/PracticeReferenceService.swift",
                 "SessionUI",
                 "AudioHapticsModule",
                 "HistoryModule",
@@ -56,7 +58,7 @@ let package = Package(
         ),
         .testTarget(
             name: "piqTests",
-            dependencies: ["piq"],
+            dependencies: ["piq", "ReferenceModule"],
             path: "ios/Tests/PracticeDomainTests"
         ),
         .testTarget(
