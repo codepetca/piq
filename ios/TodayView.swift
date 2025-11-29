@@ -20,13 +20,6 @@ struct TodayView: View {
     var body: some View {
         NavigationStack {
             List {
-                // Active session indicator (if in progress)
-                if let vm = viewModel, vm.hasActiveSession {
-                    activeSessionBanner(statusText: vm.activeSessionStatusText)
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(.init(top: 6, leading: 16, bottom: 6, trailing: 16))
-                }
-
                 ForEach(todayBlocks) { block in
                     BlockRow(block: block)
                         .listRowSeparator(.hidden)
@@ -115,23 +108,6 @@ struct TodayView: View {
                 viewModel?.setTodayBlocks(newValue)
             }
         }
-    }
-
-    // MARK: - Subviews
-
-    @ViewBuilder
-    private func activeSessionBanner(statusText: String?) -> some View {
-        HStack {
-            Image(systemName: "play.circle.fill")
-                .foregroundColor(.accentColor)
-            Text(statusText ?? "Session in progress")
-                .font(.subheadline)
-            Spacer()
-        }
-        .padding()
-        .background(Color.accentColor.opacity(0.1))
-        .cornerRadius(8)
-        .padding(.horizontal)
     }
 
     // MARK: - Computed Properties

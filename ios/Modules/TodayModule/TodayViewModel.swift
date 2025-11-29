@@ -35,36 +35,6 @@ final class TodayViewModel {
         }
     }
 
-    /// Text describing the current active session state, if any.
-    var activeSessionStatusText: String? {
-        switch engine.state {
-        case .idle, .finished:
-            return nil
-        case .previewBlock(let index, _):
-            guard let session = engine.session,
-                  index < session.blocks.count else {
-                return "Session starting"
-            }
-            let block = session.blocks[index]
-            let totalBlocks = session.blocks.count
-            return "Starting block \(index + 1)/\(totalBlocks): \(block.kind.displayName)"
-        case .inBlock(let index, _):
-            guard let session = engine.session,
-                  index < session.blocks.count else {
-                return "Session in progress"
-            }
-            let block = session.blocks[index]
-            let totalBlocks = session.blocks.count
-            return "Block \(index + 1)/\(totalBlocks): \(block.kind.displayName)"
-        case .betweenBlocks(let lastIndex, _):
-            guard let session = engine.session else {
-                return "Between blocks"
-            }
-            let totalBlocks = session.blocks.count
-            return "After block \(lastIndex + 1)/\(totalBlocks)"
-        }
-    }
-
     // MARK: - Initialization
 
     init(sre: SpacedRepetitionEngine, engine: PracticeEngine) {
