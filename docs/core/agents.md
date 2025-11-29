@@ -171,7 +171,7 @@ Responsibilities:
   - Start from models → PracticeEngine → SpacedRepetitionEngine → Storage.
   - Keep engines small, deterministic, and easy to test.
 Propose lightweight UI tests where valuable:
-  - Today screen renders 4 blocks.  
+  - Today screen renders generated microblocks (6–8).  
   - Practice screen navigates through block → feedback → next block.
 - Encourage a light TDD style for core logic (engines) where feasible.
 

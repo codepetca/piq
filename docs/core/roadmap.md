@@ -1,127 +1,72 @@
-# piq Product Roadmap
+# piq Product Roadmap (Source of Truth)
 
-This roadmap defines **what** features to build and **when**.
-
-For **why** and **how** to implement features, see `/docs/guidance/guidance.md`.
-For detailed architecture and patterns, see `/docs/core/` files.
+Last updated: 2025-11-29  
+Scope: what to build and when. Why/how live in `/docs/guidance/guidance.md` and `/docs/core/`.
 
 ---
 
 ## Development Workflow
+roadmap.md → GitHub issues (/docs/issues/* or GitHub) → implementation
 
-```
-roadmap.md (phases, features)
-    ↓
-GitHub Issues (specific tasks per phase)
-    ↓
-Implementation (following architecture + guidance docs)
-```
-
-This roadmap evolves slowly—only for major product direction changes.
-Day-to-day tasks and implementation details belong in GitHub Issues and `/docs/issues/`.
+Roadmap changes are rare and intentional. Iteration detail belongs in issues.
 
 ---
 
-# Phase 1: MVP (Core Experience)
-
-**Goal:** Minimal viable practice coach that schedules skills and guides daily practice.
-
-## Features
-
-### Skill System
-- Predefined catalog of ~38 atomic practice items
-- 11 categories: warmup, fretboard, technique, theory, rhythm, chords, soloing, repertoire, songwork, ear_training, musicality
-- See `/docs/guidance/guidance.md` for detailed catalog structure
-
-### Spaced Repetition Engine (SRE)
-- Stability-based scheduling
-- Easy/Good/Hard feedback influences future scheduling
-- "Due today" item selection
-- Interleaving across categories
-
-### Daily Session Generation
-- 6-8 blocks per session
-- Block duration: 2-15 minutes (varies by category)
-- Session structure: warmup first → interleaved middle → fun ending
-- Target: ~30-40 minutes total (acceptable range: 25-45 min)
-
-### Storage & Persistence
-- Save/load PracticeItems with SRS state
-- Save/load session history
-- Separate catalog from user progress data
-
-### UI Flow
-- Today screen → Start session → Block-by-block practice → Feedback → Summary
-- Minimal text, calm design
-- Reference diagrams ("?" button) for scales/chords/techniques
-
-**MVP Complete When:**
-User can open app, practice 6-8 interleaved micro-skills with timer and feedback, get new sessions daily, and all progress persists.
+## Status Legend
+- **Shipped**: in code now
+- **Next**: MVP-completion focus
+- **Future**: queued after MVP
+- **Explorations**: evaluate later
 
 ---
 
-# Phase 2: Enhanced Experience
-
-**Goal:** Richer feedback, customization, and history features.
-
-## Features
-
-### Enhanced History
-- Calendar view or session list
-- Trends: stability growth, categories practiced, streaks
-- Simple statistics (no scores or gamification)
-
-### Custom Skill System
-- Users create custom PracticeItems
-- Integrates with SRE using same scheduling logic
-- Optional reference diagrams or short text
-- Stored alongside catalog items with distinct catalogIDs
-
-### Improved Summary Screen
-- Show skills practiced, stability changes, next due dates
-- Streak tracking
-- Still minimal, no teaching content
-
-### Better Reference Material
-- Richer diagrams
-- Optional short hints (one sentence max)
-- No tutorials or lessons
-
-### Enhanced Settings
-- Adjust block duration preferences
-- Metronome preferences
-- Category preferences
+## Foundations (Shipped)
+- Seed catalog (~38 items) across 11 categories with instructions/focus cues and references.
+- Spaced Repetition Engine: stability-based ordering, due/priority queries, feedback application, tempo learning.
+- Session generation: 6–8 microblocks (~25–45 min) with warmup first, interleaved middle, fun ending; suggested BPM for metronome-on blocks.
+- PracticeEngine: preview → inBlock → betweenBlocks → finished; pause/extend/adjust/skip; feedback capture; timer ownership.
+- Tempo & feedback loop: MetronomeService + HapticService, starting/ending BPM capture, tempo adjustment tracking.
+- Persistence v2: sessions + SRS/tempo state saved/loaded; merge seed catalog with stored state; history stats/trends.
+- UI flows: sidebar RootView; Today (reorder/remove, resume active session); Practice session with preview + instructions card + metronome; Feedback step; History list/stats; Settings (BPM, haptics, reset/clear data).
 
 ---
 
-# Phase 3: Future Explorations
+## Phase 1 – MVP Completion (Next)
+Goal: ship a coherent daily practice coach with reliable 6–8 microblocks and onboarding.
 
-**Status:** Ideas, not commitments. Evaluate after Phase 2 completion.
+- Confirm and document the 6–8 microblock structure (durations per category) across design/architecture/guidance/UI copy.
+- Onboarding (planned): level, styles, cues → seed preferences and initial catalog emphasis.
+- Session polish: summary screen clarity (feedback + minutes), safer state handling/resume, align Today/Practice UI to microblock structure.
+- Reliability: tighten PracticeEngine/SRE/storage tests; handle empty/edge cases; ensure persistence schema v2 is stable.
+- References: ensure question-mark affordance and sheets cover existing catalog.
 
-### watchOS Companion
-- Quick practice blocks on wrist
-- Lightweight SRS reminders
+**Done when:** user can onboard, get 6–8 guided microblocks daily, complete with metronome/haptics, give feedback, see history saved, and state resumes safely.
 
-### Widgets
-- Home screen widget showing today's due skills
-- Quick-start session widget
+---
 
-### Import/Export
-- Backup SRS state
-- Share custom skills between devices/users
+## Phase 2 – Enhanced Experience (Future)
+Goal: customization and insight.
 
-### Audio & Haptics Enhancements
-- Improved timing feedback
-- Optional haptic metronome patterns
+- Custom practice items (user-created) using same SRE/tempo pipelines.
+- History depth: calendar/list hybrid, streaks/trends, per-category stats.
+- Settings depth: block duration preferences, metronome defaults, category preferences.
+- Reference richness: more diagrams + succinct hints; optional external links.
+- Summary improvements: stability/next-due hints; minimal streak view; still no teaching text.
+
+---
+
+## Phase 3 – Explorations (Evaluate after Phase 2)
+- watchOS companion for quick blocks and reminders.
+- Widgets (today’s due skills, quick start).
+- Import/export for SRS/tempo state and custom items.
+- Audio/haptics refinements (patterns, improved timing).
+- Any AI coach/backing-track/gamification ideas remain exploratory until core experience is solid.
 
 ---
 
 ## Constraints (All Phases)
-
-Every feature must respect:
-- **design.md** — minimal UI, calm aesthetic
-- **architecture.md** — module boundaries, platform constraints
-- **agents.md** — role separation
-- **tests.md** — TDD for engines
-- **guidance.md** — learning model and domain concepts
-
+- **design.md** — minimal, calm UI; SF Symbols; no teaching walls of text.
+- **architecture.md** — SwiftUI + Observation; engines own logic/timers; module boundaries.
+- **agents.md** — role separation and ownership.
+- **tests.md** — engines/storage first; TDD-leaning for logic.
+- **guidance.md** — learning model, skill catalog, interleaving/SRS rules.
