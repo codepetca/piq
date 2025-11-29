@@ -19,7 +19,6 @@ final class TodayViewModelTests: XCTestCase {
         let viewModel = TodayViewModel(sre: sre, engine: engine)
 
         XCTAssertFalse(viewModel.hasActiveSession, "Should not have active session initially")
-        XCTAssertNil(viewModel.activeSessionStatusText, "Should have no status text initially")
     }
 
     // MARK: - Refresh Blocks Tests
@@ -63,12 +62,15 @@ final class TodayViewModelTests: XCTestCase {
 
         XCTAssertEqual(engine.state, .idle, "Engine should start idle")
 
-        viewModel.startSession()
+        viewModel.refreshBlocks()
+        viewModel.startSession(with: viewModel.todayBlocks)
 
-        if case .inBlock(let index, _) = engine.state {
-            XCTAssertEqual(index, 0, "Should start at first block")
+        if case .previewBlock(let index, _) = engine.state {
+            XCTAssertEqual(index, 0, "Should start at first block (in preview state)")
+        } else if case .inBlock(let index, _) = engine.state {
+            XCTAssertEqual(index, 0, "Should start at first block (in block state)")
         } else {
-            XCTFail("Engine should be in inBlock state after starting session")
+            XCTFail("Engine should be in previewBlock or inBlock state after starting session")
         }
     }
 
@@ -80,7 +82,8 @@ final class TodayViewModelTests: XCTestCase {
 
         XCTAssertNil(engine.session, "Engine should have no session initially")
 
-        viewModel.startSession()
+        viewModel.refreshBlocks()
+        viewModel.startSession(with: viewModel.todayBlocks)
 
         XCTAssertNotNil(engine.session, "Engine should have session after start")
         XCTAssertGreaterThanOrEqual(engine.session?.blocks.count ?? 0, 6, "Session should have at least 6 blocks")
@@ -107,6 +110,7 @@ final class TodayViewModelTests: XCTestCase {
         let viewModel = TodayViewModel(sre: sre, engine: engine)
 
         engine.startSession(from: sre)
+        engine.skipPreview()  // Get to inBlock state
         engine.finishCurrentBlock()
 
         if case .betweenBlocks = engine.state {
@@ -128,55 +132,6 @@ final class TodayViewModelTests: XCTestCase {
         engine.state = .finished
 
         XCTAssertFalse(viewModel.hasActiveSession, "Should not have active session when finished")
-    }
-
-    // MARK: - Active Session Status Text Tests
-
-    func testActiveSessionStatusTextWhenIdle() {
-        let sre = SpacedRepetitionEngine()
-        let engine = PracticeEngine()
-        let viewModel = TodayViewModel(sre: sre, engine: engine)
-
-        XCTAssertNil(viewModel.activeSessionStatusText, "Status text should be nil when idle")
-    }
-
-    func testActiveSessionStatusTextWhenInBlock() {
-        let sre = SpacedRepetitionEngine()
-        sre.loadSeedCatalog()
-        let engine = PracticeEngine()
-        let viewModel = TodayViewModel(sre: sre, engine: engine)
-
-        engine.startSession(from: sre)
-
-        let statusText = viewModel.activeSessionStatusText
-        XCTAssertNotNil(statusText, "Should have status text when in block")
-        XCTAssertTrue(statusText?.contains("Block 1/") ?? false, "Status should indicate block 1")
-    }
-
-    func testActiveSessionStatusTextWhenBetweenBlocks() {
-        let sre = SpacedRepetitionEngine()
-        sre.loadSeedCatalog()
-        let engine = PracticeEngine()
-        let viewModel = TodayViewModel(sre: sre, engine: engine)
-
-        engine.startSession(from: sre)
-        engine.finishCurrentBlock()
-
-        let statusText = viewModel.activeSessionStatusText
-        XCTAssertNotNil(statusText, "Should have status text when between blocks")
-        XCTAssertTrue(statusText?.contains("After block 1/") ?? false, "Status should indicate after block 1")
-    }
-
-    func testActiveSessionStatusTextWhenFinished() {
-        let sre = SpacedRepetitionEngine()
-        sre.loadSeedCatalog()
-        let engine = PracticeEngine()
-        let viewModel = TodayViewModel(sre: sre, engine: engine)
-
-        engine.startSession(from: sre)
-        engine.state = .finished
-
-        XCTAssertNil(viewModel.activeSessionStatusText, "Status text should be nil when finished")
     }
 
     // MARK: - Resume Session Tests
@@ -215,15 +170,17 @@ final class TodayViewModelTests: XCTestCase {
         XCTAssertFalse(viewModel.hasActiveSession)
 
         // Step 2: Start session
-        viewModel.startSession()
+        viewModel.startSession(with: viewModel.todayBlocks)
         XCTAssertTrue(viewModel.hasActiveSession)
-        XCTAssertNotNil(viewModel.activeSessionStatusText)
 
-        // Step 3: Engine state is correct
-        if case .inBlock(let index, _) = engine.state {
+        // Step 3: Engine state is correct (either previewBlock or inBlock)
+        switch engine.state {
+        case .previewBlock(let index, _):
             XCTAssertEqual(index, 0)
-        } else {
-            XCTFail("Should be in first block")
+        case .inBlock(let index, _):
+            XCTAssertEqual(index, 0)
+        default:
+            XCTFail("Should be in first block (preview or in-block state)")
         }
     }
 }

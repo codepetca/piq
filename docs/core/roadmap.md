@@ -23,7 +23,7 @@ Roadmap changes are rare and intentional. Iteration detail belongs in issues.
 ## Foundations (Shipped)
 - Seed catalog (~38 items) across 11 categories with instructions/focus cues and references.
 - Spaced Repetition Engine: stability-based ordering, due/priority queries, feedback application, tempo learning.
-- Session generation: 6–8 microblocks (~25–45 min) with warmup first, interleaved middle, fun ending; suggested BPM for metronome-on blocks.
+- Session generation: 6–8 microblocks (~30–40 min) with warmup first, interleaved middle, fun ending; suggested BPM for metronome-on blocks.
 - PracticeEngine: preview → inBlock → betweenBlocks → finished; pause/extend/adjust/skip; feedback capture; timer ownership.
 - Tempo & feedback loop: MetronomeService + HapticService, starting/ending BPM capture, tempo adjustment tracking.
 - Persistence v2: sessions + SRS/tempo state saved/loaded; merge seed catalog with stored state; history stats/trends.
