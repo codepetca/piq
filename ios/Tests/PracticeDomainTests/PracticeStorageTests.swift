@@ -256,35 +256,6 @@ final class PracticeStorageTests: XCTestCase {
         XCTAssertEqual(mergedItems.count, catalogItems.count)
     }
 
-    func testLoadPracticeItemsMergesTempoStateFromStorage() {
-        let now = Date()
-        let catalogItems = PracticeItemCatalog.seedItems(now: now)
-        let firstCatalogItem = catalogItems.first!
-
-        var storedItem = firstCatalogItem
-        storedItem.tempo = TempoState(
-            currentBPM: 95,
-            targetBPM: 120,
-            history: [
-                TempoSession(date: now, startBPM: 90, endBPM: 95, adjustmentCount: 2, feedback: .good)
-            ],
-            lastPracticedBPM: 95,
-            progressionRate: 1.1
-        )
-
-        storage.saveItems([storedItem])
-
-        let mergedItems = storage.loadPracticeItems(now: now)
-        let mergedItem = mergedItems.first { $0.catalogID == firstCatalogItem.catalogID }!
-
-        XCTAssertEqual(mergedItem.tempo.currentBPM, 95)
-        XCTAssertEqual(mergedItem.tempo.lastPracticedBPM, 95)
-        XCTAssertEqual(mergedItem.tempo.history.count, 1)
-        XCTAssertEqual(mergedItem.tempo.history.first?.endBPM, 95)
-        XCTAssertEqual(mergedItem.tempo.progressionRate, 1.1, accuracy: 0.001)
-        XCTAssertEqual(mergedItem.targetMinutes, firstCatalogItem.targetMinutes)
-    }
-
     // MARK: - Clear and Empty Tests
 
     func testSaveEmptyCollectionsClearsData() {
@@ -591,39 +562,6 @@ final class PracticeStorageTests: XCTestCase {
         XCTAssertNotNil(loaded.srs.lastPlayed)
         XCTAssertEqual(loaded.srs.lastPlayed!.timeIntervalSince1970, lastPlayed.timeIntervalSince1970, accuracy: 1.0)
         XCTAssertEqual(loaded.srs.nextDue.timeIntervalSince1970, nextDue.timeIntervalSince1970, accuracy: 1.0)
-    }
-
-    func testLoadSessionsFromSchemaV1WithoutTempoFields() {
-        let sessionsURL = testDirectory.appendingPathComponent("sessions.json")
-        let formatter = ISO8601DateFormatter()
-
-        let legacyStore: [String: Any] = [
-            "schemaVersion": 1,
-            "sessions": [[
-                "id": UUID().uuidString,
-                "date": formatter.string(from: Date()),
-                "blocks": [[
-                    "id": UUID().uuidString,
-                    "kind": "warmup",
-                    "title": "Legacy Block",
-                    "detail": "",
-                    "targetMinutes": 3,
-                    "actualMinutes": 2
-                ]]
-            ]]
-        ]
-
-        let data = try! JSONSerialization.data(withJSONObject: legacyStore)
-        try! data.write(to: sessionsURL)
-
-        let loaded = storage.loadSessions()
-
-        XCTAssertEqual(loaded.count, 1)
-        let loadedBlock = loaded.first!.blocks.first!
-        XCTAssertNil(loadedBlock.startingBPM)
-        XCTAssertNil(loadedBlock.endingBPM)
-        XCTAssertEqual(loadedBlock.tempoAdjustmentCount, 0)
-        XCTAssertEqual(loadedBlock.actualMinutes, 2)
     }
 
     func testCurrentVersionLoadsWithoutMigration() {

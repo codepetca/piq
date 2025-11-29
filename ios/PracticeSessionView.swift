@@ -95,6 +95,7 @@ struct PracticeSessionView: View {
                         Spacer()
                         questionButton
                     }
+
                     blockPillRow(session: session, currentIndex: currentIndex)
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
@@ -198,6 +199,7 @@ struct PracticeSessionView: View {
                             Spacer()
                             questionButton
                         }
+
                         blockPillRow(session: session, currentIndex: currentIndex)
                             .frame(maxWidth: .infinity, alignment: .center)
                     }

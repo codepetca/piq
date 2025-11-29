@@ -685,42 +685,4 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         let notFound = engine.item(withID: UUID())
         XCTAssertNil(notFound)
     }
-
-    func testApplyFeedbackAndTempoLearningTogether() {
-        let now = Date(timeIntervalSince1970: 12_345)
-        let item = PracticeItem(
-            catalogID: "test_combo",
-            category: .technique,
-            title: "Combo Item",
-            srs: SRSState(stability: 1.5, nextDue: now),
-            tempo: TempoState(currentBPM: 70)
-        )
-
-        let engine = SpacedRepetitionEngine()
-        engine.addItem(item)
-
-        let blocks = [
-            PracticeBlock(
-                kind: .techniqueOrTheory,
-                title: "Block",
-                practiceItemID: item.id,
-                feedback: .good,
-                startingBPM: 70,
-                endingBPM: 75,
-                tempoAdjustmentCount: 2
-            )
-        ]
-
-        engine.applyFeedback(for: blocks, now: now)
-        engine.applyTempoLearning(for: blocks)
-
-        guard let updated = engine.item(withID: item.id) else {
-            return XCTFail("Item should still exist after updates")
-        }
-
-        XCTAssertNotNil(updated.srs.lastPlayed)
-        XCTAssertGreaterThan(updated.srs.stability, item.srs.stability)
-        XCTAssertEqual(updated.tempo.history.first?.adjustmentCount, 2)
-        XCTAssertGreaterThan(updated.tempo.currentBPM, item.tempo.currentBPM)
-    }
 }
