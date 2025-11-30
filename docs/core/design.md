@@ -112,6 +112,7 @@ Inside the concentric rings:
 - Large label: countdown timer (MM:SS, bold).
 
 Tap anywhere on the rings to **pause/resume** the timer.
+Swipe left/right across the timer area to decrease/increase remaining time.
 
 When paused:
 - Rings stop animating.
@@ -124,21 +125,9 @@ The metronome is represented by icons, not by the word “Metronome”.
 
 Layout (single horizontal row):
 
-- Left:
-  - Toggle button with SF Symbol `metronome`.
-  - OFF: icon in secondary color.  
-  - ON: icon tinted with primary accent.
-- Right:
-  - BPM value text, e.g. `70`.  
-  - Two icon buttons:
-    - Decrease BPM: `minus.circle`.  
-    - Increase BPM: `plus.circle`.
-
-Example row:
-
-```text
-[ metronome icon ]   70   [ − ] [ + ]
-```
+- Tap metronome icon to toggle (OFF: secondary; ON: accent tint).
+- BPM value centered inside the control.
+- Swipe left/right across the metronome control to decrease/increase BPM (no +/- buttons).
 
 No extra label like “Metronome” should be shown.
 
@@ -171,9 +160,7 @@ Brief practice tips appear below the block title when helpful:
 - **Format:** 2–4 bullet points (5–10 words each, action-oriented)
 - **Focus Cue:** One encouraging sentence in accent color
 - **Behavior:**
-  - Collapsed by default (shows focus cue only)
-  - Tap the focus cue to expand/collapse full instruction list
-  - Auto-collapse when timer is paused to avoid obscuring controls
+  - Tap the instruction card/list to open a sheet with full bullets and diagram (when available)
 - **Constraints:**
   - Max 4 bullets to avoid wall-of-text
   - No teaching paragraphs—cues only
@@ -380,8 +367,8 @@ When to recommend metronome:
 UI rules:
 - Use `metronome` SF Symbol only.  
 - Do not show the word "Metronome".  
-- Show numeric BPM and +/- icons only.
-- Record starting/ending BPM and +/- taps for metronome-on blocks to feed tempo learning.
+- Show numeric BPM with swipe-to-adjust BPM (no +/- buttons).
+- Record starting/ending BPM and swipe adjustments for metronome-on blocks to feed tempo learning.
 
 ---
 
@@ -426,13 +413,15 @@ The Practice screen uses these components:
 - `PracticeTimerView`  
   - Renders concentric rings and central timer content.
 - `MetronomeBar`  
-  - Renders the icon‑based metronome row.
+  - Renders the icon‑based metronome control with swipe-to-adjust BPM.
 - Preview state  
   - 10s countdown before each block; tap anywhere to start immediately.
 - Bottom control row  
   - Three buttons: Skip, +2:00, Finish.
 - Instruction card  
   - Tap to open sheet with full bullets and diagram if available.
+- Gesture controls  
+  - Swipe timer area left/right to adjust remaining time; swipe metronome control left/right to adjust BPM; tap metronome icon to toggle.
 
 Layout:
 
