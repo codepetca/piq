@@ -34,18 +34,15 @@ struct SessionSummaryView: View {
 
             Spacer()
 
-            // Done button
-            Button("Done") {
-                onDone()
-            }
-            .font(.headline)
-            .foregroundStyle(.white)
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(Color.accentColor)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .padding(.horizontal)
-            .padding(.bottom)
+            // Tap instruction
+            Text("Tap to finish")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .padding(.bottom)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            onDone()
         }
     }
 
