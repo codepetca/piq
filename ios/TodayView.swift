@@ -76,11 +76,11 @@ struct TodayView: View {
 
     private var blockList: some View {
         List {
-            ForEach(Array(todayBlocks.enumerated()), id: \.element.id) { index, block in
+            ForEach(todayBlocks) { block in
                 BlockRow(block: block)
                     .listRowSeparator(.hidden)
                     .listRowInsets(.init(top: 4, leading: 16, bottom: 4, trailing: 16))
-                    .opacity(blockOpacity(for: index))
+                    .transition(.opacity)
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button(role: .destructive) {
                             removeBlock(block)
@@ -99,6 +99,7 @@ struct TodayView: View {
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
         .environment(\.editMode, $editMode)
+        .animation(.easeIn(duration: 0.3), value: todayBlocks.map { $0.id })
     }
 
     @ViewBuilder
@@ -204,14 +205,6 @@ struct TodayView: View {
         todayBlocks.reduce(0) { $0 + $1.targetMinutes }
     }
 
-    // MARK: - Helpers
-
-    private func blockOpacity(for index: Int) -> Double {
-        // Simple fade-in animation, staggered from top to bottom
-        let delay = Double(index) * 0.08
-        return 1.0 // Opacity will be animated via onAppear in BlockRow
-    }
-
     // MARK: - Actions
 
     private func startSession() {
@@ -250,7 +243,6 @@ struct TodayView: View {
 
 struct BlockRow: View {
     let block: PracticeBlock
-    @State private var hasAppeared = false
 
     var body: some View {
         HStack {
@@ -272,15 +264,6 @@ struct BlockRow: View {
         .padding(.horizontal, 14)
         .background(Color(.systemGray6))
         .cornerRadius(12)
-        .opacity(hasAppeared ? 1 : 0)
-        .onAppear {
-            withAnimation(.easeIn(duration: 0.2)) {
-                hasAppeared = true
-            }
-        }
-        .onDisappear {
-            hasAppeared = false
-        }
     }
 }
 
