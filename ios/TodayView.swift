@@ -12,7 +12,7 @@ import SwiftUI
 struct TodayView: View {
     @Environment(SpacedRepetitionEngine.self) private var sre
     @Environment(PracticeEngine.self) private var engine
-    @State private var viewModel: TodayViewModel?
+    @Environment(TodayViewModel.self) private var viewModel
     @State private var showingSession = false
     @State private var blocks: [PracticeBlock] = []
     @State private var editMode: EditMode = .inactive
@@ -34,30 +34,44 @@ struct TodayView: View {
                     }
                 }
                 .onAppear {
-                    initializeViewModelIfNeeded()
-                    // Only refresh blocks if there's no active session
-                    // This prevents overwriting blocks when resuming
-                    if !(viewModel?.hasActiveSession ?? false) {
-                        viewModel?.refreshBlocks()
+                    // Only refresh blocks if there's no active session and not in completion state
+                    // This prevents overwriting blocks when resuming or showing completion
+                    if !viewModel.hasActiveSession && !viewModel.sessionJustCompleted {
+                        viewModel.refreshBlocks()
                     }
-                    blocks = viewModel?.todayBlocks ?? []
+                    blocks = viewModel.todayBlocks
                 }
                 .fullScreenCover(isPresented: $showingSession) {
                     PracticeSessionView()
                 }
                 .onChange(of: blocks) { _, newValue in
-                    viewModel?.setTodayBlocks(newValue)
+                    viewModel.setTodayBlocks(newValue)
                 }
         }
     }
 
     @ViewBuilder
     private var content: some View {
-        if todayBlocks.isEmpty {
+        if viewModel.sessionJustCompleted {
+            completionStateView
+        } else if todayBlocks.isEmpty {
             emptyStateView
         } else {
             blockList
         }
+    }
+
+    private var completionStateView: some View {
+        VStack(spacing: 16) {
+            Spacer()
+
+            Text("All done today!")
+                .font(.title)
+                .fontWeight(.medium)
+
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var blockList: some View {
@@ -66,6 +80,7 @@ struct TodayView: View {
                 BlockRow(block: block)
                     .listRowSeparator(.hidden)
                     .listRowInsets(.init(top: 4, leading: 16, bottom: 4, trailing: 16))
+                    .transition(.opacity)
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button(role: .destructive) {
                             removeBlock(block)
@@ -84,29 +99,37 @@ struct TodayView: View {
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
         .environment(\.editMode, $editMode)
+        .animation(.easeIn(duration: 0.3), value: todayBlocks.map { $0.id })
     }
 
     @ViewBuilder
     private var bottomActionBar: some View {
-        // Start or resume session button (fixed at bottom)
-        if let vm = viewModel {
-            ZStack {
-                if vm.hasActiveSession {
-                    Button(action: resumeSession) {
-                        Text("Resume")
-                            .font(.headline)
-                            .foregroundColor(.white)
+        // Start, resume, or generate new session button (fixed at bottom)
+        ZStack {
+            if viewModel.hasActiveSession {
+                Button(action: resumeSession) {
+                    Text("Resume")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(width: 76, height: 76)
+                        .background(
+                            Circle()
+                                .fill(Color.accentColor)
+                        )
+                        .shadow(color: Color.black.opacity(0.12), radius: 8, x: 0, y: 4)
+                        .offset(y: -4)
+                }
+            } else if viewModel.sessionJustCompleted {
+                Button(action: generateNewSession) {
+                    ZStack {
+                        // Pulsing glow ring
+                        Circle()
+                            .fill(Color.accentColor.opacity(0.3))
                             .frame(width: 76, height: 76)
-                            .background(
-                                Circle()
-                                    .fill(Color.accentColor)
-                            )
-                            .shadow(color: Color.black.opacity(0.12), radius: 8, x: 0, y: 4)
-                            .offset(y: -4)
-                    }
-                } else {
-                    Button(action: startSession) {
-                        Image(systemName: "play.fill")
+                            .modifier(PulseEffect())
+
+                        // Main button
+                        Image(systemName: "sparkles")
                             .font(.system(size: 30, weight: .semibold))
                             .foregroundColor(.white)
                             .frame(width: 76, height: 76)
@@ -114,11 +137,27 @@ struct TodayView: View {
                                 Circle()
                                     .fill(Color.accentColor)
                             )
-                            .shadow(color: Color.black.opacity(0.16), radius: 8, x: 0, y: 4)
-                            .offset(y: -4)
                     }
+                    .shadow(color: Color.black.opacity(0.16), radius: 8, x: 0, y: 4)
+                    .offset(y: -4)
                 }
+            } else {
+                Button(action: startSession) {
+                    Image(systemName: "play.fill")
+                        .font(.system(size: 30, weight: .semibold))
+                        .foregroundColor(.white)
+                        .frame(width: 76, height: 76)
+                        .background(
+                            Circle()
+                                .fill(Color.accentColor)
+                        )
+                        .shadow(color: Color.black.opacity(0.16), radius: 8, x: 0, y: 4)
+                        .offset(y: -4)
+                }
+            }
 
+            // Hide alarm badge in completion state
+            if !viewModel.sessionJustCompleted {
                 HStack {
                     Spacer()
                     AlarmBadgeView(minutes: totalTargetMinutes, size: 48, tint: .primary)
@@ -126,11 +165,11 @@ struct TodayView: View {
                 .padding(.leading, 16)
                 .padding(.trailing, 36)
             }
-            .frame(maxWidth: .infinity, minHeight: 80)
-            .padding(.vertical, 6)
-            .padding(.bottom, 4)
-            .background(.regularMaterial)
         }
+        .frame(maxWidth: .infinity, minHeight: 80)
+        .padding(.vertical, 6)
+        .padding(.bottom, 4)
+        .background(.regularMaterial)
     }
 
     // MARK: - Empty State
@@ -168,21 +207,22 @@ struct TodayView: View {
 
     // MARK: - Actions
 
-    private func initializeViewModelIfNeeded() {
-        if viewModel == nil {
-            viewModel = TodayViewModel(sre: sre, engine: engine)
-        }
-    }
-
     private func startSession() {
-        let blocksToUse = todayBlocks.isEmpty ? viewModel?.todayBlocks ?? [] : todayBlocks
+        let blocksToUse = todayBlocks.isEmpty ? viewModel.todayBlocks : todayBlocks
         guard !blocksToUse.isEmpty else { return }
-        viewModel?.startSession(with: blocksToUse)
+        viewModel.startSession(with: blocksToUse)
         showingSession = true
     }
 
     private func resumeSession() {
         showingSession = true
+    }
+
+    private func generateNewSession() {
+        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+            viewModel.generateNewSession()
+            blocks = viewModel.todayBlocks
+        }
     }
 
     private func removeBlock(_ block: PracticeBlock) {
@@ -192,7 +232,7 @@ struct TodayView: View {
 
     private func moveBlocks(from source: IndexSet, to destination: Int) {
         blocks.move(fromOffsets: source, toOffset: destination)
-        viewModel?.setTodayBlocks(blocks)
+        viewModel.setTodayBlocks(blocks)
         withAnimation(.easeInOut(duration: 0.15)) {
             editMode = .inactive
         }
@@ -296,6 +336,23 @@ private struct TodayPreviewContainer: View {
                 .foregroundStyle(Color.accentColor)
         }
         .padding()
+    }
+}
+
+// MARK: - Pulse Effect
+
+struct PulseEffect: ViewModifier {
+    @State private var isPulsing = false
+
+    func body(content: Content) -> some View {
+        content
+            .scaleEffect(isPulsing ? 1.3 : 1.0)
+            .opacity(isPulsing ? 0.0 : 1.0)
+            .onAppear {
+                withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: false)) {
+                    isPulsing = true
+                }
+            }
     }
 }
 

@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="340" height="260" viewBox="0 0 340 260">
+
+  <!-- Background -->
+  <rect x="0" y="0" width="340" height="260" fill="white"/>
+
+  <!-- Title with smaller 'm' -->
+  <text x="170" y="24"
+        font-family="SF Pro, -apple-system, system-ui, sans-serif"
+        font-size="15"
+        text-anchor="middle"
+        fill="#111">
+    A<tspan font-size="11">m</tspan> Pentatonic – Pos 1
+  </text>
+
+  <!-- String labels (black) -->
+  <text x="50" y="60"  font-family="SF Pro" font-size="10" text-anchor="end" fill="#000">e</text>
+  <text x="50" y="88"  font-family="SF Pro" font-size="10" text-anchor="end" fill="#000">B</text>
+  <text x="50" y="116" font-family="SF Pro" font-size="10" text-anchor="end" fill="#000">G</text>
+  <text x="50" y="144" font-family="SF Pro" font-size="10" text-anchor="end" fill="#000">D</text>
+  <text x="50" y="172" font-family="SF Pro" font-size="10" text-anchor="end" fill="#000">A</text>
+  <text x="50" y="200" font-family="SF Pro" font-size="10" text-anchor="end" fill="#000">E</text>
+
+  <!-- Guitar strings (extended, thin, black) -->
+  <g stroke="#000" stroke-width="1">
+    <line x1="70" x2="290" y1="60"  y2="60"  />
+    <line x1="70" x2="290" y1="88"  y2="88"  />
+    <line x1="70" x2="290" y1="116" y2="116" />
+    <line x1="70" x2="290" y1="144" y2="144" />
+    <line x1="70" x2="290" y1="172" y2="172" />
+    <line x1="70" x2="290" y1="200" y2="200" />
+  </g>
+
+  <!-- Fret lines (same width as strings now) -->
+  <g stroke="#000" stroke-width="1">
+    <line x1="90"  x2="90"  y1="60" y2="200" />
+    <line x1="134" x2="134" y1="60" y2="200" />
+    <line x1="178" x2="178" y1="60" y2="200" />
+    <line x1="222" x2="222" y1="60" y2="200" />
+    <line x1="266" x2="266" y1="60" y2="200" />
+  </g>
+
+  <!-- Fret numbers -->
+  <text x="112" y="236" font-family="SF Pro" font-size="10" text-anchor="middle" fill="#000">5</text>
+  <text x="156" y="236" font-family="SF Pro" font-size="10" text-anchor="middle" fill="#000">6</text>
+  <text x="200" y="236" font-family="SF Pro" font-size="10" text-anchor="middle" fill="#000">7</text>
+  <text x="244" y="236" font-family="SF Pro" font-size="10" text-anchor="middle" fill="#000">8</text>
+
+  <!-- Scale dots -->
+  <g fill="#0A84FF">
+    <circle cx="244" cy="60"  r="7" />
+    <circle cx="112" cy="88"  r="7" />
+    <circle cx="244" cy="88"  r="7" />
+    <circle cx="112" cy="116" r="7" />
+    <circle cx="200" cy="116" r="7" />
+    <circle cx="112" cy="144" r="7" />
+    <circle cx="112" cy="172" r="7" />
+    <circle cx="200" cy="172" r="7" />
+    <circle cx="244" cy="200" r="7" />
+  </g>
+
+  <!-- Root notes -->
+  <circle cx="112" cy="60"  r="8" fill="white" stroke="#0A84FF" stroke-width="2"/>
+  <circle cx="200" cy="144" r="8" fill="white" stroke="#0A84FF" stroke-width="2"/>
+  <circle cx="112" cy="200" r="8" fill="white" stroke="#0A84FF" stroke-width="2"/>
+
+</svg>

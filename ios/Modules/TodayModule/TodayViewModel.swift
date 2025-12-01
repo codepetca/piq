@@ -35,6 +35,9 @@ final class TodayViewModel {
         }
     }
 
+    /// Whether a session was just completed and we should show the completion state.
+    private(set) var sessionJustCompleted: Bool = false
+
     // MARK: - Initialization
 
     init(sre: SpacedRepetitionEngine, engine: PracticeEngine) {
@@ -67,5 +70,20 @@ final class TodayViewModel {
     /// Replace the displayed blocks (used for manual reordering/removal in UI).
     func setTodayBlocks(_ blocks: [PracticeBlock]) {
         todayBlocks = blocks
+    }
+
+    // MARK: - Post-Session Completion
+
+    /// Signal that a session was just completed.
+    /// Shows the "All done today!" state.
+    func markSessionCompleted() {
+        sessionJustCompleted = true
+    }
+
+    /// Generate a new session and clear completion state.
+    /// Called when user taps the sparkles button after completing a session.
+    func generateNewSession() {
+        sessionJustCompleted = false
+        refreshBlocks()
     }
 }

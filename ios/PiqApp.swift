@@ -8,6 +8,7 @@ struct PiqApp: App {
     @State private var metronomeService = MetronomeService()
     @State private var hapticService = HapticService()
     @State private var settingsViewModel: SettingsViewModel?
+    @State private var todayViewModel: TodayViewModel?
     @State private var referenceService = PracticeReferenceService()
 
     private let storage = PracticeStorage()
@@ -21,15 +22,20 @@ struct PiqApp: App {
                 .environment(metronomeService)
                 .environment(hapticService)
                 .environment(settingsViewModel ?? SettingsViewModel())
+                .environment(todayViewModel ?? TodayViewModel(sre: spacedRepetitionEngine, engine: practiceEngine))
                 .environment(referenceService)
                 .onAppear {
                     loadInitialData()
                     applyUserPreferences()
                     setupSessionCompletionHandler()
-                    // Initialize settings with dependencies
+                    // Initialize settings and today view models with dependencies
                     settingsViewModel = SettingsViewModel(
                         historyViewModel: historyViewModel,
                         sre: spacedRepetitionEngine
+                    )
+                    todayViewModel = TodayViewModel(
+                        sre: spacedRepetitionEngine,
+                        engine: practiceEngine
                     )
                 }
         }

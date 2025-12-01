@@ -81,6 +81,15 @@ final class PracticeEngine {
 
     // MARK: - Session Management
 
+    /// Reset the engine to idle state after session completion.
+    /// Clears session, timer state, and pause flags.
+    func resetToIdle() {
+        state = .idle
+        session = nil
+        isPaused = false
+        sessionSaved = false
+    }
+
     /// Start a new practice session with default blocks.
     func startSession() {
         sessionSaved = false
