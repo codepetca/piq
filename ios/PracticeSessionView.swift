@@ -7,6 +7,7 @@ struct PracticeSessionView: View {
     @Environment(HapticService.self) private var haptics
     @Environment(SettingsViewModel.self) private var settings
     @Environment(PracticeReferenceService.self) private var referenceService
+    @Environment(TodayViewModel.self) private var todayViewModel
     @Environment(\.dismiss) private var dismiss
 
     @State private var showingInstructionSheet = false
@@ -520,6 +521,12 @@ struct PracticeSessionView: View {
 
                     // Session persistence is handled automatically by PracticeEngine.onSessionFinished
                     // which saves to history, applies SRE feedback, and persists items.
+
+                    // Signal completion to TodayViewModel to show "All done today!" state
+                    todayViewModel.markSessionCompleted()
+
+                    // Reset engine to idle state
+                    engine.resetToIdle()
 
                     // Stop metronome and haptics when leaving
                     metronome.stop()
