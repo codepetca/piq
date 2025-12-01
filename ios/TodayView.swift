@@ -58,6 +58,7 @@ struct TodayView: View {
             emptyStateView
         } else {
             blockList
+                .transition(.opacity.combined(with: .move(edge: .bottom)))
         }
     }
 
@@ -76,10 +77,15 @@ struct TodayView: View {
 
     private var blockList: some View {
         List {
-            ForEach(todayBlocks) { block in
+            ForEach(Array(todayBlocks.enumerated()), id: \.element.id) { index, block in
                 BlockRow(block: block)
                     .listRowSeparator(.hidden)
                     .listRowInsets(.init(top: 4, leading: 16, bottom: 4, trailing: 16))
+                    .transition(.asymmetric(
+                        insertion: .opacity.combined(with: .move(edge: .trailing)),
+                        removal: .opacity
+                    ))
+                    .animation(.spring(response: 0.4, dampingFraction: 0.8).delay(Double(index) * 0.05), value: todayBlocks)
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button(role: .destructive) {
                             removeBlock(block)
@@ -217,8 +223,10 @@ struct TodayView: View {
     }
 
     private func generateNewSession() {
-        viewModel.generateNewSession()
-        blocks = viewModel.todayBlocks
+        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+            viewModel.generateNewSession()
+            blocks = viewModel.todayBlocks
+        }
     }
 
     private func removeBlock(_ block: PracticeBlock) {
