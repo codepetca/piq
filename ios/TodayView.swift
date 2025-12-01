@@ -119,17 +119,25 @@ struct TodayView: View {
                 }
             } else if viewModel.sessionJustCompleted {
                 Button(action: generateNewSession) {
-                    Image(systemName: "sparkles")
-                        .font(.system(size: 30, weight: .semibold))
-                        .foregroundColor(.white)
-                        .frame(width: 76, height: 76)
-                        .background(
-                            Circle()
-                                .fill(Color.accentColor)
-                        )
-                        .shadow(color: Color.black.opacity(0.16), radius: 8, x: 0, y: 4)
-                        .offset(y: -4)
-                        .modifier(ShimmerEffect())
+                    ZStack {
+                        // Pulsing glow ring
+                        Circle()
+                            .fill(Color.accentColor.opacity(0.3))
+                            .frame(width: 76, height: 76)
+                            .modifier(PulseEffect())
+
+                        // Main button
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 30, weight: .semibold))
+                            .foregroundColor(.white)
+                            .frame(width: 76, height: 76)
+                            .background(
+                                Circle()
+                                    .fill(Color.accentColor)
+                            )
+                    }
+                    .shadow(color: Color.black.opacity(0.16), radius: 8, x: 0, y: 4)
+                    .offset(y: -4)
                 }
             } else {
                 Button(action: startSession) {
@@ -327,17 +335,18 @@ private struct TodayPreviewContainer: View {
     }
 }
 
-// MARK: - Shimmer Effect
+// MARK: - Pulse Effect
 
-struct ShimmerEffect: ViewModifier {
-    @State private var phase: CGFloat = 0
+struct PulseEffect: ViewModifier {
+    @State private var isPulsing = false
 
     func body(content: Content) -> some View {
         content
-            .opacity(0.8 + 0.2 * CGFloat(sin(phase)))
+            .scaleEffect(isPulsing ? 1.3 : 1.0)
+            .opacity(isPulsing ? 0.0 : 1.0)
             .onAppear {
-                withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
-                    phase = .pi * 2
+                withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: false)) {
+                    isPulsing = true
                 }
             }
     }
