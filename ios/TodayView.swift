@@ -69,17 +69,9 @@ struct TodayView: View {
                 .font(.title)
                 .fontWeight(.medium)
 
-            Text("Tap to continue")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .contentShape(Rectangle())
-        .onTapGesture {
-            generateNewSession()
-        }
     }
 
     private var blockList: some View {
@@ -112,26 +104,32 @@ struct TodayView: View {
 
     @ViewBuilder
     private var bottomActionBar: some View {
-        // Start or resume session button (fixed at bottom)
-        // Hidden during completion state since entire screen is tappable
-        if !viewModel.sessionJustCompleted {
-            ZStack {
-                if viewModel.hasActiveSession {
-                    Button(action: resumeSession) {
-                        Text("Resume")
-                            .font(.headline)
-                            .foregroundColor(.white)
+        // Start, resume, or generate new session button (fixed at bottom)
+        ZStack {
+            if viewModel.hasActiveSession {
+                Button(action: resumeSession) {
+                    Text("Resume")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(width: 76, height: 76)
+                        .background(
+                            Circle()
+                                .fill(Color.accentColor)
+                        )
+                        .shadow(color: Color.black.opacity(0.12), radius: 8, x: 0, y: 4)
+                        .offset(y: -4)
+                }
+            } else if viewModel.sessionJustCompleted {
+                Button(action: generateNewSession) {
+                    ZStack {
+                        // Pulsing glow ring
+                        Circle()
+                            .fill(Color.accentColor.opacity(0.3))
                             .frame(width: 76, height: 76)
-                            .background(
-                                Circle()
-                                    .fill(Color.accentColor)
-                            )
-                            .shadow(color: Color.black.opacity(0.12), radius: 8, x: 0, y: 4)
-                            .offset(y: -4)
-                    }
-                } else {
-                    Button(action: startSession) {
-                        Image(systemName: "play.fill")
+                            .modifier(PulseEffect())
+
+                        // Main button
+                        Image(systemName: "sparkles")
                             .font(.system(size: 30, weight: .semibold))
                             .foregroundColor(.white)
                             .frame(width: 76, height: 76)
@@ -139,11 +137,27 @@ struct TodayView: View {
                                 Circle()
                                     .fill(Color.accentColor)
                             )
-                            .shadow(color: Color.black.opacity(0.16), radius: 8, x: 0, y: 4)
-                            .offset(y: -4)
                     }
+                    .shadow(color: Color.black.opacity(0.16), radius: 8, x: 0, y: 4)
+                    .offset(y: -4)
                 }
+            } else {
+                Button(action: startSession) {
+                    Image(systemName: "play.fill")
+                        .font(.system(size: 30, weight: .semibold))
+                        .foregroundColor(.white)
+                        .frame(width: 76, height: 76)
+                        .background(
+                            Circle()
+                                .fill(Color.accentColor)
+                        )
+                        .shadow(color: Color.black.opacity(0.16), radius: 8, x: 0, y: 4)
+                        .offset(y: -4)
+                }
+            }
 
+            // Hide alarm badge in completion state
+            if !viewModel.sessionJustCompleted {
                 HStack {
                     Spacer()
                     AlarmBadgeView(minutes: totalTargetMinutes, size: 48, tint: .primary)
@@ -151,11 +165,11 @@ struct TodayView: View {
                 .padding(.leading, 16)
                 .padding(.trailing, 36)
             }
-            .frame(maxWidth: .infinity, minHeight: 80)
-            .padding(.vertical, 6)
-            .padding(.bottom, 4)
-            .background(.regularMaterial)
         }
+        .frame(maxWidth: .infinity, minHeight: 80)
+        .padding(.vertical, 6)
+        .padding(.bottom, 4)
+        .background(.regularMaterial)
     }
 
     // MARK: - Empty State
@@ -322,6 +336,23 @@ private struct TodayPreviewContainer: View {
                 .foregroundStyle(Color.accentColor)
         }
         .padding()
+    }
+}
+
+// MARK: - Pulse Effect
+
+struct PulseEffect: ViewModifier {
+    @State private var isPulsing = false
+
+    func body(content: Content) -> some View {
+        content
+            .scaleEffect(isPulsing ? 1.3 : 1.0)
+            .opacity(isPulsing ? 0.0 : 1.0)
+            .onAppear {
+                withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: false)) {
+                    isPulsing = true
+                }
+            }
     }
 }
 
