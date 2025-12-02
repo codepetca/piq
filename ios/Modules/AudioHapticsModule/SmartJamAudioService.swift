@@ -56,9 +56,10 @@ final class SmartJamAudioService {
         // Support names with or without extension. If missing, we silently skip playback.
         let assetName = config.assetName as NSString
         let name = assetName.deletingPathExtension
-        let ext = assetName.pathExtension.isEmpty ? nil : assetName.pathExtension
+        let ext = assetName.pathExtension
+        let extArgument: String? = ext.isEmpty ? nil : ext
 
-        guard let url = Bundle.main.url(forResource: name, withExtension: ext.isEmpty ? nil : ext) else {
+        guard let url = Bundle.main.url(forResource: name, withExtension: extArgument) else {
             print("SmartJamAudioService: missing asset \(config.assetName)")
             return nil
         }
