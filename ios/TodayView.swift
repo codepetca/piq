@@ -258,7 +258,14 @@ struct BlockRow: View {
 
             Spacer()
 
-            AlarmBadgeView(minutes: block.targetMinutes, size: 32, tint: .primary)
+            HStack(spacing: 8) {
+                if block.smartJamConfig != nil {
+                    Image(systemName: "music.note")
+                        .foregroundStyle(.tint)
+                        .accessibilityLabel("SmartJam backing")
+                }
+                AlarmBadgeView(minutes: block.targetMinutes, size: 32, tint: .primary)
+            }
         }
         .padding(.vertical, 12)
         .padding(.horizontal, 14)
