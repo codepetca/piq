@@ -117,7 +117,8 @@ final class SpacedRepetitionEngine {
     /// Returns nil if no item of that kind exists.
     func generateBlock(
         for blockKind: PracticeBlockKind,
-        now: Date = Date()
+        now: Date = Date(),
+        preferredStyles: [MusicStyle] = []
     ) -> PracticeBlock? {
         // Prioritize the earliest due item for the requested kind.
         let candidate = prioritizedItems(asOf: now).first { $0.blockKind == blockKind }
@@ -134,6 +135,15 @@ final class SpacedRepetitionEngine {
         let suggestedBPM: Int? = blockKind.defaultMetronomeOn
             ? TempoEngine.suggestedBPM(for: item)
             : nil
+        let suggestedJamBPM = TempoEngine.suggestedBPM(for: item)
+        let jamConfig = SmartJamCategoryMapper.category(for: item.blockKind).flatMap {
+            smartJamService.makeConfig(
+                targetKey: item.key,
+                targetBPM: suggestedJamBPM,
+                preferredStyles: preferredStyles,
+                category: $0
+            )
+        }
 
         return PracticeBlock(
             kind: item.blockKind,
@@ -143,6 +153,7 @@ final class SpacedRepetitionEngine {
             key: item.key,
             practiceItemID: item.id,
             referenceID: item.referenceID,
+            smartJamConfig: jamConfig,
             instructions: instructions,
             focusCue: focusCue,
             startingBPM: suggestedBPM

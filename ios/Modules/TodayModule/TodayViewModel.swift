@@ -103,7 +103,8 @@ final class TodayViewModel {
     /// Append a new block of the requested kind to today's list (used by inline action sheet).
     func appendBlock(kind: PracticeBlockKind) {
         guard !hasActiveSession else { return }
-        guard let block = sre.generateBlock(for: kind) else { return }
+        let preferences = preferencesProvider()
+        guard let block = sre.generateBlock(for: kind, preferredStyles: preferences.styles) else { return }
         sessionJustCompleted = false
         todayBlocks.append(block)
     }
