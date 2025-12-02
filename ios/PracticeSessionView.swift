@@ -5,6 +5,7 @@ struct PracticeSessionView: View {
     @Environment(SpacedRepetitionEngine.self) private var sre
     @Environment(MetronomeService.self) private var metronome
     @Environment(HapticService.self) private var haptics
+    @Environment(SmartJamAudioService.self) private var smartJamAudio
     @Environment(SettingsViewModel.self) private var settings
     @Environment(PracticeReferenceService.self) private var referenceService
     @Environment(TodayViewModel.self) private var todayViewModel
@@ -44,10 +45,14 @@ struct PracticeSessionView: View {
             haptics.isEnabled = settings.hapticFeedbackEnabled
             // Set block-specific tempo and start metronome for first block if needed
             handleMetronomeForBlock(at: engine.currentBlockIndex)
+            handleJam(for: engine.state)
         }
         .onChange(of: engine.currentBlockIndex) { _, newIndex in
             // Auto-start/stop metronome and set tempo based on block
             handleMetronomeForBlock(at: newIndex)
+        }
+        .onChange(of: engine.state) { _, newState in
+            handleJam(for: newState)
         }
         .sheet(isPresented: $showingInteractionTips) {
             InteractionTipsSheet {
@@ -81,6 +86,24 @@ struct PracticeSessionView: View {
             }
         } else {
             metronome.stop()
+        }
+    }
+
+    // MARK: - SmartJam Control
+
+    private func handleJam(for state: PracticeEngineState) {
+        switch state {
+        case .previewBlock(let index, _), .inBlock(let index, _):
+            guard let block = block(at: index), let config = block.smartJamConfig else {
+                smartJamAudio.stopJam()
+                return
+            }
+            smartJamAudio.startJam(for: config)
+            if engine.isPaused {
+                smartJamAudio.pauseJam()
+            }
+        default:
+            smartJamAudio.stopJam()
         }
     }
 
@@ -531,6 +554,7 @@ struct PracticeSessionView: View {
                     // Stop metronome and haptics when leaving
                     metronome.stop()
                     haptics.isEnabled = false
+                    smartJamAudio.stopJam()
 
                     dismiss()
                 }
@@ -553,8 +577,10 @@ struct PracticeSessionView: View {
     private func togglePause() {
         if engine.isPaused {
             engine.resume()
+            smartJamAudio.resumeJam()
         } else {
             engine.pause()
+            smartJamAudio.pauseJam()
         }
     }
 }
@@ -568,6 +594,7 @@ struct PracticeSessionView: View {
     }()
     let metronome = MetronomeService()
     let haptics = HapticService()
+    let smartJamAudio = SmartJamAudioService()
     let settings = SettingsViewModel()
     let referenceService = PracticeReferenceService()
 
@@ -576,6 +603,7 @@ struct PracticeSessionView: View {
         .environment(sre)
         .environment(metronome)
         .environment(haptics)
+        .environment(smartJamAudio)
         .environment(settings)
         .environment(referenceService)
 }

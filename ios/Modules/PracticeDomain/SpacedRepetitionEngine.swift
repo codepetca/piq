@@ -4,6 +4,7 @@ import Observation
 @Observable
 final class SpacedRepetitionEngine {
     private(set) var items: [PracticeItem] = []
+    private let smartJamService = SmartJamService()
 
     // MARK: - Item Management
 
@@ -118,7 +119,8 @@ final class SpacedRepetitionEngine {
         now: Date = Date(),
         targetMinutes: Int = 35,
         minBlocks: Int = 6,
-        maxBlocks: Int = 8
+        maxBlocks: Int = 8,
+        preferredStyles: [MusicStyle] = []
     ) -> PracticeSession {
 
         // 1. Get all available items (SRS prioritized)
@@ -169,6 +171,15 @@ final class SpacedRepetitionEngine {
             let suggestedBPM: Int? = item.blockKind.defaultMetronomeOn
                 ? TempoEngine.suggestedBPM(for: item)
                 : nil
+            let suggestedJamBPM = TempoEngine.suggestedBPM(for: item)
+            let jamConfig = SmartJamCategoryMapper.category(for: item.blockKind).flatMap {
+                smartJamService.makeConfig(
+                    targetKey: item.key,
+                    targetBPM: suggestedJamBPM,
+                    preferredStyles: preferredStyles,
+                    category: $0
+                )
+            }
 
             let block = PracticeBlock(
                 kind: item.blockKind,
@@ -178,6 +189,7 @@ final class SpacedRepetitionEngine {
                 key: item.key,
                 practiceItemID: item.id,
                 referenceID: item.referenceID,
+                smartJamConfig: jamConfig,
                 instructions: instructions,
                 focusCue: focusCue,
                 startingBPM: suggestedBPM

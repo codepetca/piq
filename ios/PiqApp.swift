@@ -7,6 +7,7 @@ struct PiqApp: App {
     @State private var historyViewModel = HistoryViewModel()
     @State private var metronomeService = MetronomeService()
     @State private var hapticService = HapticService()
+    @State private var smartJamAudioService = SmartJamAudioService()
     @State private var settingsViewModel: SettingsViewModel?
     @State private var todayViewModel: TodayViewModel?
     @State private var referenceService = PracticeReferenceService()
@@ -21,8 +22,13 @@ struct PiqApp: App {
                 .environment(historyViewModel)
                 .environment(metronomeService)
                 .environment(hapticService)
+                .environment(smartJamAudioService)
                 .environment(settingsViewModel ?? SettingsViewModel())
-                .environment(todayViewModel ?? TodayViewModel(sre: spacedRepetitionEngine, engine: practiceEngine))
+                .environment(todayViewModel ?? TodayViewModel(
+                    sre: spacedRepetitionEngine,
+                    engine: practiceEngine,
+                    preferencesProvider: { storage.loadPreferences() }
+                ))
                 .environment(referenceService)
                 .onAppear {
                     loadInitialData()
@@ -35,7 +41,8 @@ struct PiqApp: App {
                     )
                     todayViewModel = TodayViewModel(
                         sre: spacedRepetitionEngine,
-                        engine: practiceEngine
+                        engine: practiceEngine,
+                        preferencesProvider: { storage.loadPreferences() }
                     )
                 }
         }

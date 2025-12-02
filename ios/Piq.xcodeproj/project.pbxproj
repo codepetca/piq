@@ -50,6 +50,9 @@
 		A1000040001 /* StylesStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000040000 /* StylesStepView.swift */; };
 		A1000041001 /* CuesStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000041000 /* CuesStepView.swift */; };
 		A1000042001 /* OnboardingSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000042000 /* OnboardingSummaryView.swift */; };
+		A1000066001 /* SmartJamModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000066000 /* SmartJamModels.swift */; };
+		A1000067001 /* SmartJamService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000067000 /* SmartJamService.swift */; };
+		A1000068001 /* SmartJamAudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000068000 /* SmartJamAudioService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -97,6 +100,9 @@
 		A1000040000 /* StylesStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StylesStepView.swift; sourceTree = "<group>"; };
 		A1000041000 /* CuesStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CuesStepView.swift; sourceTree = "<group>"; };
 		A1000042000 /* OnboardingSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingSummaryView.swift; sourceTree = "<group>"; };
+		A1000066000 /* SmartJamModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartJamModels.swift; sourceTree = "<group>"; };
+		A1000067000 /* SmartJamService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartJamService.swift; sourceTree = "<group>"; };
+		A1000068000 /* SmartJamAudioService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartJamAudioService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,6 +150,7 @@
 				A10000GR008 /* SettingsModule */,
 				A10000GR010 /* ReferenceModule */,
 				A10000GR011 /* OnboardingModule */,
+				A10000GR012 /* SmartJamModule */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -204,6 +211,7 @@
 			children = (
 				A1000022000 /* MetronomeService.swift */,
 				A1000024000 /* HapticService.swift */,
+				A1000068000 /* SmartJamAudioService.swift */,
 			);
 			path = AudioHapticsModule;
 			sourceTree = "<group>";
@@ -246,6 +254,15 @@
 				A1000042000 /* OnboardingSummaryView.swift */,
 			);
 			path = OnboardingModule;
+			sourceTree = "<group>";
+		};
+		A10000GR012 /* SmartJamModule */ = {
+			isa = PBXGroup;
+			children = (
+				A1000066000 /* SmartJamModels.swift */,
+				A1000067000 /* SmartJamService.swift */,
+			);
+			path = SmartJamModule;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -359,6 +376,9 @@
 				A1000040001 /* StylesStepView.swift in Sources */,
 				A1000041001 /* CuesStepView.swift in Sources */,
 				A1000042001 /* OnboardingSummaryView.swift in Sources */,
+				A1000066001 /* SmartJamModels.swift in Sources */,
+				A1000067001 /* SmartJamService.swift in Sources */,
+				A1000068001 /* SmartJamAudioService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

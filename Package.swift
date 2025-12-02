@@ -40,6 +40,8 @@ let package = Package(
                 "PracticeDomain/SpacedRepetitionEngine.swift",
                 "PracticeDomain/TempoEngine.swift",
                 "PracticeDomain/UserPreferences.swift",
+                "SmartJamModule/SmartJamModels.swift",
+                "SmartJamModule/SmartJamService.swift",
                 "TodayModule/TodayViewModel.swift",
                 "OnboardingModule/OnboardingViewModel.swift",
                 "OnboardingModule/OnboardingView.swift",
