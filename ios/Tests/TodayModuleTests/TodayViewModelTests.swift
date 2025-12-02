@@ -155,6 +155,49 @@ final class TodayViewModelTests: XCTestCase {
         XCTAssertFalse(viewModel.resumeSession(), "Should return false when there's no active session")
     }
 
+    // MARK: - Quick Action Helpers
+
+    func testRegenerateTodayBlocksClearsCompletionState() {
+        let sre = SpacedRepetitionEngine()
+        sre.loadSeedCatalog()
+        let engine = PracticeEngine()
+        let viewModel = TodayViewModel(sre: sre, engine: engine)
+
+        viewModel.markSessionCompleted()
+        viewModel.regenerateTodayBlocks()
+
+        XCTAssertFalse(viewModel.sessionJustCompleted, "Regenerate should clear completion flag")
+        XCTAssertFalse(viewModel.todayBlocks.isEmpty, "Regenerate should refresh blocks")
+    }
+
+    func testAppendBlockAddsSoloWhenIdle() {
+        let sre = SpacedRepetitionEngine()
+        sre.loadSeedCatalog()
+        let engine = PracticeEngine()
+        let viewModel = TodayViewModel(sre: sre, engine: engine)
+
+        viewModel.appendBlock(kind: .solo)
+
+        XCTAssertEqual(viewModel.todayBlocks.count, 1)
+        XCTAssertEqual(viewModel.todayBlocks.first?.kind, .solo)
+        XCTAssertNotNil(viewModel.todayBlocks.first?.practiceItemID)
+    }
+
+    func testAppendBlockNoOpWhenActiveSession() {
+        let sre = SpacedRepetitionEngine()
+        sre.loadSeedCatalog()
+        let engine = PracticeEngine()
+        let viewModel = TodayViewModel(sre: sre, engine: engine)
+
+        viewModel.refreshBlocks()
+        let initialBlocks = viewModel.todayBlocks
+
+        engine.startSession(from: sre)
+        viewModel.appendBlock(kind: .solo)
+
+        XCTAssertEqual(viewModel.todayBlocks, initialBlocks, "Should not mutate blocks while a session is active")
+    }
+
     // MARK: - Integration Tests
 
     func testFullWorkflow_RefreshStartAndDetectActiveSession() {

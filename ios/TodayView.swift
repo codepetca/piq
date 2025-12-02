@@ -16,6 +16,7 @@ struct TodayView: View {
     @State private var showingSession = false
     @State private var blocks: [PracticeBlock] = []
     @State private var editMode: EditMode = .inactive
+    @State private var showingQuickActions = false
     var onMenuTap: (() -> Void)? = nil
 
     var body: some View {
@@ -104,72 +105,32 @@ struct TodayView: View {
 
     @ViewBuilder
     private var bottomActionBar: some View {
-        // Start, resume, or generate new session button (fixed at bottom)
-        ZStack {
-            if viewModel.hasActiveSession {
-                Button(action: resumeSession) {
-                    Text("Resume")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(width: 76, height: 76)
-                        .background(
-                            Circle()
-                                .fill(Color.accentColor)
-                        )
-                        .shadow(color: Color.black.opacity(0.12), radius: 8, x: 0, y: 4)
-                        .offset(y: -4)
-                }
-            } else if viewModel.sessionJustCompleted {
-                Button(action: generateNewSession) {
-                    ZStack {
-                        // Pulsing glow ring
-                        Circle()
-                            .fill(Color.accentColor.opacity(0.3))
-                            .frame(width: 76, height: 76)
-                            .modifier(PulseEffect())
-
-                        // Main button
-                        Image(systemName: "sparkles")
-                            .font(.system(size: 30, weight: .semibold))
-                            .foregroundColor(.white)
-                            .frame(width: 76, height: 76)
-                            .background(
-                                Circle()
-                                    .fill(Color.accentColor)
-                            )
-                    }
-                    .shadow(color: Color.black.opacity(0.16), radius: 8, x: 0, y: 4)
-                    .offset(y: -4)
-                }
-            } else {
-                Button(action: startSession) {
-                    Image(systemName: "play.fill")
-                        .font(.system(size: 30, weight: .semibold))
-                        .foregroundColor(.white)
-                        .frame(width: 76, height: 76)
-                        .background(
-                            Circle()
-                                .fill(Color.accentColor)
-                        )
-                        .shadow(color: Color.black.opacity(0.16), radius: 8, x: 0, y: 4)
-                        .offset(y: -4)
-                }
-            }
-
-            // Hide alarm badge in completion state
+        HStack(alignment: .center, spacing: 16) {
+            quickActionButton
+            Spacer()
+            mainActionButton
+            Spacer()
             if !viewModel.sessionJustCompleted {
-                HStack {
-                    Spacer()
-                    AlarmBadgeView(minutes: totalTargetMinutes, size: 48, tint: .primary)
-                }
-                .padding(.leading, 16)
-                .padding(.trailing, 36)
+                AlarmBadgeView(minutes: totalTargetMinutes, size: 48, tint: .primary)
             }
         }
         .frame(maxWidth: .infinity, minHeight: 80)
+        .padding(.horizontal, 20)
         .padding(.vertical, 6)
         .padding(.bottom, 4)
         .background(.regularMaterial)
+        .confirmationDialog("Quick actions", isPresented: $showingQuickActions) {
+            Button("Regenerate today") {
+                regenerateTodayBlocks()
+            }
+            Button("Add Solo block") {
+                addSoloBlock()
+            }
+            Button("Add Technique block") {
+                addTechniqueBlock()
+            }
+            Button("Cancel", role: .cancel) {}
+        }
     }
 
     // MARK: - Empty State
@@ -205,6 +166,77 @@ struct TodayView: View {
         todayBlocks.reduce(0) { $0 + $1.targetMinutes }
     }
 
+    private var quickActionButton: some View {
+        Button {
+            showingQuickActions = true
+        } label: {
+            Image(systemName: "plus")
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundColor(.white)
+                .frame(width: 44, height: 44)
+                .background(
+                    Circle()
+                        .fill(Color.accentColor)
+                )
+                .shadow(color: Color.black.opacity(0.1), radius: 6, x: 0, y: 3)
+        }
+        .disabled(viewModel.hasActiveSession)
+        .opacity(viewModel.hasActiveSession ? 0.35 : 1.0)
+    }
+
+    @ViewBuilder
+    private var mainActionButton: some View {
+        if viewModel.hasActiveSession {
+            Button(action: resumeSession) {
+                Text("Resume")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .frame(width: 76, height: 76)
+                    .background(
+                        Circle()
+                            .fill(Color.accentColor)
+                    )
+                    .shadow(color: Color.black.opacity(0.12), radius: 8, x: 0, y: 4)
+                    .offset(y: -4)
+            }
+        } else if viewModel.sessionJustCompleted {
+            Button(action: generateNewSession) {
+                ZStack {
+                    // Pulsing glow ring
+                    Circle()
+                        .fill(Color.accentColor.opacity(0.3))
+                        .frame(width: 76, height: 76)
+                        .modifier(PulseEffect())
+
+                    // Main button
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 30, weight: .semibold))
+                        .foregroundColor(.white)
+                        .frame(width: 76, height: 76)
+                        .background(
+                            Circle()
+                                .fill(Color.accentColor)
+                        )
+                }
+                .shadow(color: Color.black.opacity(0.16), radius: 8, x: 0, y: 4)
+                .offset(y: -4)
+            }
+        } else {
+            Button(action: startSession) {
+                Image(systemName: "play.fill")
+                    .font(.system(size: 30, weight: .semibold))
+                    .foregroundColor(.white)
+                    .frame(width: 76, height: 76)
+                    .background(
+                        Circle()
+                            .fill(Color.accentColor)
+                    )
+                    .shadow(color: Color.black.opacity(0.16), radius: 8, x: 0, y: 4)
+                    .offset(y: -4)
+            }
+        }
+    }
+
     // MARK: - Actions
 
     private func startSession() {
@@ -221,6 +253,27 @@ struct TodayView: View {
     private func generateNewSession() {
         withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
             viewModel.generateNewSession()
+            blocks = viewModel.todayBlocks
+        }
+    }
+
+    private func regenerateTodayBlocks() {
+        withAnimation(.easeInOut(duration: 0.25)) {
+            viewModel.regenerateTodayBlocks()
+            blocks = viewModel.todayBlocks
+        }
+    }
+
+    private func addSoloBlock() {
+        withAnimation(.easeInOut(duration: 0.25)) {
+            viewModel.appendBlock(kind: .solo)
+            blocks = viewModel.todayBlocks
+        }
+    }
+
+    private func addTechniqueBlock() {
+        withAnimation(.easeInOut(duration: 0.25)) {
+            viewModel.appendBlock(kind: .techniqueOrTheory)
             blocks = viewModel.todayBlocks
         }
     }
