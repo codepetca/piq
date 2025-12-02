@@ -112,6 +112,42 @@ final class SpacedRepetitionEngine {
         items[index] = item
     }
 
+    /// Generate a single block for the requested block kind using the next-due item.
+    /// Returns nil if no item of that kind exists.
+    func generateBlock(
+        for blockKind: PracticeBlockKind,
+        now: Date = Date()
+    ) -> PracticeBlock? {
+        // Prioritize the earliest due item for the requested kind.
+        let candidate = prioritizedItems(asOf: now).first { $0.blockKind == blockKind }
+        guard let item = candidate else { return nil }
+
+        let (instructions, focusCue, updatedSRS) = item.selectInstructionsForDisplay()
+
+        if let index = items.firstIndex(where: { $0.id == item.id }) {
+            var updatedItem = items[index]
+            updatedItem.srs = updatedSRS
+            items[index] = updatedItem
+        }
+
+        let suggestedBPM: Int? = blockKind.defaultMetronomeOn
+            ? TempoEngine.suggestedBPM(for: item)
+            : nil
+
+        return PracticeBlock(
+            kind: item.blockKind,
+            title: item.title,
+            detail: item.detail,
+            targetMinutes: item.targetMinutes,
+            key: item.key,
+            practiceItemID: item.id,
+            referenceID: item.referenceID,
+            instructions: instructions,
+            focusCue: focusCue,
+            startingBPM: suggestedBPM
+        )
+    }
+
     // MARK: - Session Generation
 
     func generateTodaySession(

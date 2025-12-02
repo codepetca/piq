@@ -83,7 +83,21 @@ final class TodayViewModel {
     /// Generate a new session and clear completion state.
     /// Called when user taps the sparkles button after completing a session.
     func generateNewSession() {
+        regenerateTodayBlocks()
+    }
+
+    /// Regenerate today's blocks (used by inline action sheet).
+    func regenerateTodayBlocks() {
+        guard !hasActiveSession else { return }
         sessionJustCompleted = false
         refreshBlocks()
+    }
+
+    /// Append a new block of the requested kind to today's list (used by inline action sheet).
+    func appendBlock(kind: PracticeBlockKind) {
+        guard !hasActiveSession else { return }
+        guard let block = sre.generateBlock(for: kind) else { return }
+        sessionJustCompleted = false
+        todayBlocks.append(block)
     }
 }

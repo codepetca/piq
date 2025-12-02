@@ -23,6 +23,50 @@ final class SpacedRepetitionEngineTests: XCTestCase {
         XCTAssertEqual(engine.dueItems(asOf: Date()).first?.id, past.id)
     }
 
+    func testGenerateBlockUsesNextDueItemOfRequestedKind() {
+        let now = Date(timeIntervalSince1970: 10_000)
+        let late = PracticeItem(
+            catalogID: "tech_late",
+            category: .technique,
+            title: "Later",
+            srs: SRSState(stability: 2.0, nextDue: now.addingTimeInterval(1 * 86_400))
+        )
+        let early = PracticeItem(
+            catalogID: "tech_early",
+            category: .technique,
+            title: "Earlier",
+            srs: SRSState(stability: 1.0, nextDue: now.addingTimeInterval(-1 * 86_400)),
+            coreInstructions: ["Core"],
+            bonusTips: ["Bonus"],
+            focusCues: ["Cue"]
+        )
+
+        let engine = SpacedRepetitionEngine()
+        engine.addItem(late)
+        engine.addItem(early)
+
+        let block = engine.generateBlock(for: .techniqueOrTheory, now: now)
+
+        XCTAssertEqual(block?.practiceItemID, early.id)
+        XCTAssertEqual(block?.kind, .techniqueOrTheory)
+        XCTAssertEqual(block?.title, early.title)
+        XCTAssertEqual(block?.instructions.count, 2, "Should include core instruction and rotating bonus tip")
+        XCTAssertEqual(block?.focusCue, "Cue")
+        XCTAssertNotNil(block?.startingBPM, "Technique blocks should include suggested BPM")
+    }
+
+    func testGenerateBlockReturnsNilWhenKindMissing() {
+        let engine = SpacedRepetitionEngine()
+        engine.loadSeedCatalog()
+
+        // Remove all solo-kind items (soloing + musicality) to simulate missing category
+        let soloIDs = engine.items.filter { $0.blockKind == .solo }.map(\.id)
+        soloIDs.forEach { engine.removeItem(withID: $0) }
+
+        let block = engine.generateBlock(for: .solo)
+        XCTAssertNil(block)
+    }
+
     func testFeedbackAdjustsStabilityAndNextDue() {
         let now = Date(timeIntervalSince1970: 1000)
         let engine = SpacedRepetitionEngine()
