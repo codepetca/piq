@@ -8,6 +8,19 @@
 
 /* Begin PBXBuildFile section */
 		6BEA90092EDF584900E26F46 /* sj_blues_solo_90_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA90082EDF584900E26F46 /* sj_blues_solo_90_full.mp3 */; };
+		6BEA90112EDF584900E26F46 /* sj_blues_tech_70_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA90102EDF584900E26F46 /* sj_blues_tech_70_full.mp3 */; };
+		6BEA90162EDF5DCE00E26F46 /* sj_pop_tech_92_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA900D2EDF5DCE00E26F46 /* sj_pop_tech_92_full.mp3 */; };
+		6BEA90172EDF5DCE00E26F46 /* sj_rnb_solo_94_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA900E2EDF5DCE00E26F46 /* sj_rnb_solo_94_full.mp3 */; };
+		6BEA90182EDF5DCE00E26F46 /* sj_rock_solo_120_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA90112EDF5DCE00E26F46 /* sj_rock_solo_120_full.mp3 */; };
+		6BEA90192EDF5DCE00E26F46 /* sj_blues_solo_110_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA900B2EDF5DCE00E26F46 /* sj_blues_solo_110_full.mp3 */; };
+		6BEA901A2EDF5DCE00E26F46 /* sj_rock_solo_100_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA90102EDF5DCE00E26F46 /* sj_rock_solo_100_full.mp3 */; };
+		6BEA901B2EDF5DCE00E26F46 /* sj_rock_tech_80_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA90132EDF5DCE00E26F46 /* sj_rock_tech_80_full.mp3 */; };
+		6BEA901C2EDF5DCE00E26F46 /* sj_worship_solo_72_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA90142EDF5DCE00E26F46 /* sj_worship_solo_72_full.mp3 */; };
+		6BEA901D2EDF5DCE00E26F46 /* sj_rnb_tech_85_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA900F2EDF5DCE00E26F46 /* sj_rnb_tech_85_full.mp3 */; };
+		6BEA901E2EDF5DCE00E26F46 /* sj_pop_solo_95_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA900C2EDF5DCE00E26F46 /* sj_pop_solo_95_full.mp3 */; };
+		6BEA901F2EDF5DCE00E26F46 /* sj_rock_tech_70_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA90122EDF5DCE00E26F46 /* sj_rock_tech_70_full.mp3 */; };
+		6BEA90202EDF5DCE00E26F46 /* sj_worship_tech_68_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA90152EDF5DCE00E26F46 /* sj_worship_tech_68_full.mp3 */; };
+		6BEA90212EDF5DCE00E26F46 /* sj_blues_solo_100_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA900A2EDF5DCE00E26F46 /* sj_blues_solo_100_full.mp3 */; };
 		A1000001001 /* PiqApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001000 /* PiqApp.swift */; };
 		A1000002001 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000002000 /* RootView.swift */; };
 		A1000003001 /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000003000 /* TodayView.swift */; };
@@ -57,6 +70,19 @@
 
 /* Begin PBXFileReference section */
 		6BEA90082EDF584900E26F46 /* sj_blues_solo_90_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_blues_solo_90_full.mp3; path = Resources/SmartJam/sj_blues_solo_90_full.mp3; sourceTree = "<group>"; };
+		6BEA900A2EDF5DCE00E26F46 /* sj_blues_solo_100_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_blues_solo_100_full.mp3; path = Resources/SmartJam/sj_blues_solo_100_full.mp3; sourceTree = "<group>"; };
+		6BEA900B2EDF5DCE00E26F46 /* sj_blues_solo_110_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_blues_solo_110_full.mp3; path = Resources/SmartJam/sj_blues_solo_110_full.mp3; sourceTree = "<group>"; };
+		6BEA900C2EDF5DCE00E26F46 /* sj_pop_solo_95_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_pop_solo_95_full.mp3; path = Resources/SmartJam/sj_pop_solo_95_full.mp3; sourceTree = "<group>"; };
+		6BEA900D2EDF5DCE00E26F46 /* sj_pop_tech_92_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_pop_tech_92_full.mp3; path = Resources/SmartJam/sj_pop_tech_92_full.mp3; sourceTree = "<group>"; };
+		6BEA900E2EDF5DCE00E26F46 /* sj_rnb_solo_94_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_rnb_solo_94_full.mp3; path = Resources/SmartJam/sj_rnb_solo_94_full.mp3; sourceTree = "<group>"; };
+		6BEA900F2EDF5DCE00E26F46 /* sj_rnb_tech_85_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_rnb_tech_85_full.mp3; path = Resources/SmartJam/sj_rnb_tech_85_full.mp3; sourceTree = "<group>"; };
+		6BEA90102EDF584900E26F46 /* sj_blues_tech_70_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_blues_tech_70_full.mp3; path = Resources/SmartJam/sj_blues_tech_70_full.mp3; sourceTree = "<group>"; };
+		6BEA90102EDF5DCE00E26F46 /* sj_rock_solo_100_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_rock_solo_100_full.mp3; path = Resources/SmartJam/sj_rock_solo_100_full.mp3; sourceTree = "<group>"; };
+		6BEA90112EDF5DCE00E26F46 /* sj_rock_solo_120_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_rock_solo_120_full.mp3; path = Resources/SmartJam/sj_rock_solo_120_full.mp3; sourceTree = "<group>"; };
+		6BEA90122EDF5DCE00E26F46 /* sj_rock_tech_70_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_rock_tech_70_full.mp3; path = Resources/SmartJam/sj_rock_tech_70_full.mp3; sourceTree = "<group>"; };
+		6BEA90132EDF5DCE00E26F46 /* sj_rock_tech_80_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_rock_tech_80_full.mp3; path = Resources/SmartJam/sj_rock_tech_80_full.mp3; sourceTree = "<group>"; };
+		6BEA90142EDF5DCE00E26F46 /* sj_worship_solo_72_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_worship_solo_72_full.mp3; path = Resources/SmartJam/sj_worship_solo_72_full.mp3; sourceTree = "<group>"; };
+		6BEA90152EDF5DCE00E26F46 /* sj_worship_tech_68_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_worship_tech_68_full.mp3; path = Resources/SmartJam/sj_worship_tech_68_full.mp3; sourceTree = "<group>"; };
 		A1000000000 /* Piq.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Piq.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1000001000 /* PiqApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiqApp.swift; sourceTree = "<group>"; };
 		A1000002000 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
@@ -135,6 +161,19 @@
 				A1000015000 /* PracticeSessionView.swift */,
 				A1000006000 /* Assets.xcassets */,
 				6BEA90082EDF584900E26F46 /* sj_blues_solo_90_full.mp3 */,
+				6BEA900A2EDF5DCE00E26F46 /* sj_blues_solo_100_full.mp3 */,
+				6BEA900B2EDF5DCE00E26F46 /* sj_blues_solo_110_full.mp3 */,
+				6BEA900C2EDF5DCE00E26F46 /* sj_pop_solo_95_full.mp3 */,
+				6BEA900D2EDF5DCE00E26F46 /* sj_pop_tech_92_full.mp3 */,
+				6BEA900E2EDF5DCE00E26F46 /* sj_rnb_solo_94_full.mp3 */,
+				6BEA900F2EDF5DCE00E26F46 /* sj_rnb_tech_85_full.mp3 */,
+				6BEA90102EDF5DCE00E26F46 /* sj_rock_solo_100_full.mp3 */,
+				6BEA90112EDF5DCE00E26F46 /* sj_rock_solo_120_full.mp3 */,
+				6BEA90122EDF5DCE00E26F46 /* sj_rock_tech_70_full.mp3 */,
+				6BEA90132EDF5DCE00E26F46 /* sj_rock_tech_80_full.mp3 */,
+				6BEA90142EDF5DCE00E26F46 /* sj_worship_solo_72_full.mp3 */,
+				6BEA90152EDF5DCE00E26F46 /* sj_worship_tech_68_full.mp3 */,
+				6BEA90102EDF584900E26F46 /* sj_blues_tech_70_full.mp3 */,
 				A10000GR002 /* Modules */,
 			);
 			sourceTree = "<group>";
@@ -324,6 +363,19 @@
 			files = (
 				A1000006001 /* Assets.xcassets in Resources */,
 				6BEA90092EDF584900E26F46 /* sj_blues_solo_90_full.mp3 in Resources */,
+				6BEA90112EDF584900E26F46 /* sj_blues_tech_70_full.mp3 in Resources */,
+				6BEA90162EDF5DCE00E26F46 /* sj_pop_tech_92_full.mp3 in Resources */,
+				6BEA90172EDF5DCE00E26F46 /* sj_rnb_solo_94_full.mp3 in Resources */,
+				6BEA90182EDF5DCE00E26F46 /* sj_rock_solo_120_full.mp3 in Resources */,
+				6BEA90192EDF5DCE00E26F46 /* sj_blues_solo_110_full.mp3 in Resources */,
+				6BEA901A2EDF5DCE00E26F46 /* sj_rock_solo_100_full.mp3 in Resources */,
+				6BEA901B2EDF5DCE00E26F46 /* sj_rock_tech_80_full.mp3 in Resources */,
+				6BEA901C2EDF5DCE00E26F46 /* sj_worship_solo_72_full.mp3 in Resources */,
+				6BEA901D2EDF5DCE00E26F46 /* sj_rnb_tech_85_full.mp3 in Resources */,
+				6BEA901E2EDF5DCE00E26F46 /* sj_pop_solo_95_full.mp3 in Resources */,
+				6BEA901F2EDF5DCE00E26F46 /* sj_rock_tech_70_full.mp3 in Resources */,
+				6BEA90202EDF5DCE00E26F46 /* sj_worship_tech_68_full.mp3 in Resources */,
+				6BEA90212EDF5DCE00E26F46 /* sj_blues_solo_100_full.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
