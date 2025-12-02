@@ -18,6 +18,7 @@ final class TodayViewModel {
 
     private let sre: SpacedRepetitionEngine
     private let engine: PracticeEngine
+    private let preferencesProvider: () -> UserPreferences
 
     // MARK: - Properties
 
@@ -40,9 +41,14 @@ final class TodayViewModel {
 
     // MARK: - Initialization
 
-    init(sre: SpacedRepetitionEngine, engine: PracticeEngine) {
+    init(
+        sre: SpacedRepetitionEngine,
+        engine: PracticeEngine,
+        preferencesProvider: @escaping () -> UserPreferences = { .default }
+    ) {
         self.sre = sre
         self.engine = engine
+        self.preferencesProvider = preferencesProvider
     }
 
     // MARK: - Actions
@@ -50,7 +56,8 @@ final class TodayViewModel {
     /// Refresh the displayed blocks from the SRE.
     /// Called when Today screen appears to ensure fresh data.
     func refreshBlocks() {
-        let session = sre.generateTodaySession()
+        let preferences = preferencesProvider()
+        let session = sre.generateTodaySession(preferredStyles: preferences.styles)
         todayBlocks = session.blocks
     }
 

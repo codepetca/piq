@@ -12,6 +12,7 @@ struct PracticeBlock: Identifiable, Codable, Equatable {
     var practiceItemID: UUID?
     var feedback: PracticeBlockFeedback?
     var referenceID: String?
+    var smartJamConfig: SmartJamConfig?
 
     // Instructions to display during practice
     var instructions: [String]
@@ -33,6 +34,7 @@ struct PracticeBlock: Identifiable, Codable, Equatable {
         practiceItemID: UUID? = nil,
         feedback: PracticeBlockFeedback? = nil,
         referenceID: String? = nil,
+        smartJamConfig: SmartJamConfig? = nil,
         instructions: [String] = [],
         focusCue: String? = nil,
         startingBPM: Int? = nil,
@@ -49,6 +51,7 @@ struct PracticeBlock: Identifiable, Codable, Equatable {
         self.practiceItemID = practiceItemID
         self.feedback = feedback
         self.referenceID = referenceID
+        self.smartJamConfig = smartJamConfig
         self.instructions = instructions
         self.focusCue = focusCue
         self.startingBPM = startingBPM
@@ -61,6 +64,7 @@ struct PracticeBlock: Identifiable, Codable, Equatable {
     enum CodingKeys: String, CodingKey {
         case id, kind, title, detail, targetMinutes, actualMinutes, key
         case practiceItemID, feedback, referenceID
+        case smartJamConfig
         case instructions, focusCue
         case startingBPM, endingBPM, tempoAdjustmentCount
     }
@@ -78,6 +82,7 @@ struct PracticeBlock: Identifiable, Codable, Equatable {
         practiceItemID = try container.decodeIfPresent(UUID.self, forKey: .practiceItemID)
         feedback = try container.decodeIfPresent(PracticeBlockFeedback.self, forKey: .feedback)
         referenceID = try container.decodeIfPresent(String.self, forKey: .referenceID)
+        smartJamConfig = try container.decodeIfPresent(SmartJamConfig.self, forKey: .smartJamConfig)
         instructions = try container.decodeIfPresent([String].self, forKey: .instructions) ?? []
         focusCue = try container.decodeIfPresent(String.self, forKey: .focusCue)
         // For v1 blocks without tempo fields, use defaults
