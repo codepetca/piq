@@ -93,7 +93,7 @@ struct PracticeSessionView: View {
 
     private func handleJam(for state: PracticeEngineState) {
         switch state {
-        case .previewBlock(let index, _), .inBlock(let index, _):
+        case .inBlock(let index, _):
             guard let block = block(at: index), let config = block.smartJamConfig else {
                 smartJamAudio.stopJam()
                 return
@@ -102,6 +102,8 @@ struct PracticeSessionView: View {
             if engine.isPaused {
                 smartJamAudio.pauseJam()
             }
+        case .previewBlock:
+            smartJamAudio.stopJam()
         default:
             smartJamAudio.stopJam()
         }
