@@ -65,7 +65,7 @@ struct SmartJamPatternCatalog {
                     category: .solo,
                     baseBPM: 90,
                     baseKey: "Am",
-                    assetName: "sj_blues_solo_90_full"
+                    assetName: "sj_blues_solo_90_full.mp3"
                 ),
                 SmartJamPatternFamily(
                     id: "sj_blues_solo_110",
@@ -73,7 +73,7 @@ struct SmartJamPatternCatalog {
                     category: .solo,
                     baseBPM: 110,
                     baseKey: "Em",
-                    assetName: "sj_blues_solo_110_full"
+                    assetName: "sj_blues_solo_110_full.mp3"
                 ),
                 SmartJamPatternFamily(
                     id: "sj_rock_solo_100",
@@ -81,7 +81,7 @@ struct SmartJamPatternCatalog {
                     category: .solo,
                     baseBPM: 100,
                     baseKey: "Am",
-                    assetName: "sj_rock_solo_100_full"
+                    assetName: "sj_rock_solo_100_full.mp3"
                 ),
                 SmartJamPatternFamily(
                     id: "sj_rock_solo_120",
@@ -89,7 +89,7 @@ struct SmartJamPatternCatalog {
                     category: .solo,
                     baseBPM: 120,
                     baseKey: "Em",
-                    assetName: "sj_rock_solo_120_full"
+                    assetName: "sj_rock_solo_120_full.mp3"
                 ),
                 SmartJamPatternFamily(
                     id: "sj_pop_solo_95",
@@ -97,7 +97,7 @@ struct SmartJamPatternCatalog {
                     category: .solo,
                     baseBPM: 95,
                     baseKey: "C",
-                    assetName: "sj_pop_solo_95_full"
+                    assetName: "sj_pop_solo_95_full.mp3"
                 ),
                 SmartJamPatternFamily(
                     id: "sj_worship_solo_72",
@@ -105,7 +105,7 @@ struct SmartJamPatternCatalog {
                     category: .solo,
                     baseBPM: 72,
                     baseKey: "G",
-                    assetName: "sj_worship_solo_72_full"
+                    assetName: "sj_worship_solo_72_full.mp3"
                 ),
                 SmartJamPatternFamily(
                     id: "sj_rnb_solo_94",
@@ -113,7 +113,7 @@ struct SmartJamPatternCatalog {
                     category: .solo,
                     baseBPM: 94,
                     baseKey: "Am",
-                    assetName: "sj_rnb_solo_94_full"
+                    assetName: "sj_rnb_solo_94_full.mp3"
                 ),
                 SmartJamPatternFamily(
                     id: "sj_rock_tech_80",
@@ -121,7 +121,7 @@ struct SmartJamPatternCatalog {
                     category: .technique,
                     baseBPM: 80,
                     baseKey: "Am",
-                    assetName: "sj_rock_tech_80_full"
+                    assetName: "sj_rock_tech_80_full.mp3"
                 ),
                 SmartJamPatternFamily(
                     id: "sj_blues_tech_70",
@@ -129,7 +129,7 @@ struct SmartJamPatternCatalog {
                     category: .technique,
                     baseBPM: 70,
                     baseKey: "Am",
-                    assetName: "sj_blues_tech_70_full"
+                    assetName: "sj_blues_tech_70_full.mp3"
                 ),
                 SmartJamPatternFamily(
                     id: "sj_pop_tech_92",
@@ -137,7 +137,7 @@ struct SmartJamPatternCatalog {
                     category: .technique,
                     baseBPM: 92,
                     baseKey: "C",
-                    assetName: "sj_pop_tech_92_full"
+                    assetName: "sj_pop_tech_92_full.mp3"
                 ),
                 SmartJamPatternFamily(
                     id: "sj_rnb_tech_85",
@@ -145,7 +145,7 @@ struct SmartJamPatternCatalog {
                     category: .technique,
                     baseBPM: 85,
                     baseKey: "Em",
-                    assetName: "sj_rnb_tech_85_full"
+                    assetName: "sj_rnb_tech_85_full.mp3"
                 ),
                 SmartJamPatternFamily(
                     id: "sj_worship_tech_68",
@@ -153,7 +153,7 @@ struct SmartJamPatternCatalog {
                     category: .technique,
                     baseBPM: 68,
                     baseKey: "G",
-                    assetName: "sj_worship_tech_68_full"
+                    assetName: "sj_worship_tech_68_full.mp3"
                 )
             ]
         )
