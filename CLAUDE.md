@@ -2,6 +2,26 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+---
+
+## 🚀 AI Agents: START HERE
+
+**MANDATORY:** Before any work, read `.ai/START-HERE.md` and follow the 8-step initialization ritual.
+
+This ensures:
+- ✅ Environment is verified and ready
+- ✅ Context is recovered from previous sessions
+- ✅ Architectural boundaries are clear
+- ✅ Feature status is known
+- ✅ Session continuity is maintained
+
+**Quick links:**
+- `.ai/START-HERE.md` — Initialization ritual (MUST READ FIRST)
+- `docs/issue-worker.md` — 9-step implementation workflow
+- `docs/issue-author.md` — How to create well-formed issues
+
+---
+
 ## Project Overview
 
 **piq** is a minimal, distraction-free iOS guitar practice app that helps guitarists build skills through spaced repetition and deliberate practice. It tells users what to practice today in 4 guided blocks (Warm-Up, Song, Solo, Technique) with timers, simple feedback (Easy/Good/Hard), and light reference diagrams.
@@ -50,16 +70,19 @@ swift test --filter PracticeEngineTests.testStartSession
 
 ## Required Reading Before Any Changes
 
-Read these documentation files **in order** before modifying code:
+**FIRST:** Follow the initialization ritual in `.ai/START-HERE.md` (mandatory for all sessions).
 
-1. `/docs/core/design.md` — UI/UX flows, visual design system, component patterns
+Then read these documentation files **as needed** based on your task:
+
+1. `.ai/START-HERE.md` — **MANDATORY** initialization ritual and workflow
 2. `/docs/core/architecture.md` — Architecture, modules, platform constraints, patterns
-3. `/docs/core/agents.md` — Multi-agent collaboration patterns, responsibilities
-4. `/docs/core/tests.md` — Testing philosophy, TDD approach, priorities
-5. `/docs/guidance/guidance.md` — Guitar learning domain model, SRS concepts
-6. Active issue file (if working on specific task): `/docs/issues/issue-*.md`
+3. `/docs/core/design.md` — UI/UX flows, visual design system, component patterns
+4. `/docs/core/agents.md` — Multi-agent collaboration patterns, responsibilities
+5. `/docs/core/tests.md` — Testing philosophy, TDD approach, priorities
+6. `/docs/guidance/guidance.md` — Guitar learning domain model, SRS concepts
+7. Active issue file (if working on specific task): `/docs/issues/issue-*.md`
 
-These files define the architectural rules and must be followed strictly.
+**Document hierarchy** (for conflict resolution): `.ai/features.json` > `architecture.md` > `CLAUDE.md` > `START-HERE.md` > `JOURNAL.md`
 
 ---
 
@@ -159,16 +182,21 @@ All lowercase, underscore-separated.
 
 ### Working on a GitHub Issue
 
-1. Fetch issue: `gh issue view N --json number,title,body,labels`
-2. Read relevant documentation files (see Required Reading section)
-3. Create implementation plan
-4. Ask clarifying questions if needed
-5. Implement following architecture rules
-6. **If adding new Swift files:** Update both Package.swift AND ios/Piq.xcodeproj/project.pbxproj
-7. Write/update tests (TDD for engines)
-8. Run `swift test` to verify
-9. Show `git diff`
-10. Suggest commit message following repo style
+**Use the standardized workflow in `docs/issue-worker.md`** (9-step process).
+
+Quick summary:
+1. Initialize with `.ai/START-HERE.md` ritual (verify env, review journal, check features)
+2. Fetch issue: `gh issue view N --json number,title,body,labels`
+3. Clarify ambiguities before coding
+4. Create branch and Draft PR
+5. Propose plan and wait for approval
+6. Implement following TDD and architecture rules
+7. **If adding new Swift files:** Update both Package.swift AND ios/Piq.xcodeproj/project.pbxproj
+8. Update `.ai/features.json` if features completed
+9. Write journal entry in `.ai/JOURNAL.md`
+10. Finalize PR and validate against acceptance criteria
+
+**See `docs/issue-worker.md` for detailed workflow.**
 
 ### Pre-Commit Checks
 
