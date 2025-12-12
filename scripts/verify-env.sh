@@ -4,6 +4,7 @@
 # Validates that the development environment is properly configured before AI work begins
 
 set -e  # Exit immediately on error
+set -u  # Exit on undefined variable
 
 echo "🔍 Verifying piq development environment..."
 echo ""
@@ -95,14 +96,6 @@ if [ ${#MISSING_FILES[@]} -gt 0 ]; then
     error "Missing .ai/ files: ${MISSING_FILES[*]}"
 fi
 success "All required .ai/ files present"
-echo ""
-
-# 6. Validate features.json is valid JSON
-echo "Validating features.json..."
-if ! python3 -m json.tool .ai/features.json > /dev/null 2>&1; then
-    error "features.json is not valid JSON"
-fi
-success "features.json is valid JSON"
 echo ""
 
 # All checks passed

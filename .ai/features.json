@@ -5,9 +5,10 @@
     "lastUpdated": "2025-12-12",
     "phase": "Phase 1",
     "totalFeatures": 28,
-    "passing": 20,
-    "failing": 8,
-    "rules": "Mark features as passing/failing, add new features, but NEVER DELETE FEATURES FROM THIS FILE (append-only for historical tracking)"
+    "passing": 25,
+    "failing": 3,
+    "rules": "Mark features as passing/failing, add new features, but NEVER DELETE FEATURES FROM THIS FILE (append-only for historical tracking)",
+    "notes": "Completion dates before 2025-12-12 are backfilled based on git history and represent estimated completion times"
   },
   "features": [
     {

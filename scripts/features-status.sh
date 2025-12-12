@@ -3,6 +3,9 @@
 # piq Feature Status Display
 # Shows feature summary from .ai/features.json without external dependencies (pure bash + grep)
 
+set -e  # Exit immediately on error
+set -u  # Exit on undefined variable
+
 FEATURES_FILE=".ai/features.json"
 
 # Colors
