@@ -49,6 +49,7 @@ extension PracticeSession {
     /// Generates 6-8 microblocks (~30–40 min) with warmup first, interleaved middle, fun ending.
     static func makeTodayDemo() -> PracticeSession {
         let items = PracticeItemCatalog.seedItems()
+        let smartJamService = SmartJamService()
         let targetTotalMinutes = 35
         let minTotalMinutes = 30
         let maxTotalMinutes = 40
@@ -123,6 +124,14 @@ extension PracticeSession {
                 key: item.key,
                 practiceItemID: item.id,
                 referenceID: item.referenceID,
+                smartJamConfig: SmartJamCategoryMapper.category(for: item.blockKind).flatMap {
+                    smartJamService.makeConfig(
+                        targetKey: item.key,
+                        targetBPM: TempoEngine.suggestedBPM(for: item),
+                        preferredStyles: [],
+                        category: $0
+                    )
+                },
                 instructions: instructions,
                 focusCue: focusCue
             )
@@ -136,6 +145,7 @@ extension PracticeSession {
     /// Demonstrates the session structure and adapts block count based on level.
     static func makeOnboardingPreview(for preferences: UserPreferences) -> PracticeSession {
         let items = PracticeItemCatalog.seedItems()
+        let smartJamService = SmartJamService()
 
         // Determine block count based on level
         let blockCount: Int
@@ -160,6 +170,14 @@ extension PracticeSession {
                 key: item.key,
                 practiceItemID: item.id,
                 referenceID: item.referenceID,
+                smartJamConfig: SmartJamCategoryMapper.category(for: item.blockKind).flatMap {
+                    smartJamService.makeConfig(
+                        targetKey: item.key,
+                        targetBPM: TempoEngine.suggestedBPM(for: item),
+                        preferredStyles: preferences.styles,
+                        category: $0
+                    )
+                },
                 instructions: instructions,
                 focusCue: focusCue
             )

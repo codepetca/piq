@@ -427,6 +427,8 @@ The Practice screen uses these components:
   - Renders concentric rings and central timer content.
 - `MetronomeBar`  
   - Renders the icon‑based metronome row.
+- SmartJam backing track (no extra controls)  
+  - Solo/Technique blocks may auto-start a bundled loop; pause/resume follows the block pause state.
 - Preview state  
   - 10s countdown before each block; tap anywhere to start immediately.
 - Bottom control row  

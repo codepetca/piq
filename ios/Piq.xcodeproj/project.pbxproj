@@ -7,6 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6BEA90092EDF584900E26F46 /* sj_blues_solo_90_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA90082EDF584900E26F46 /* sj_blues_solo_90_full.mp3 */; };
+		6BEA90112EDF584900E26F46 /* sj_blues_tech_70_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA90102EDF584900E26F46 /* sj_blues_tech_70_full.mp3 */; };
+		6BEA90162EDF5DCE00E26F46 /* sj_pop_tech_92_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA900D2EDF5DCE00E26F46 /* sj_pop_tech_92_full.mp3 */; };
+		6BEA90172EDF5DCE00E26F46 /* sj_rnb_solo_94_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA900E2EDF5DCE00E26F46 /* sj_rnb_solo_94_full.mp3 */; };
+		6BEA90182EDF5DCE00E26F46 /* sj_rock_solo_120_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA90112EDF5DCE00E26F46 /* sj_rock_solo_120_full.mp3 */; };
+		6BEA90192EDF5DCE00E26F46 /* sj_blues_solo_110_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA900B2EDF5DCE00E26F46 /* sj_blues_solo_110_full.mp3 */; };
+		6BEA901A2EDF5DCE00E26F46 /* sj_rock_solo_100_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA90102EDF5DCE00E26F46 /* sj_rock_solo_100_full.mp3 */; };
+		6BEA901B2EDF5DCE00E26F46 /* sj_rock_tech_80_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA90132EDF5DCE00E26F46 /* sj_rock_tech_80_full.mp3 */; };
+		6BEA901C2EDF5DCE00E26F46 /* sj_worship_solo_72_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA90142EDF5DCE00E26F46 /* sj_worship_solo_72_full.mp3 */; };
+		6BEA901D2EDF5DCE00E26F46 /* sj_rnb_tech_85_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA900F2EDF5DCE00E26F46 /* sj_rnb_tech_85_full.mp3 */; };
+		6BEA901E2EDF5DCE00E26F46 /* sj_pop_solo_95_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA900C2EDF5DCE00E26F46 /* sj_pop_solo_95_full.mp3 */; };
+		6BEA901F2EDF5DCE00E26F46 /* sj_rock_tech_70_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA90122EDF5DCE00E26F46 /* sj_rock_tech_70_full.mp3 */; };
+		6BEA90202EDF5DCE00E26F46 /* sj_worship_tech_68_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA90152EDF5DCE00E26F46 /* sj_worship_tech_68_full.mp3 */; };
+		6BEA90212EDF5DCE00E26F46 /* sj_blues_solo_100_full.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BEA900A2EDF5DCE00E26F46 /* sj_blues_solo_100_full.mp3 */; };
 		A1000001001 /* PiqApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001000 /* PiqApp.swift */; };
 		A1000002001 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000002000 /* RootView.swift */; };
 		A1000003001 /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000003000 /* TodayView.swift */; };
@@ -19,8 +33,6 @@
 		A1000010001 /* PracticeSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000010000 /* PracticeSession.swift */; };
 		A1000011001 /* PracticeEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000011000 /* PracticeEngine.swift */; };
 		A1000012001 /* PracticeItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000012000 /* PracticeItem.swift */; };
-		A1000025001 /* PracticeItemCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000025000 /* PracticeItemCategory.swift */; };
-		A1000026001 /* PracticeItemCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000026000 /* PracticeItemCatalog.swift */; };
 		A1000013001 /* SpacedRepetitionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000013000 /* SpacedRepetitionEngine.swift */; };
 		A1000014001 /* PracticeStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000014000 /* PracticeStorage.swift */; };
 		A1000015001 /* PracticeSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000015000 /* PracticeSessionView.swift */; };
@@ -28,18 +40,18 @@
 		A1000017001 /* FeedbackBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000017000 /* FeedbackBar.swift */; };
 		A1000018001 /* MetronomeBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000018000 /* MetronomeBar.swift */; };
 		A1000019001 /* SongChoiceSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000019000 /* SongChoiceSheet.swift */; };
-		A1000050001 /* SessionSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000050000 /* SessionSummaryView.swift */; };
 		A1000020001 /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000020000 /* HistoryViewModel.swift */; };
 		A1000021001 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000021000 /* SessionDetailView.swift */; };
 		A1000022001 /* MetronomeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000022000 /* MetronomeService.swift */; };
 		A1000023001 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000023000 /* SettingsViewModel.swift */; };
 		A1000024001 /* HapticService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000024000 /* HapticService.swift */; };
+		A1000025001 /* PracticeItemCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000025000 /* PracticeItemCategory.swift */; };
+		A1000026001 /* PracticeItemCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000026000 /* PracticeItemCatalog.swift */; };
 		A1000027001 /* TodayViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000027000 /* TodayViewModel.swift */; };
 		A1000028001 /* PracticeReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000028000 /* PracticeReference.swift */; };
 		A1000029001 /* PracticeReferenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000029000 /* PracticeReferenceService.swift */; };
 		A1000030001 /* PracticeReferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000030000 /* PracticeReferenceView.swift */; };
 		A1000031001 /* HistoryTrendCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000031000 /* HistoryTrendCalculator.swift */; };
-
 		A1000033001 /* TempoEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000033000 /* TempoEngine.swift */; };
 		A1000034001 /* BlockPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000034000 /* BlockPreviewView.swift */; };
 		A1000035001 /* UserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000035000 /* UserPreferences.swift */; };
@@ -50,9 +62,27 @@
 		A1000040001 /* StylesStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000040000 /* StylesStepView.swift */; };
 		A1000041001 /* CuesStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000041000 /* CuesStepView.swift */; };
 		A1000042001 /* OnboardingSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000042000 /* OnboardingSummaryView.swift */; };
+		A1000050001 /* SessionSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000050000 /* SessionSummaryView.swift */; };
+		A1000066001 /* SmartJamModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000066000 /* SmartJamModels.swift */; };
+		A1000067001 /* SmartJamService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000067000 /* SmartJamService.swift */; };
+		A1000068001 /* SmartJamAudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000068000 /* SmartJamAudioService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		6BEA90082EDF584900E26F46 /* sj_blues_solo_90_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_blues_solo_90_full.mp3; path = Resources/SmartJam/sj_blues_solo_90_full.mp3; sourceTree = "<group>"; };
+		6BEA900A2EDF5DCE00E26F46 /* sj_blues_solo_100_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_blues_solo_100_full.mp3; path = Resources/SmartJam/sj_blues_solo_100_full.mp3; sourceTree = "<group>"; };
+		6BEA900B2EDF5DCE00E26F46 /* sj_blues_solo_110_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_blues_solo_110_full.mp3; path = Resources/SmartJam/sj_blues_solo_110_full.mp3; sourceTree = "<group>"; };
+		6BEA900C2EDF5DCE00E26F46 /* sj_pop_solo_95_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_pop_solo_95_full.mp3; path = Resources/SmartJam/sj_pop_solo_95_full.mp3; sourceTree = "<group>"; };
+		6BEA900D2EDF5DCE00E26F46 /* sj_pop_tech_92_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_pop_tech_92_full.mp3; path = Resources/SmartJam/sj_pop_tech_92_full.mp3; sourceTree = "<group>"; };
+		6BEA900E2EDF5DCE00E26F46 /* sj_rnb_solo_94_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_rnb_solo_94_full.mp3; path = Resources/SmartJam/sj_rnb_solo_94_full.mp3; sourceTree = "<group>"; };
+		6BEA900F2EDF5DCE00E26F46 /* sj_rnb_tech_85_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_rnb_tech_85_full.mp3; path = Resources/SmartJam/sj_rnb_tech_85_full.mp3; sourceTree = "<group>"; };
+		6BEA90102EDF584900E26F46 /* sj_blues_tech_70_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_blues_tech_70_full.mp3; path = Resources/SmartJam/sj_blues_tech_70_full.mp3; sourceTree = "<group>"; };
+		6BEA90102EDF5DCE00E26F46 /* sj_rock_solo_100_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_rock_solo_100_full.mp3; path = Resources/SmartJam/sj_rock_solo_100_full.mp3; sourceTree = "<group>"; };
+		6BEA90112EDF5DCE00E26F46 /* sj_rock_solo_120_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_rock_solo_120_full.mp3; path = Resources/SmartJam/sj_rock_solo_120_full.mp3; sourceTree = "<group>"; };
+		6BEA90122EDF5DCE00E26F46 /* sj_rock_tech_70_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_rock_tech_70_full.mp3; path = Resources/SmartJam/sj_rock_tech_70_full.mp3; sourceTree = "<group>"; };
+		6BEA90132EDF5DCE00E26F46 /* sj_rock_tech_80_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_rock_tech_80_full.mp3; path = Resources/SmartJam/sj_rock_tech_80_full.mp3; sourceTree = "<group>"; };
+		6BEA90142EDF5DCE00E26F46 /* sj_worship_solo_72_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_worship_solo_72_full.mp3; path = Resources/SmartJam/sj_worship_solo_72_full.mp3; sourceTree = "<group>"; };
+		6BEA90152EDF5DCE00E26F46 /* sj_worship_tech_68_full.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sj_worship_tech_68_full.mp3; path = Resources/SmartJam/sj_worship_tech_68_full.mp3; sourceTree = "<group>"; };
 		A1000000000 /* Piq.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Piq.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1000001000 /* PiqApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiqApp.swift; sourceTree = "<group>"; };
 		A1000002000 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
@@ -66,8 +96,6 @@
 		A1000010000 /* PracticeSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeSession.swift; sourceTree = "<group>"; };
 		A1000011000 /* PracticeEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeEngine.swift; sourceTree = "<group>"; };
 		A1000012000 /* PracticeItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeItem.swift; sourceTree = "<group>"; };
-		A1000025000 /* PracticeItemCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeItemCategory.swift; sourceTree = "<group>"; };
-		A1000026000 /* PracticeItemCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeItemCatalog.swift; sourceTree = "<group>"; };
 		A1000013000 /* SpacedRepetitionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpacedRepetitionEngine.swift; sourceTree = "<group>"; };
 		A1000014000 /* PracticeStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeStorage.swift; sourceTree = "<group>"; };
 		A1000015000 /* PracticeSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeSessionView.swift; sourceTree = "<group>"; };
@@ -75,18 +103,18 @@
 		A1000017000 /* FeedbackBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackBar.swift; sourceTree = "<group>"; };
 		A1000018000 /* MetronomeBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeBar.swift; sourceTree = "<group>"; };
 		A1000019000 /* SongChoiceSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongChoiceSheet.swift; sourceTree = "<group>"; };
-		A1000050000 /* SessionSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionSummaryView.swift; sourceTree = "<group>"; };
 		A1000020000 /* HistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewModel.swift; sourceTree = "<group>"; };
 		A1000021000 /* SessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailView.swift; sourceTree = "<group>"; };
 		A1000022000 /* MetronomeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetronomeService.swift; sourceTree = "<group>"; };
 		A1000023000 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		A1000024000 /* HapticService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticService.swift; sourceTree = "<group>"; };
+		A1000025000 /* PracticeItemCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeItemCategory.swift; sourceTree = "<group>"; };
+		A1000026000 /* PracticeItemCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeItemCatalog.swift; sourceTree = "<group>"; };
 		A1000027000 /* TodayViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewModel.swift; sourceTree = "<group>"; };
 		A1000028000 /* PracticeReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeReference.swift; sourceTree = "<group>"; };
 		A1000029000 /* PracticeReferenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeReferenceService.swift; sourceTree = "<group>"; };
 		A1000030000 /* PracticeReferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeReferenceView.swift; sourceTree = "<group>"; };
 		A1000031000 /* HistoryTrendCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryTrendCalculator.swift; sourceTree = "<group>"; };
-
 		A1000033000 /* TempoEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TempoEngine.swift; sourceTree = "<group>"; };
 		A1000034000 /* BlockPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockPreviewView.swift; sourceTree = "<group>"; };
 		A1000035000 /* UserPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferences.swift; sourceTree = "<group>"; };
@@ -97,6 +125,10 @@
 		A1000040000 /* StylesStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StylesStepView.swift; sourceTree = "<group>"; };
 		A1000041000 /* CuesStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CuesStepView.swift; sourceTree = "<group>"; };
 		A1000042000 /* OnboardingSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingSummaryView.swift; sourceTree = "<group>"; };
+		A1000050000 /* SessionSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionSummaryView.swift; sourceTree = "<group>"; };
+		A1000066000 /* SmartJamModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartJamModels.swift; sourceTree = "<group>"; };
+		A1000067000 /* SmartJamService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartJamService.swift; sourceTree = "<group>"; };
+		A1000068000 /* SmartJamAudioService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartJamAudioService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,12 +145,12 @@
 		A10000GR000 = {
 			isa = PBXGroup;
 			children = (
-				A10000GR001 /*  */,
+				A10000GR001,
 				A10000GR003 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		A10000GR001 /*  */ = {
+		A10000GR001 = {
 			isa = PBXGroup;
 			children = (
 				A1000001000 /* PiqApp.swift */,
@@ -128,9 +160,22 @@
 				A1000005000 /* SettingsView.swift */,
 				A1000015000 /* PracticeSessionView.swift */,
 				A1000006000 /* Assets.xcassets */,
+				6BEA90082EDF584900E26F46 /* sj_blues_solo_90_full.mp3 */,
+				6BEA900A2EDF5DCE00E26F46 /* sj_blues_solo_100_full.mp3 */,
+				6BEA900B2EDF5DCE00E26F46 /* sj_blues_solo_110_full.mp3 */,
+				6BEA900C2EDF5DCE00E26F46 /* sj_pop_solo_95_full.mp3 */,
+				6BEA900D2EDF5DCE00E26F46 /* sj_pop_tech_92_full.mp3 */,
+				6BEA900E2EDF5DCE00E26F46 /* sj_rnb_solo_94_full.mp3 */,
+				6BEA900F2EDF5DCE00E26F46 /* sj_rnb_tech_85_full.mp3 */,
+				6BEA90102EDF5DCE00E26F46 /* sj_rock_solo_100_full.mp3 */,
+				6BEA90112EDF5DCE00E26F46 /* sj_rock_solo_120_full.mp3 */,
+				6BEA90122EDF5DCE00E26F46 /* sj_rock_tech_70_full.mp3 */,
+				6BEA90132EDF5DCE00E26F46 /* sj_rock_tech_80_full.mp3 */,
+				6BEA90142EDF5DCE00E26F46 /* sj_worship_solo_72_full.mp3 */,
+				6BEA90152EDF5DCE00E26F46 /* sj_worship_tech_68_full.mp3 */,
+				6BEA90102EDF584900E26F46 /* sj_blues_tech_70_full.mp3 */,
 				A10000GR002 /* Modules */,
 			);
-			name = "";
 			sourceTree = "<group>";
 		};
 		A10000GR002 /* Modules */ = {
@@ -144,6 +189,7 @@
 				A10000GR008 /* SettingsModule */,
 				A10000GR010 /* ReferenceModule */,
 				A10000GR011 /* OnboardingModule */,
+				A10000GR012 /* SmartJamModule */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -185,7 +231,6 @@
 				A1000019000 /* SongChoiceSheet.swift */,
 				A1000034000 /* BlockPreviewView.swift */,
 				A1000050000 /* SessionSummaryView.swift */,
-
 			);
 			path = SessionUI;
 			sourceTree = "<group>";
@@ -204,6 +249,7 @@
 			children = (
 				A1000022000 /* MetronomeService.swift */,
 				A1000024000 /* HapticService.swift */,
+				A1000068000 /* SmartJamAudioService.swift */,
 			);
 			path = AudioHapticsModule;
 			sourceTree = "<group>";
@@ -246,6 +292,15 @@
 				A1000042000 /* OnboardingSummaryView.swift */,
 			);
 			path = OnboardingModule;
+			sourceTree = "<group>";
+		};
+		A10000GR012 /* SmartJamModule */ = {
+			isa = PBXGroup;
+			children = (
+				A1000066000 /* SmartJamModels.swift */,
+				A1000067000 /* SmartJamService.swift */,
+			);
+			path = SmartJamModule;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -307,6 +362,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1000006001 /* Assets.xcassets in Resources */,
+				6BEA90092EDF584900E26F46 /* sj_blues_solo_90_full.mp3 in Resources */,
+				6BEA90112EDF584900E26F46 /* sj_blues_tech_70_full.mp3 in Resources */,
+				6BEA90162EDF5DCE00E26F46 /* sj_pop_tech_92_full.mp3 in Resources */,
+				6BEA90172EDF5DCE00E26F46 /* sj_rnb_solo_94_full.mp3 in Resources */,
+				6BEA90182EDF5DCE00E26F46 /* sj_rock_solo_120_full.mp3 in Resources */,
+				6BEA90192EDF5DCE00E26F46 /* sj_blues_solo_110_full.mp3 in Resources */,
+				6BEA901A2EDF5DCE00E26F46 /* sj_rock_solo_100_full.mp3 in Resources */,
+				6BEA901B2EDF5DCE00E26F46 /* sj_rock_tech_80_full.mp3 in Resources */,
+				6BEA901C2EDF5DCE00E26F46 /* sj_worship_solo_72_full.mp3 in Resources */,
+				6BEA901D2EDF5DCE00E26F46 /* sj_rnb_tech_85_full.mp3 in Resources */,
+				6BEA901E2EDF5DCE00E26F46 /* sj_pop_solo_95_full.mp3 in Resources */,
+				6BEA901F2EDF5DCE00E26F46 /* sj_rock_tech_70_full.mp3 in Resources */,
+				6BEA90202EDF5DCE00E26F46 /* sj_worship_tech_68_full.mp3 in Resources */,
+				6BEA90212EDF5DCE00E26F46 /* sj_blues_solo_100_full.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -340,7 +409,6 @@
 				A1000019001 /* SongChoiceSheet.swift in Sources */,
 				A1000034001 /* BlockPreviewView.swift in Sources */,
 				A1000050001 /* SessionSummaryView.swift in Sources */,
-
 				A1000020001 /* HistoryViewModel.swift in Sources */,
 				A1000021001 /* SessionDetailView.swift in Sources */,
 				A1000022001 /* MetronomeService.swift in Sources */,
@@ -359,6 +427,9 @@
 				A1000040001 /* StylesStepView.swift in Sources */,
 				A1000041001 /* CuesStepView.swift in Sources */,
 				A1000042001 /* OnboardingSummaryView.swift in Sources */,
+				A1000066001 /* SmartJamModels.swift in Sources */,
+				A1000067001 /* SmartJamService.swift in Sources */,
+				A1000068001 /* SmartJamAudioService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
